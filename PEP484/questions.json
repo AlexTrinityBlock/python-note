@@ -184,19 +184,19 @@
       "The annotation is removed from the function"
     ],
     "answer": [0],
-    "explanation": "The PEP states that \"no type checking happens at runtime\". Annotations are only available at runtime through __annotations__; checking is done by a separate off-line type checker, which the user runs voluntarily."
+    "explanation": "The PEP states that \"no type checking happens at runtime\". Annotations are only available at runtime through `__annotations__`; checking is done by a separate off-line type checker, which the user runs voluntarily."
   },
   {
     "type": "single",
     "question": "Where are the annotations of a function available at runtime?",
     "options": [
-      "In the __annotations__ attribute of the function object",
+      "In the `__annotations__` attribute of the function object",
       "In a global registry in the typing module",
       "They are not available at runtime at all",
-      "In the function's __doc__ attribute"
+      "In the function's `__doc__` attribute"
     ],
     "answer": [0],
-    "explanation": "\"these annotations are available at runtime through the usual __annotations__ attribute\". Evaluating the annotation expressions and storing them in __annotations__ is the only runtime effect of type-hint annotations."
+    "explanation": "\"these annotations are available at runtime through the usual `__annotations__` attribute\". Evaluating the annotation expressions and storing them in `__annotations__` is the only runtime effect of type-hint annotations."
   },
   {
     "type": "single",

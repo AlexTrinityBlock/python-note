@@ -45,7 +45,7 @@
     "type": "multiple",
     "question": "Which of the following statements about docstrings are true?",
     "options": [
-      "They are stored in the __doc__ attribute",
+      "They are stored in the `__doc__` attribute",
       "They can be displayed with help()",
       "They are ignored by Python at runtime",
       "A one-line docstring should end with a period"
@@ -125,41 +125,41 @@
     "answer": [
       0
     ],
-    "explanation": "PEP 257: \"For consistency, always use \"\"\"triple double quotes\"\"\" around docstrings. Use r\"\"\"raw triple double quotes\"\"\" if you use any backslashes in your docstrings.\" Without the raw prefix, the sequence \\t becomes a tab character and \\f becomes a form feed inside __doc__, corrupting the path text."
+    "explanation": "PEP 257: \"For consistency, always use \"\"\"triple double quotes\"\"\" around docstrings. Use r\"\"\"raw triple double quotes\"\"\" if you use any backslashes in your docstrings.\" Without the raw prefix, the sequence \\t becomes a tab character and \\f becomes a form feed inside `__doc__`, corrupting the path text."
   },
   {
     "type": "single",
     "question": "What does PEP 257 say about the string literal in this function?\n\n```python\ndef f():\n    x = 1\n    \"\"\"Return x.\"\"\"\n    return x\n```",
     "options": [
-      "It is not a docstring: only a string literal that occurs as the first statement in a definition becomes the __doc__ attribute, and string literals elsewhere are not recognized by the bytecode compiler.",
-      "It becomes f.__doc__, because any string literal inside a function body is a docstring.",
+      "It is not a docstring: only a string literal that occurs as the first statement in a definition becomes the `__doc__` attribute, and string literals elsewhere are not recognized by the bytecode compiler.",
+      "It becomes `f.__doc__`, because any string literal inside a function body is a docstring.",
       "It is an attribute docstring, because it appears immediately after a simple assignment.",
       "It is an additional docstring, because it follows another statement."
     ],
     "answer": [
       0
     ],
-    "explanation": "A docstring is a string literal that occurs as the first statement in a module, function, class, or method definition; such a docstring becomes the __doc__ attribute. Here the string literal follows `x = 1`, so it is not a docstring and f.__doc__ is None. Attribute docstrings are string literals immediately after a simple assignment at the top level of a module, class, or __init__ method; additional docstrings come immediately after another docstring — neither applies here."
+    "explanation": "A docstring is a string literal that occurs as the first statement in a module, function, class, or method definition; such a docstring becomes the `__doc__` attribute. Here the string literal follows `x = 1`, so it is not a docstring and `f.__doc__` is None. Attribute docstrings are string literals immediately after a simple assignment at the top level of a module, class, or `__init__` method; additional docstrings come immediately after another docstring — neither applies here."
   },
   {
     "type": "multiple",
     "question": "Which statements about string literals that occur elsewhere than as the first statement are true according to PEP 257?\n\n```python\n\"\"\"Module docstring.\"\"\"\n\nMAX_SIZE = 100\n\"\"\"Maximum number of items a container may hold.\"\"\"\n```",
     "options": [
-      "They are not recognized by the Python bytecode compiler and are not accessible as runtime object attributes (i.e. not assigned to __doc__).",
-      "A string literal occurring immediately after a simple assignment at the top level of a module, class, or __init__ method is called an attribute docstring.",
+      "They are not recognized by the Python bytecode compiler and are not accessible as runtime object attributes (i.e. not assigned to `__doc__`).",
+      "A string literal occurring immediately after a simple assignment at the top level of a module, class, or `__init__` method is called an attribute docstring.",
       "A string literal occurring immediately after another docstring is called an additional docstring.",
-      "Attribute docstrings are automatically assigned to the __doc__ attribute of the object they document."
+      "Attribute docstrings are automatically assigned to the `__doc__` attribute of the object they document."
     ],
     "answer": [
       0,
       1,
       2
     ],
-    "explanation": "PEP 257: string literals occurring elsewhere in Python code \"are not recognized by the Python bytecode compiler and are not accessible as runtime object attributes (i.e. not assigned to __doc__)\", but two types may be extracted by software tools: attribute docstrings (immediately after a simple assignment at the top level of a module, class, or __init__ method) and additional docstrings (immediately after another docstring). The example shows an attribute docstring for MAX_SIZE."
+    "explanation": "PEP 257: string literals occurring elsewhere in Python code \"are not recognized by the Python bytecode compiler and are not accessible as runtime object attributes (i.e. not assigned to `__doc__`)\", but two types may be extracted by software tools: attribute docstrings (immediately after a simple assignment at the top level of a module, class, or `__init__` method) and additional docstrings (immediately after another docstring). The example shows an attribute docstring for MAX_SIZE."
   },
   {
     "type": "single",
-    "question": "Per the trim() algorithm in PEP 257, what does trim(foo.__doc__) return for this function?\n\n```python\ndef foo():\n    \"\"\"\n    This is the second line of the docstring.\n    \"\"\"\n```",
+    "question": "Per the trim() algorithm in PEP 257, what does trim(`foo.__doc__`) return for this function?\n\n```python\ndef foo():\n    \"\"\"\n    This is the second line of the docstring.\n    \"\"\"\n```",
     "options": [
       "'This is the second line of the docstring.'",
       "'\\nThis is the second line of the docstring.\\n'",
@@ -206,7 +206,7 @@
     "question": "Which statements about PEP 257's conventions for class docstrings are true?\n\n```python\nclass Stack:\n    \"\"\"A simple stack.\"\"\"\n\n    def __init__(self):\n        \"\"\"Initialize an empty stack.\"\"\"\n```",
     "options": [
       "The class docstring should summarize the class's behavior and list the public methods and instance variables.",
-      "The class constructor should be documented in the docstring for __init__, not in the class docstring.",
+      "The class constructor should be documented in the docstring for `__init__`, not in the class docstring.",
       "A blank line is required after a class docstring to offset it from the first method.",
       "Once a class has a docstring, its methods should not have docstrings of their own."
     ],
@@ -215,7 +215,7 @@
       1,
       2
     ],
-    "explanation": "PEP 257: \"The docstring for a class should summarize its behavior and list the public methods and instance variables... The class constructor should be documented in the docstring for its __init__ method. Individual methods should be documented by their own docstring.\" It also says to insert a blank line after all docstrings that document a class, so the docstring is offset from the first method."
+    "explanation": "PEP 257: \"The docstring for a class should summarize its behavior and list the public methods and instance variables... The class constructor should be documented in the docstring for its `__init__` method. Individual methods should be documented by their own docstring.\" It also says to insert a blank line after all docstrings that document a class, so the docstring is offset from the first method."
   },
   {
     "type": "single",
@@ -266,20 +266,20 @@
       "All modules.",
       "Every local variable assignment inside a function.",
       "All functions and classes exported by a module.",
-      "Public methods, including the __init__ constructor."
+      "Public methods, including the `__init__` constructor."
     ],
     "answer": [
       0,
       2,
       3
     ],
-    "explanation": "PEP 257: \"All modules should normally have docstrings, and all functions and classes exported by a module should also have docstrings. Public methods (including the __init__ constructor) should also have docstrings.\""
+    "explanation": "PEP 257: \"All modules should normally have docstrings, and all functions and classes exported by a module should also have docstrings. Public methods (including the `__init__` constructor) should also have docstrings.\""
   },
   {
     "type": "single",
     "question": "Where does PEP 257 say a package may be documented?",
     "options": [
-      "In the module docstring of the __init__.py file in the package directory.",
+      "In the module docstring of the `__init__`.py file in the package directory.",
       "In a README file placed next to the package directory.",
       "In the docstring of the package's main class.",
       "In a separate documentation file under a docs/ directory."
@@ -287,21 +287,21 @@
     "answer": [
       0
     ],
-    "explanation": "PEP 257: \"A package may be documented in the module docstring of the __init__.py file in the package directory.\""
+    "explanation": "PEP 257: \"A package may be documented in the module docstring of the `__init__`.py file in the package directory.\""
   },
   {
     "type": "single",
     "question": "String literals occurring immediately after a simple assignment at the top level of a module, class, or which method are called \"attribute docstrings\" per PEP 257?",
     "options": [
       "Any method whose name begins with an underscore.",
-      "__str__",
-      "__main__",
-      "__init__"
+      "`__str__`",
+      "`__main__`",
+      "`__init__`"
     ],
     "answer": [
       3
     ],
-    "explanation": "PEP 257: \"String literals occurring immediately after a simple assignment at the top level of a module, class, or __init__ method are called 'attribute docstrings'.\""
+    "explanation": "PEP 257: \"String literals occurring immediately after a simple assignment at the top level of a module, class, or `__init__` method are called 'attribute docstrings'.\""
   },
   {
     "type": "multiple",
@@ -383,7 +383,7 @@
     "options": [
       "The classes exported by the module, with a one-line summary of each.",
       "The exceptions and functions (and any other objects) exported by the module.",
-      "The modules and subpackages exported by the package (for the docstring of the package's __init__.py module).",
+      "The modules and subpackages exported by the package (for the docstring of the package's `__init__`.py module).",
       "The full source code of every exported object."
     ],
     "answer": [
@@ -391,7 +391,7 @@
       1,
       2
     ],
-    "explanation": "PEP 257: \"The docstring for a module should generally list the classes, exceptions and functions (and any other objects) that are exported by the module, with a one-line summary of each. (These summaries generally give less detail than the summary line in the object's docstring.) The docstring for a package (i.e., the docstring of the package's __init__.py module) should also list the modules and subpackages exported by the package.\""
+    "explanation": "PEP 257: \"The docstring for a module should generally list the classes, exceptions and functions (and any other objects) that are exported by the module, with a one-line summary of each. (These summaries generally give less detail than the summary line in the object's docstring.) The docstring for a package (i.e., the docstring of the package's `__init__`.py module) should also list the modules and subpackages exported by the package.\""
   },
   {
     "type": "multiple",
@@ -414,7 +414,7 @@
     "question": "If a class is intended to be subclassed and has an additional interface for subclasses, where does PEP 257 say this interface should be listed?",
     "options": [
       "Separately, in the class's docstring.",
-      "Only in the __init__ method's docstring.",
+      "Only in the `__init__` method's docstring.",
       "In a comment above the class definition.",
       "In the module docstring instead of the class docstring."
     ],

@@ -173,10 +173,10 @@
     "type": "single",
     "question": "Where should module-level dunder names such as `__all__` and `__version__` be placed?\n\n```python\n\"\"\"This is the example module.\n\nThis module does stuff.\n\"\"\"\n\nfrom __future__ import barry_as_FLUFL\n\n__all__ = ['a', 'b', 'c']\n__version__ = '0.1'\n\nimport os\nimport sys\n```",
     "options": [
-      "After the module docstring, before import statements (except from __future__ imports)",
+      "After the module docstring, before import statements (except from `__future__` imports)",
       "After all import statements",
       "Immediately before the module docstring",
-      "In a separate module named __dunder__.py"
+      "In a separate module named `__dunder__`.py"
     ],
     "answer": [
       0
@@ -595,10 +595,10 @@
     "type": "single",
     "question": "When implementing ordering operations with rich comparisons, how many comparison methods does PEP 8 suggest implementing?",
     "options": [
-      "All six: __eq__, __ne__, __lt__, __le__, __gt__, __ge__",
-      "Just __eq__ and __lt__",
-      "Only __lt__, since sort() and min() only use <",
-      "All except __ne__, which is derived automatically"
+      "All six: `__eq__`, `__ne__`, `__lt__`, `__le__`, `__gt__`, `__ge__`",
+      "Just `__eq__` and `__lt__`",
+      "Only `__lt__`, since sort() and min() only use <",
+      "All except `__ne__`, which is derived automatically"
     ],
     "answer": [
       0

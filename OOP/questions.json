@@ -17,10 +17,10 @@
     "type": "single",
     "question": "Which attribute of a class describes the order in which its methods are searched during inheritance?",
     "options": [
-      "__mro__",
-      "__bases__",
-      "__dict__",
-      "__class__"
+      "`__mro__`",
+      "`__bases__`",
+      "`__dict__`",
+      "`__class__`"
     ],
     "answer": [
       0
@@ -47,10 +47,10 @@
     "type": "single",
     "question": "In Python 3, what is the recommended way to call the parent class constructor from a subclass?",
     "options": [
-      "super().__init__()",
-      "parent().__init__()",
-      "super().__init__",
-      "ParentClass.__init__()"
+      "super().`__init__`()",
+      "parent().`__init__`()",
+      "super().`__init__`",
+      "`ParentClass.__init__`()"
     ],
     "answer": [
       0
@@ -89,10 +89,10 @@
     "type": "single",
     "question": "What happens when B() is executed?\n\n```python\nclass A:\n    pass\n\nclass B:\n    def __new__(cls):\n        return object.__new__(A)\n    def __init__(self):\n        print(\"B init\")\n\nB()\n```",
     "options": [
-      "Nothing is printed: B.__init__ is never called because __new__ returned an instance of A, not of B",
+      "Nothing is printed: `B.__init__` is never called because `__new__` returned an instance of A, not of B",
       "B init is printed",
-      "A.__init__ is called and the instance is initialized as an A",
-      "TypeError is raised because __new__ must return an instance of the requested class"
+      "`A.__init__` is called and the instance is initialized as an A",
+      "TypeError is raised because `__new__` must return an instance of the requested class"
     ],
     "answer": [
       0
@@ -103,10 +103,10 @@
     "type": "single",
     "question": "What happens when this code runs?\n\n```python\nclass A:\n    def __init__(self):\n        return 42\n\nA()\n```",
     "options": [
-      "Raises TypeError at runtime because __init__ must not return a non-None value",
+      "Raises TypeError at runtime because `__init__` must not return a non-None value",
       "The value 42 is silently ignored and A() returns a new instance",
       "A() evaluates to the integer 42",
-      "Raises SyntaxError at class definition time because return with a value is not allowed in __init__"
+      "Raises SyntaxError at class definition time because return with a value is not allowed in `__init__`"
     ],
     "answer": [
       0
@@ -120,7 +120,7 @@
       "str(A()) returns 'official repr'",
       "print(A()) outputs 'official repr'",
       "format(A()) returns 'official repr'",
-      "str(A()) returns the default representation, such as <__main__.A object at 0x...>"
+      "str(A()) returns the default representation, such as <`__main__`.A object at 0x...>"
     ],
     "answer": [
       0,
@@ -134,9 +134,9 @@
     "question": "Which statements about this code are true?\n\n```python\nclass Point:\n    def __init__(self, x):\n        self.x = x\n    def __eq__(self, other):\n        return self.x == other.x\n\nhash(Point(1))\n```",
     "options": [
       "Calling hash(Point(1)) raises TypeError because Point is unhashable",
-      "Point.__hash__ is implicitly set to None",
+      "`Point.__hash__` is implicitly set to None",
       "Two Point instances compare equal when their x attributes are equal",
-      "Point inherits object.__hash__, so hash(p) is based on object identity"
+      "Point inherits `object.__hash__`, so hash(p) is based on object identity"
     ],
     "answer": [
       0,
@@ -163,7 +163,7 @@
     "type": "multiple",
     "question": "Which statements about this class are true?\n\n```python\nclass A:\n    __slots__ = (\"x\",)\n\na = A()\na.x = 1\n```",
     "options": [
-      "Instances of A have no __dict__ attribute",
+      "Instances of A have no `__dict__` attribute",
       "Assigning a.y would raise AttributeError",
       "Instances of A support weak references by default",
       "Declaring a class attribute x = 0 on A would give the slot x a default value"
@@ -194,8 +194,8 @@
     "options": [
       "Raises TypeError: object of type 'C' has no len()",
       "Prints 5",
-      "Raises AttributeError: 'C' object has no attribute '__len__'",
-      "Prints 0 because object provides a default __len__"
+      "Raises AttributeError: 'C' object has no attribute '`__len__`'",
+      "Prints 0 because object provides a default `__len__`"
     ],
     "answer": [
       0
@@ -276,10 +276,10 @@
     "type": "multiple",
     "question": "Which statements about this code are true?\n\n```python\nclass Base:\n    def __init_subclass__(cls, **kwargs):\n        super().__init_subclass__(**kwargs)\n        cls.tag = \"auto\"\n\nclass Child(Base):\n    pass\n```",
     "options": [
-      "Base.__init_subclass__ is called automatically when Child is created",
+      "`Base.__init_subclass__` is called automatically when Child is created",
       "Inside the hook, cls refers to the newly created subclass Child",
-      "Keyword arguments given in Child's class definition would be forwarded to Base.__init_subclass__",
-      "__init_subclass__ must be decorated with @classmethod to receive the class as its first argument"
+      "Keyword arguments given in Child's class definition would be forwarded to `Base.__init_subclass__`",
+      "`__init_subclass__` must be decorated with @classmethod to receive the class as its first argument"
     ],
     "answer": [
       0,
@@ -295,7 +295,7 @@
       "a[0] returns 'instance'",
       "A[0] returns 'generic'",
       "B[0] returns 'generic'",
-      "If A defined no __class_getitem__, the expression A[0] would raise TypeError"
+      "If A defined no `__class_getitem__`, the expression A[0] would raise TypeError"
     ],
     "answer": [
       0,
@@ -407,8 +407,8 @@
     "question": "```python\nclass Reverse:\n    def __init__(self, data):\n        self.data = data\n        self.index = len(data)\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if self.index == 0:\n            raise StopIteration\n        self.index = self.index - 1\n        return self.data[self.index]\n```\n\nWhich of the following statements about this class and the iterator protocol are TRUE?",
     "options": [
       "A for loop over an instance of Reverse calls iter() on it behind the scenes to obtain the iterator",
-      "Returning self from __iter__() is valid here because the same object also defines __next__()",
-      "When __next__() raises StopIteration, the for loop terminates normally instead of erroring",
+      "Returning self from `__iter__`() is valid here because the same object also defines `__next__`()",
+      "When `__next__`() raises StopIteration, the for loop terminates normally instead of erroring",
       "Calling next(rev) after all elements have been consumed raises an IndexError"
     ],
     "answer": [
@@ -425,7 +425,7 @@
       "Each call to next(c) resumes execution where yield left off, remembering all local variables",
       "Local variables and the execution state are saved automatically between calls",
       "When a generator terminates, it automatically raises StopIteration",
-      "The programmer must manually define __iter__() and __next__() on the generator object"
+      "The programmer must manually define `__iter__`() and `__next__`() on the generator object"
     ],
     "answer": [
       0,
@@ -529,7 +529,7 @@
     "options": [
       "type(x) is X",
       "type(X) is X",
-      "X.__bases__ is the empty tuple ()",
+      "`X.__bases__` is the empty tuple ()",
       "x is an instance of type"
     ],
     "answer": [
@@ -541,7 +541,7 @@
     "type": "single",
     "question": "Which statement about the code below is **True**?\n\n```python\nclass C:\n    def __init__(self):\n        self._x = 1\n    def getx(self):\n        \"\"\"The current x value.\"\"\"\n        return self._x\n    x = property(getx)\n\nc = C()\n```",
     "options": [
-      "C.x.__doc__ is 'The current x value.'",
+      "`C.x.__doc__` is 'The current x value.'",
       "c.x = 5 succeeds and sets c._x to 5",
       "del c.x removes the property from the class",
       "c.x raises AttributeError"
@@ -612,15 +612,15 @@
     "type": "single",
     "question": "```python\nfrom dataclasses import dataclass\n\n@dataclass(order=True)\nclass P:\n    x: int\n```\n\nWhich statement about class P is true?",
     "options": [
-      "The class gains __lt__, __le__, __gt__ and __ge__ methods, and also __eq__, because eq defaults to True",
-      "The class gains __lt__, __le__, __gt__ and __ge__ methods, but no __eq__, because order=True replaces the eq-related generation",
+      "The class gains `__lt__`, `__le__`, `__gt__` and `__ge__` methods, and also `__eq__`, because eq defaults to True",
+      "The class gains `__lt__`, `__le__`, `__gt__` and `__ge__` methods, but no `__eq__`, because order=True replaces the eq-related generation",
       "ValueError is raised, because order=True must always be paired with an explicit eq=True",
-      "The class also gains a __hash__ method, so P instances can be used as dictionary keys and set members"
+      "The class also gains a `__hash__` method, so P instances can be used as dictionary keys and set members"
     ],
     "answer": [
       0
     ],
-    "explanation": "order=True makes dataclasses generate __lt__, __le__, __gt__ and __ge__. Each ordering method compares the two instances as if they were tuples of their fields, in order, and both instances must be of the identical type. eq defaults to True, so __eq__ is generated as well; combining order=True with eq=False is an error (ValueError), but the default combination is legal. Because eq=True and frozen=False, no __hash__ is generated - instead __hash__ is set to None, marking instances unhashable. __hash__ would only be created automatically when eq=True and frozen=True, or when forced with unsafe_hash=True."
+    "explanation": "order=True makes dataclasses generate `__lt__`, `__le__`, `__gt__` and `__ge__`. Each ordering method compares the two instances as if they were tuples of their fields, in order, and both instances must be of the identical type. eq defaults to True, so `__eq__` is generated as well; combining order=True with eq=False is an error (ValueError), but the default combination is legal. Because eq=True and frozen=False, no `__hash__` is generated - instead `__hash__` is set to None, marking instances unhashable. `__hash__` would only be created automatically when eq=True and frozen=True, or when forced with unsafe_hash=True."
   },
   {
     "type": "single",
@@ -628,13 +628,13 @@
     "options": [
       "FrozenInstanceError is raised, and it is a subclass of AttributeError",
       "AttributeError is raised, but not the more specific FrozenInstanceError",
-      "The assignment succeeds silently, because frozen=True only affects __repr__ and __eq__ generation",
-      "TypeError is raised, because the implicitly defined __setattr__ cannot be used to assign fields"
+      "The assignment succeeds silently, because frozen=True only affects `__repr__` and `__eq__` generation",
+      "TypeError is raised, because the implicitly defined `__setattr__` cannot be used to assign fields"
     ],
     "answer": [
       0
     ],
-    "explanation": "With frozen=True, dataclasses adds __setattr__ and __delattr__ methods that raise FrozenInstanceError when invoked, emulating read-only instances. FrozenInstanceError is documented as a subclass of AttributeError, so catching AttributeError also catches it. Assigning any field on a frozen dataclass instance raises this exception; the generated __init__ itself populates the fields through object.__setattr__, which is why frozen dataclasses carry a small performance penalty. Note that defining your own __setattr__ or __delattr__ while frozen=True makes the decorator raise TypeError at class creation time."
+    "explanation": "With frozen=True, dataclasses adds `__setattr__` and `__delattr__` methods that raise FrozenInstanceError when invoked, emulating read-only instances. FrozenInstanceError is documented as a subclass of AttributeError, so catching AttributeError also catches it. Assigning any field on a frozen dataclass instance raises this exception; the generated `__init__` itself populates the fields through `object.__setattr__`, which is why frozen dataclasses carry a small performance penalty. Note that defining your own `__setattr__` or `__delattr__` while frozen=True makes the decorator raise TypeError at class creation time."
   },
   {
     "type": "multiple",
@@ -663,7 +663,7 @@
     "answer": [
       0
     ],
-    "explanation": "A field annotated with InitVar is an init-only pseudo-field: it is neither returned by the fields() function nor stored on the instance. It is only added as a parameter of the generated __init__() and forwarded to __post_init__() in definition order. So fields(C) returns a single Field object, for a. InitVar pseudo-fields are excluded from fields() in the same way ClassVar pseudo-fields are. Calling fields() on a non-dataclass (class or instance) raises TypeError, but C here is a genuine dataclass, so no error occurs. As a side effect, C(1, 2) leaves self.a == 3 because __post_init__ adds b to a."
+    "explanation": "A field annotated with InitVar is an init-only pseudo-field: it is neither returned by the fields() function nor stored on the instance. It is only added as a parameter of the generated `__init__`() and forwarded to `__post_init__`() in definition order. So fields(C) returns a single Field object, for a. InitVar pseudo-fields are excluded from fields() in the same way ClassVar pseudo-fields are. Calling fields() on a non-dataclass (class or instance) raises TypeError, but C here is a genuine dataclass, so no error occurs. As a side effect, C(1, 2) leaves self.a == 3 because `__post_init__` adds b to a."
   },
   {
     "type": "single",
@@ -677,7 +677,7 @@
     "answer": [
       0
     ],
-    "explanation": "replace() builds a new object of the same type by calling the dataclass __init__() with the changed field values, so __post_init__() runs as well. Passing a field that was defined with init=False in changes is an error — the reference documentation states that a ValueError will be raised in this case (CPython implementations raise TypeError with the message \"field y is declared with init=False, it cannot be specified with replace()\"). Either way, an exception is raised and no new instance is returned. Note that y is still a real field of C — it is only excluded from __init__ — so the claim that it is \"not a field\" is wrong. If the keys were not field names at all, TypeError would be raised instead. Also note that init=False fields are never copied from the source object by replace(); they are re-initialized from their default (or inside __post_init__), which is why the documentation recommends using init=False rarely and judiciously."
+    "explanation": "replace() builds a new object of the same type by calling the dataclass `__init__`() with the changed field values, so `__post_init__`() runs as well. Passing a field that was defined with init=False in changes is an error — the reference documentation states that a ValueError will be raised in this case (CPython implementations raise TypeError with the message \"field y is declared with init=False, it cannot be specified with replace()\"). Either way, an exception is raised and no new instance is returned. Note that y is still a real field of C — it is only excluded from `__init__` — so the claim that it is \"not a field\" is wrong. If the keys were not field names at all, TypeError would be raised instead. Also note that init=False fields are never copied from the source object by replace(); they are re-initialized from their default (or inside `__post_init__`), which is why the documentation recommends using init=False rarely and judiciously."
   },
   {
     "type": "multiple",
@@ -693,50 +693,50 @@
       1,
       2
     ],
-    "explanation": "is_dataclass() returns True for a dataclass, for a subclass of a dataclass (even when the subclass is not itself decorated), and for an instance of any of those. Generic aliases such as list[int] are explicitly excluded and return False. If you need to test for an instance only and not a class, the documentation suggests the extra check is_dataclass(obj) and not isinstance(obj, type). Note that Sub inherits the generated __init__ of Base, so Sub(1) is a valid call that sets x to 1."
+    "explanation": "is_dataclass() returns True for a dataclass, for a subclass of a dataclass (even when the subclass is not itself decorated), and for an instance of any of those. Generic aliases such as list[int] are explicitly excluded and return False. If you need to test for an instance only and not a class, the documentation suggests the extra check is_dataclass(obj) and not isinstance(obj, type). Note that Sub inherits the generated `__init__` of Base, so Sub(1) is a valid call that sets x to 1."
   },
   {
     "type": "single",
     "question": "```python\nfrom dataclasses import dataclass\nclass Base:\n    def __init__(self):\n        print(\"Base init called\")\n@dataclass\nclass D(Base):\n    x: int = 0\nd = D()\n```\n\nWhat happens when D() is created?",
     "options": [
-      "Nothing is printed, because the __init__ generated for D does not call the base class __init__",
-      "Base init called is printed, because the generated __init__ calls super().__init__() first",
-      "TypeError is raised, because the generated __init__ tries to pass x to Base.__init__",
-      "No __init__ is generated for D, because the base class Base already defines an __init__"
+      "Nothing is printed, because the `__init__` generated for D does not call the base class `__init__`",
+      "Base init called is printed, because the generated `__init__` calls super().`__init__`() first",
+      "TypeError is raised, because the generated `__init__` tries to pass x to `Base.__init__`",
+      "No `__init__` is generated for D, because the base class Base already defines an `__init__`"
     ],
     "answer": [
       0
     ],
-    "explanation": "The documentation states explicitly that the __init__() generated by @dataclass does not call base class __init__() methods. The generated __init__ for D is essentially def __init__(self, x: int = 0): self.x = x, and Base.__init__ is never invoked, so nothing is printed. If the base class initialization must run, the common pattern is to call it inside __post_init__(), for example super().__init__(...). This matters when the base is a plain class; if the base is itself a dataclass, the derived dataclass initializes all inherited fields by itself. Defining __init__ in the class itself (not in the base) would suppress generation of the dataclass __init__."
+    "explanation": "The documentation states explicitly that the `__init__`() generated by @dataclass does not call base class `__init__`() methods. The generated `__init__` for D is essentially def `__init__`(self, x: int = 0): self.x = x, and `Base.__init__` is never invoked, so nothing is printed. If the base class initialization must run, the common pattern is to call it inside `__post_init__`(), for example super().`__init__`(...). This matters when the base is a plain class; if the base is itself a dataclass, the derived dataclass initializes all inherited fields by itself. Defining `__init__` in the class itself (not in the base) would suppress generation of the dataclass `__init__`."
   },
   {
     "type": "single",
     "question": "```python\nfrom dataclasses import dataclass, KW_ONLY\n\n@dataclass\nclass Point:\n    x: float\n    _: KW_ONLY\n    y: float\n    z: float\n\np = Point(1.0, 2.0, 3.0)\n```\n\nWhat happens when Point(1.0, 2.0, 3.0) is called?",
     "options": [
       "TypeError is raised, because y and z are keyword-only fields and must be passed by keyword",
-      "It succeeds, and p.x == 1.0, p.y == 2.0 and p.z == 3.0, because KW_ONLY only affects __match_args__",
+      "It succeeds, and p.x == 1.0, p.y == 2.0 and p.z == 3.0, because KW_ONLY only affects `__match_args__`",
       "TypeError is raised, because the KW_ONLY pseudo-field named _ must be given a value as well",
       "It succeeds, but only x and y are stored on the instance; z is silently dropped"
     ],
     "answer": [
       0
     ],
-    "explanation": "KW_ONLY is a sentinel used as a type annotation: every field declared after the pseudo-field of type KW_ONLY becomes keyword-only, meaning its parameter in the generated __init__ must be specified with a keyword. The pseudo-field itself (name and all) is otherwise completely ignored, so no argument is needed for _. The call Point(1.0, y=2.0, z=3.0) would work. Keyword-only fields are also not included in __match_args__. It is an error to declare more than one field of type KW_ONLY in a single dataclass."
+    "explanation": "KW_ONLY is a sentinel used as a type annotation: every field declared after the pseudo-field of type KW_ONLY becomes keyword-only, meaning its parameter in the generated `__init__` must be specified with a keyword. The pseudo-field itself (name and all) is otherwise completely ignored, so no argument is needed for _. The call Point(1.0, y=2.0, z=3.0) would work. Keyword-only fields are also not included in `__match_args__`. It is an error to declare more than one field of type KW_ONLY in a single dataclass."
   },
   {
     "type": "multiple",
     "question": "```python\nfrom dataclasses import dataclass\n\n@dataclass(slots=True)\nclass P:\n    x: int\n\np = P(1)\n```\n\nWhich of the following statements are true about @dataclass(slots=True)?",
     "options": [
       "The decorator returns a new class instead of the original one",
-      "Instances of P do not have a __dict__ attribute",
-      "TypeError is raised at definition time if the class already defines __slots__",
-      "Instances of P are weakly referenceable by default, because slot classes automatically get a __weakref__ slot"
+      "Instances of P do not have a `__dict__` attribute",
+      "TypeError is raised at definition time if the class already defines `__slots__`",
+      "Instances of P are weakly referenceable by default, because slot classes automatically get a `__weakref__` slot"
     ],
     "answer": [
       0,
       1,
       2
     ],
-    "explanation": "With slots=True, dataclasses generates a __slots__ attribute and, unlike the default behavior, returns a new class instead of the original one. Instances then have no __dict__ (unless a base class provides one), so attributes live in slots. If the class already defines __slots__, TypeError is raised. Weak references are not automatic: weakref_slot=True (default False) adds a slot named __weakref__ so instances can be weakly referenced, and it is an error to specify weakref_slot=True without slots=True. Since Python 3.11, a field name already present in a base class __slots__ is not duplicated in the generated __slots__, so use fields() rather than __slots__ to retrieve field names. Also, passing parameters to a base class __init_subclass__() with slots=True results in a TypeError."
+    "explanation": "With slots=True, dataclasses generates a `__slots__` attribute and, unlike the default behavior, returns a new class instead of the original one. Instances then have no `__dict__` (unless a base class provides one), so attributes live in slots. If the class already defines `__slots__`, TypeError is raised. Weak references are not automatic: weakref_slot=True (default False) adds a slot named `__weakref__` so instances can be weakly referenced, and it is an error to specify weakref_slot=True without slots=True. Since Python 3.11, a field name already present in a base class `__slots__` is not duplicated in the generated `__slots__`, so use fields() rather than `__slots__` to retrieve field names. Also, passing parameters to a base class `__init_subclass__`() with slots=True results in a TypeError."
   }
 ]
