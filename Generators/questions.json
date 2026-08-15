@@ -1,0 +1,1182 @@
+[
+  {
+    "type": "multiple",
+    "question": "Which of the following does the Abstract of PEP 234 propose or state? (Select all that apply.)",
+    "options": [
+      "An iteration interface that objects can provide to control the behaviour of `for` loops — looping is customized by a method that produces an iterator object, and the iterator's *get next value* operation raises an exception when no more items are available.",
+      "Specific iterators over the keys of a dictionary and over the lines of a file.",
+      "Allowing `dict.has_key(key)` to be spelled `key in dict`.",
+      "A standard iterator base class from which all iterators must inherit.",
+      "A `while`-loop-based protocol as the primary iteration mechanism."
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Per the PEP 234 Abstract, the document proposes an iteration interface to control `for` loops: a method produces an iterator object whose \"get next value\" operation returns the next item each call and raises an exception when no more items are available (option 0). It also proposes specific iterators over dictionary keys and over file lines (option 1), and the spelling `key in dict` as an alternative for `dict.has_key(key)` (option 2). A standard iterator base class was NOT proposed — the Abstract only describes the interface, and a later Resolved Issue explicitly rejects a mandatory standard iterator type (option 4 is wrong because the PEP replaces the sequence protocol for `for` loops, it does not make `while` loops primary). Note: the Abstract also states the PEP is an almost complete rewrite by Guido van Rossum describing the actual implementation checked into the Python 2.2 CVS trunk, and that some more esoteric proposals of the original version were withdrawn for now."
+  },
+  {
+    "type": "single",
+    "question": "In the Python API Specification of PEP 234, how is the `StopIteration` exception exposed, and what must an iterator's `next()` method do?",
+    "options": [
+      "`StopIteration` is made visible as one of the standard exceptions and is derived from `Exception`; `next()` returns the next value in the iteration or raises `StopIteration` (or a derived class) to signal the end, while any other exception signifies an error and is propagated normally.",
+      "`StopIteration` is derived from `IndexError`; `next()` may return `None` at the end of the iteration.",
+      "`StopIteration` is a special built-in value rather than an exception; `next()` returns a sentinel `End` object at the end.",
+      "`StopIteration` is derived from `Exception`; `next()` raises it only on genuine errors, never to signal the end of iteration."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 234's Python API Specification makes `StopIteration` visible as one of the standard exceptions, derived from `Exception`. Iterator objects returned by either form of `iter()` have a `next()` method that either returns the next value in the iteration or raises `StopIteration` (or a derived exception class) to signal the end of the iteration. Any other exception should be considered to signify an error and propagated normally, not taken to mean the end of the iteration. (In modern Python 3 the method is `__next__()` and the built-in `next(it)` calls it, but the PEP 234 text — written for Python 2 — specifies `next()`.)"
+  },
+  {
+    "type": "single",
+    "question": "Consider this code, which uses the two-argument form of `iter()` described in PEP 234:\n\n```python\ncounter = [0]\n\ndef tick():\n    counter[0] += 1\n    return counter[0]\n\nit = iter(tick, 3)\nprint(list(it))\n```\n\nWhat does the program print?",
+    "options": [
+      "[1, 2]",
+      "[1, 2, 3]",
+      "[0, 1, 2]",
+      "It raises `StopIteration` immediately."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Per PEP 234, `iter(callable, sentinel)` returns a special kind of iterator that calls the callable to produce a new value and compares the return value to the sentinel. If the return value equals the sentinel, this signals the end of the iteration and `StopIteration` is raised rather than returning normally; if it does not equal the sentinel, it is returned as the next value from the iterator. Here `tick()` returns 1, then 2 (both != 3, so yielded), then 3 which equals the sentinel, so `StopIteration` is raised and `list()` stops — printing `[1, 2]`. The PEP also notes the callable is allowed to raise `StopIteration` itself as an alternative way to end the iteration, and that this functionality is available from the C API as `PyCallIter_New(callable, sentinel)`. The one-argument form, `iter(obj)`, simply calls `PyObject_GetIter(obj)`."
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 234's Python API Specification, which combination of methods makes the class below usable both as an iterator and directly in a `for` loop?\n\n```python\nclass MyIter:\n    def __init__(self, data):\n        self.data = data\n        self.i = 0\n    def next(self):\n        if self.i >= len(self.data):\n            raise StopIteration\n        value = self.data[self.i]\n        self.i += 1\n        return value\n    def __iter__(self):\n        return self\n```",
+    "options": [
+      "A `next()` method that returns the next value or raises `StopIteration`, plus an `__iter__()` method that returns `self`.",
+      "Only a `__iter__()` method that returns a new iterator object each time it is called.",
+      "Only a `next()` method — `__iter__()` is not needed for an iterator.",
+      "Only a `__getitem__()` method that supports integer indexing."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 234 states that classes can define how they are iterated over by defining an `__iter__()` method that takes no additional arguments and returns a valid iterator object; a class that wants to *be* an iterator should implement two methods: a `next()` method (returning the next value or raising `StopIteration`) and an `__iter__()` method that returns `self`. These correspond to two distinct protocols: (1) an object can be iterated over with `for` if it implements `__iter__()` or `__getitem__()`; (2) an object can function as an iterator if it implements `next()`. Container-like objects usually support only protocol 1, while iterators are required to support both — the semantics of iteration come only from protocol 2, and protocol 1 is present so that code receiving an iterator can use a `for` loop over it. (In Python 3, `next()` is spelled `__next__()` and `iter()`'s protocol uses `__iter__()`/`__next__()`.)"
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 234's Dictionary Iterators section, what does `k in dict` mean and which mechanism implements it?",
+    "options": [
+      "It tests membership among the keys of the dictionary, equivalent to `dict.has_key(k)`, implemented by a new `sq_contains` slot on dictionaries.",
+      "It tests membership among the values of the dictionary.",
+      "It raises an error, because dictionaries did not support the `in` operator before this PEP.",
+      "It iterates over the dictionary and returns the first key equal to `k`."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The PEP gives dictionaries a `sq_contains` slot that implements the same test as the `has_key()` method, so `if k in dict: ...` can be written instead of `if dict.has_key(k): ...`. A Resolved Issue confirms this is by far the most useful (probably the only useful) interpretation of `in` for a dictionary: there was resistance because `x in list` checks whether x is present among the *values*, while the proposal makes `x in dict` check whether x is present among the *keys* — but the PEP argues the symmetry between lists and dictionaries is very weak, so that argument does not carry much weight. (In Python 3, `has_key()` is gone and `k in dict` remains the standard key-membership test.)"
+  },
+  {
+    "type": "single",
+    "question": "PEP 234 gives dictionaries a `tp_iter` slot that returns an efficient iterator over the dictionary's keys. During such an iteration, which modifications to the dictionary are permitted?",
+    "options": [
+      "Setting the value for an existing key; additions, deletions, and the `update()` method are not allowed.",
+      "Adding new keys is allowed; deleting keys and updating values are not.",
+      "Any modification is allowed as long as no exception is raised during the loop.",
+      "No modification whatsoever is allowed, including changing the value of an existing key."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Per PEP 234, during an iteration over a dictionary's keys the dictionary should not be modified, except that setting the value for an existing key is allowed — deletions or additions are not allowed, nor is the `update()` method. This restriction applies whether the modification is done by the loop itself or by another thread. With this in place, `for k in dict: ...` is equivalent to, but much faster than, `for k in dict.keys(): ...` (the iterator avoids building the temporary list of keys)."
+  },
+  {
+    "type": "single",
+    "question": "Which statement about the dictionary iterator methods proposed in PEP 234 is correct?",
+    "options": [
+      "Dictionaries get explicit methods `iterkeys()`, `itervalues()`, and `iteritems()` returning different kinds of iterators, and `for x in dict` is shorthand for `for x in dict.iterkeys()`.",
+      "Dictionaries get new methods `keys()`, `values()` and `items()` that return lists, and `for x in dict` is shorthand for `for x in dict.items()`.",
+      "Only `iterkeys()` is provided; values and items must always be fetched explicitly with `dict[x]`.",
+      "`for x in dict` iterates over the values of the dictionary."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The PEP proposes adding `iterkeys()`, `itervalues()` and `iteritems()` to dictionaries, so you can write `for key in dict.iterkeys(): ...`, `for value in dict.itervalues(): ...`, or `for key, value in dict.iteritems(): ...`; `for x in dict` is shorthand for `for x in dict.iterkeys()`. The section closes by noting that other mappings, if they support iterators at all, should also iterate over the keys — though this should not be taken as an absolute rule, since specific applications may have different requirements. (In Python 3 these methods were replaced by the view objects `keys()`, `values()`, `items()`; `for x in dict` still iterates over keys.)"
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 234's File Iterators section, what is `for line in file:` shorthand for, and how does it compare in speed?\n\n```python\nfor line in file:\n    ...\n```",
+    "options": [
+      "Shorthand for `for line in iter(file.readline, \"\"):`, which is equivalent to, but faster than, the `while 1: line = file.readline(); if not line: break; ...` idiom.",
+      "Shorthand for `for line in iter(file.read, \"\"):`.",
+      "Shorthand for `for line in file.readlines():`.",
+      "Shorthand for `for line in file.read().splitlines():`."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The PEP notes the common idiom to iterate over the lines of a file was ugly and slow, and proposes that files implement a `tp_iter` slot equivalent to `iter(f.readline, \"\")`, so `for line in file: ...` is a shorthand for `for line in iter(file.readline, \"\"): ...`, which is equivalent to but faster than the `while 1: line = file.readline(); if not line: break; ...` loop. The stated rationale is that `for line in file` ought to become the recommended, standard way to iterate over the lines of a file and should be as fast as can be — the iterator version is considerably faster than calling `readline()` directly because of the internal buffer in the iterator. (This idiom remains standard in Python 3.)"
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 234, why does the following pattern NOT work as expected, and what is the correct way to write it?\n\n```python\nfor line in file:\n    if line == '\\n':\n        break\nfor line in file:\n    print(line, end='')\n```",
+    "options": [
+      "Because the file iterator uses an internal buffer, so the fresh iterator created by the second `for` loop does not take the buffer read-ahead by the first loop into account; the correct way is to create one iterator once (`it = iter(file)`) and use it for both loops.",
+      "Because `print(line, end='')` is not valid syntax, which makes the whole program fail.",
+      "Because a file object can never be iterated over more than once.",
+      "Because `break` permanently destroys the file object's iterator state."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 234 explains that because the file iterator uses an internal buffer, mixing it with other file operations (e.g. `file.readline()`) doesn't work right, and the two-loop pattern above fails because the iterator created by the second `for` loop doesn't take the buffer read-ahead by the first `for` loop into account. The correct way is to bind one iterator and reuse it: `it = iter(file)`; `for line in it:` ... `break`; `for line in it:` ... The section also notes that some iterators are destructive: they consume all the values, so a second independent iterator cannot easily be created — you could reopen the file or `seek()` to the beginning, but those solutions don't work for all file types (e.g. when the file object really represents a pipe or a stream socket)."
+  },
+  {
+    "type": "multiple",
+    "question": "According to the Rationale section of PEP 234, which of the following are among the stated virtues of the iterator proposal? (Select all that apply.)",
+    "options": [
+      "It provides an extensible iterator interface.",
+      "It allows performance enhancements to list iteration.",
+      "It allows big performance enhancements to dictionary iteration.",
+      "It allows one to provide an interface for just iteration without pretending to provide random access to elements.",
+      "It is backward-compatible with all existing user-defined classes and extension objects that emulate sequences and mappings, even mappings that only implement a subset of {`__getitem__`, `keys`, `values`, `items`}.",
+      "It makes code iterating over non-sequence collections more concise and readable.",
+      "It requires all iterators to inherit from a standard `Iterator` base class.",
+      "It removes support for the sequence protocol (`__getitem__`) entirely."
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "explanation": "The Rationale section lists exactly six virtues (\"four – no, five – no, six – points\"): (1) an extensible iterator interface; (2) performance enhancements to list iteration; (3) big performance enhancements to dictionary iteration; (4) an interface for just iteration without pretending to provide random access; (5) backward compatibility with existing user-defined classes and extension objects that emulate sequences and mappings, even those implementing only a subset of {`__getitem__`, `keys`, `values`, `items`}; and (6) more concise and readable code when iterating over non-sequence collections. Options 6 and 7 are false: the PEP explicitly rejects a mandatory standard iterator base class (Resolved Issues), and `__getitem__`-based iteration remains supported as one of the two protocols."
+  },
+  {
+    "type": "single",
+    "question": "Per the Resolved Issues of PEP 234, which two alternative spellings for the iterator's `next()` method were proposed and rejected?",
+    "options": [
+      "`__next__()` (rejected because it corresponds to a type object slot, `tp_iternext`) and `__call__()` (rejected because calling would be the only operation and `x()` is less readable than `x.next()`).",
+      "`__get__()` and `__call__()`.",
+      "`__next__()` and `__getitem__()`.",
+      "`advance()` and `__call__()`."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 234's Resolved Issues record that two alternative spellings for `next()` were proposed but rejected: `__next__()`, because it corresponds to a type object slot (`tp_iternext`) and would be ugly to write when user code calls `next()` directly (a possible extension of the protocol would allow `prev()`, `current()` and `reset()`, and surely we don't want `__prev__()`, `__current__()`, `__reset__()`); and `__call__()`, the original proposal, because taken out of context `x()` is not very readable while `x.next()` is clear, and there's a danger that every special-purpose object would want to use `__call__()` for its most common operation, causing more confusion than clarity. The PEP notes in retrospect it might have been better to go for `__next__()` with a new built-in `next(it)` calling `it.__next__()`, but it was too late — `next()` had been deployed in Python 2.2 since December 2001 (Python 3 later adopted `__next__()` and the `next()` builtin)."
+  },
+  {
+    "type": "multiple",
+    "question": "Select all statements that match PEP 234's Resolved Issues about the `StopIteration` exception:",
+    "options": [
+      "Alternatives to an exception for signalling the end of iteration — a special value `End`, a function `end()` to test whether the iterator is finished, and reusing `IndexError` — were proposed and rejected.",
+      "A special `End` value is dangerous because a sequence could legitimately contain that value, which would end a loop over it prematurely without any warning (the PEP compares this to the problems caused by null-terminated C strings).",
+      "An `end()` function would require two calls per iteration, which is much more expensive than one call plus a test for an exception; especially the time-critical `for` loop can test very cheaply for an exception.",
+      "Reusing `IndexError` can cause confusion because it can be a genuine error, which would be masked by ending the loop prematurely.",
+      "Resolution: once `StopIteration` is raised, calling `it.next()` continues to raise `StopIteration` (this was not implemented in Python 2.2, where many iterators could raise `StopIteration` on one call but not the next; it was remedied in Python 2.3).",
+      "Resolution: an iterator may raise `StopIteration` once and then resume normal iteration on subsequent calls."
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "explanation": "Options 0–3 summarize the rejected alternatives to the `StopIteration` exception: a special `End` value could collide with a real sequence value and silently end the loop (option 1, with the null-terminated-C-strings analogy and the introspection-tool thought experiment); an `end()` function would need two calls per iteration, more expensive than one call plus a cheap exception test, and the time-critical `for` loop can test very cheaply for an exception (option 2); reusing `IndexError` could mask a genuine error by ending the loop prematurely (option 3). Option 4 states the resolution of the \"sticky StopIteration\" question: once `StopIteration` is raised, `it.next()` continues to raise it; the PEP notes this was in fact not implemented in Python 2.2 and was remedied in Python 2.3. Option 5 is the opposite of the resolution."
+  },
+  {
+    "type": "multiple",
+    "question": "Select all statements that reflect decisions recorded in PEP 234's Resolved Issues:",
+    "options": [
+      "The ability to restart an iterator should be dealt with by calling `iter()` on a sequence repeatedly, not by the iterator protocol itself.",
+      "A request for a standard iterator type that all iterators would have to be derived from was rejected, because it is not the Python way: dictionaries are mappings because they support `__getitem__()` and a handful of other operations, not because they are derived from an abstract mapping type.",
+      "All iterators must inherit from a common `Iterator` base class to be usable in a `for` loop.",
+      "Calling `iter()` on an already-exhausted iterator restarts it from the beginning."
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "Two resolved issues are covered here. First, some folks requested the ability to restart an iterator; the resolution is that this should be dealt with by calling `iter()` on a sequence repeatedly, not by the iterator protocol itself (option 0 — option 3 is false because a `for` loop obtains a fresh iterator from the *container*; an exhausted iterator object itself does not restart). Second, some asked for a standard iterator type; the resolution is that this is not the Python way — objects are characterized by the operations they support, e.g. dictionaries are mappings because they support `__getitem__()` and a handful of other operations, not because they are derived from an abstract mapping type (option 1; option 2 is false for the same reason). These are the kind of topics the PEP says were \"decided by consensus or BDFL pronouncement\"."
+  },
+  {
+    "type": "single",
+    "question": "Per the Resolved Issues of PEP 234, why was the built-in named `iter()`, and how does a single name serve two different operations?",
+    "options": [
+      "`iter()` is an abbreviation consistent with Python's history of using short names for common builtins (e.g. `repr()`, `str()`, `len()`); longer names like `iterate()` and `traverse()` were rejected. The same name is used because both forms return an iterator: `iter(obj)` gets an iterator from an object, while `iter(callable, sentinel)` makes an iterator from a function — the builtin takes an optional sentinel argument.",
+      "`iter()` was chosen because it was the shortest available name, and two separate builtins `getiter()` and `iterfunc()` were added for the two operations.",
+      "`iter()` is short for 'iterate' and the sentinel-based form is exposed as a completely separate function.",
+      "`iter()` was chosen arbitrarily; no alternative names were considered."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Two resolved issues address the name. The name `iter()` is an abbreviation — alternatives such as `iterate()` and `traverse()` were proposed but appear too long, and Python has a history of using abbreviations for common builtins, e.g. `repr()`, `str()`, `len()`; the resolution is \"`iter()` it is\". Using the same name for two different operations (getting an iterator from an object, and making an iterator for a function with a sentinel value) is admittedly somewhat ugly, but no better name was found for the second operation, and since both return an iterator it is easy to remember; the resolution is that the builtin `iter()` takes an optional argument, which is the sentinel to look for."
+  },
+  {
+    "type": "multiple",
+    "question": "Per PEP 234's Resolved Issues, which proposed iterator-related extensions were rejected or tentatively rejected? (Select all that apply.)",
+    "options": [
+      "Making a file object its own iterator, with a `next()` method returning the next line — this was tentatively rejected: it has advantages and makes it even clearer that the file iterator is destructive, but it would make implementing the \"sticky StopIteration\" feature even more painful.",
+      "Extensions to the iterator protocol such as `prev()` to get the previous item, `current()` to get the current item again, `finished()` to test whether the iterator is finished, and possibly `rewind()`, `__len__()`, and `position()` — rejected, because many cannot easily be implemented for all iterator types without adding arbitrary buffering, and some cannot be implemented at all (e.g. anything involving reversing directions cannot be done when iterating over a file or function).",
+      "A `current()` method was adopted as a mandatory part of the iterator protocol.",
+      "The protocol was extended with a mandatory `rewind()` method that all iterators must support."
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "Two resolved issues cover rejected extensions. First, making a file object its own iterator (a `next()` method returning the next line) was proposed; it has certain advantages and makes it even clearer that the iterator is destructive, but the disadvantage is that it would make it even more painful to implement the \"sticky StopIteration\" feature — the resolution is tentatively rejected, though people still argued for it. Second, extensions like `prev()`, `current()`, `finished()`, `rewind()`, `__len__()` and `position()` were requested; while some are useful, many cannot easily be implemented for all iterator types without arbitrary buffering, and reversing directions cannot be done when iterating over a file or function — the resolution is rejected, with a possible separate PEP to standardize the names for such operations when they are implementable. Options 2 and 3 are false — `current()` and `rewind()` were not adopted."
+  },
+  {
+    "type": "single",
+    "question": "After a long discussion about whether `for x in dict` should assign the successive keys, values, or items, what did the BDFL pronounce, per PEP 234's Resolved Issues?",
+    "options": [
+      "`for x in dict` iterates over the keys, and dictionaries have `iteritems()`, `iterkeys()` and `itervalues()` to return the different flavors of dictionary iterators; the symmetry between `for x in dict` and `if x in dict` was deemed too compelling to break, and `for key, value in dict.iteritems()` is only about 7% faster than `for key in dict: dict[key]`.",
+      "`for x in dict` iterates over the values, since values are what most loops actually need.",
+      "`for x in dict` iterates over (key, value) tuples, matching the majority use of `dict.items()` in the standard library.",
+      "Iteration over a dictionary was left unspecified, since dictionaries were not part of the iteration proposal."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The PEP records the debate: the symmetry between `if x in y` and `for x in y` (for sequences, `if x in y` iterates over y comparing the iterated values to x) suggests `for x in dict` should iterate over keys. The argument against keys was practicality — scans of the standard library show about as many uses of `for x in dict.items()` as `for x in dict.keys()` (with `items()` having a small majority), and many `keys()` loops fetch the value via `dict[x]`; making both key and value available would support the largest number of cases. Guido found the correspondence between `for x in dict` and `if x in dict` too compelling to break, with not much overhead in writing `dict[x]` to explicitly get the value. For fast iteration over items, `for key, value in dict.iteritems()` is recommended — timing showed it only about 7% faster than `for key in dict: dict[key]`. Resolution (by BDFL pronouncement): `for x in dict` iterates over the keys, and dictionaries have `iteritems()`, `iterkeys()` and `itervalues()`."
+  },
+  {
+    "type": "single",
+    "question": "According to the Abstract of PEP 255, what does the PEP introduce to Python?",
+    "options": [
+      "The concept of generators, as well as a new statement used in conjunction with them, the `yield` statement",
+      "Coroutines and the `await` keyword",
+      "Closures and the `nonlocal` keyword",
+      "List comprehensions and the `range()` builtin"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Abstract states: \"This PEP introduces the concept of generators to Python, as well as a new statement used in conjunction with them, the `yield` statement.\" The other options describe features from different eras (coroutines/`await` came much later) and are not what PEP 255 is about."
+  },
+  {
+    "type": "single",
+    "question": "PEP 255's Motivation explains that when a producer function has a hard enough job that it requires maintaining state between values produced, most programming languages offer no pleasant and efficient solution beyond what?",
+    "options": [
+      "Adding a callback function to the producer's argument list, to be called with each value produced",
+      "Having the producer return the entire result as a single large list",
+      "Making the producer a class whose attributes expose its internal state",
+      "Restarting the producer from scratch for every value it produces"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Motivation says most languages offer \"no pleasant and efficient solution beyond adding a callback function to the producer's argument list, to be called with each value produced.\" It cites `tokenize.py`, which requires the caller to pass a *tokeneater* function called whenever `tokenize()` finds the next token. This makes caller programs convoluted: they must remember between callbacks which tokens were seen last — `tabnanny.py`'s tokeneater even maintains a state machine in global variables, which the PEP says was difficult to get working correctly and is still difficult to understand."
+  },
+  {
+    "type": "multiple",
+    "question": "The Motivation considers alternatives to the callback approach for a producer like `tokenize`. Which drawbacks does PEP 255 cite for (a) materializing the entire parse as one large list, and (b) converting the producer into an iterator?",
+    "options": [
+      "Materializing the whole parse as a list is impractical because programs can be very large, so no a priori bound can be placed on the memory needed; clients that only want to see whether something appears early would waste severe time parsing the whole program first",
+      "An iterator version is pleasant for the caller, but it shifts the burden onto the producer to remember its state between `.next()` invocations, and a recursive algorithm would require removing the recursion manually and maintaining traversal state by hand",
+      "An iterator version removes all state-keeping from the producer, making it trivial to implement",
+      "The whole-parse list is the approach the PEP recommends as the best solution"
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "The PEP rejects the large-list approach because \"no a priori bound can be placed on the memory needed to materialize the whole parse\" and some clients only want to see whether something specific appears early (e.g. a future statement), so parsing everything first is \"a severe waste of time.\" It also rejects converting `tokenize` into an iterator because that \"shifts the burden on tokenize to remember *its* state between `.next()` invocations,\" and a recursive algorithm for producing tree nodes would require removing the recursion manually and maintaining the traversal state by hand. Option 2 contradicts the PEP (the burden moves to the producer), and option 3 contradicts it (the list approach is rejected)."
+  },
+  {
+    "type": "multiple",
+    "question": "PEP 255's Motivation also examines thread-based and Stackless-based options. Which statements reflect what the PEP says about them?",
+    "options": [
+      "Running the producer and consumer in separate threads allows both to keep their state naturally, but it does not work on platforms without threads and is very slow on platforms that do have them",
+      "Stackless Python supports lightweight coroutines with much the same programmatic benefits as threads but is much more efficient; however, it is a controversial rethinking of the Python core",
+      "Generators provide the complete Stackless implementation inside CPython, replacing it entirely",
+      "The thread approach is efficient on every platform and is the recommended solution"
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "The PEP notes that `Demo/threads/Generator.py` provided a usable synchronized-communication class for running producer and consumer in separate threads, but \"this doesn't work on platforms without threads, though, and is very slow on platforms that do.\" For Stackless (PEP 219), it says lightweight coroutines have \"much the same programmatic benefits as the thread option, but is much more efficient,\" yet Stackless is \"a controversial rethinking of the Python core\" and Jython might not be able to implement the same semantics. The PEP concludes that generators provide \"a useful subset of Stackless functionality in a way that fits easily into the current CPython implementation\" — a subset, not a complete replacement (option 2), and threads are not efficient everywhere (option 3)."
+  },
+  {
+    "type": "single",
+    "question": "Consider the very simple example from PEP 255's Motivation:\n\n```python\ndef fib():\n    a, b = 0, 1\n    while 1:\n        yield b\n        a, b = b, a+b\n```\n\nWhich sequence does `fib()` yield, starting from its first value?",
+    "options": [
+      "1, 1, 2, 3, 5, 8, ...",
+      "0, 1, 1, 2, 3, 5, ...",
+      "0, 1, 2, 3, 5, 8, ...",
+      "1, 2, 3, 5, 8, 13, ..."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "When `fib()` is first invoked it sets *a* to 0 and *b* to 1, then yields *b* back to its caller — the caller sees 1. When `fib` is resumed, from its point of view the `yield` statement is really the same as, say, a `print` statement: it continues after the yield with all local state intact. *a* and *b* then become 1 and 1, and `fib` loops back to the `yield`, yielding 1 to its invoker, and so on: 1, 1, 2, 3, 5, ... The PEP stresses that from the caller's point of view the `fib` invocation is an iterable object that can be resumed at will, and that resuming a generator should be no more expensive than a function call."
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 255's Motivation, how does a Python generator relate to Python iterators?",
+    "options": [
+      "A Python generator is a kind of Python iterator, but of an especially powerful kind",
+      "Generators and iterators are unrelated, mutually exclusive mechanisms",
+      "A generator is just a function that returns a list of values at once",
+      "A generator is an iterator that cannot be used in for-loops"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Motivation concludes: \"a Python generator is a kind of Python iterator, but of an especially powerful kind.\" The same producer/consumer approach applies to many functions — for example, `tokenize.py` could yield the next token instead of invoking a callback function with it as argument, and tokenize clients could iterate over the tokens in a natural way."
+  },
+  {
+    "type": "single",
+    "question": "According to the 'Specification: Yield' section of PEP 255, in the initial release a module desiring to use generators had to include which line near the top, and what happened to modules using the identifier `yield` without it?",
+    "options": [
+      "`from __future__ import generators`; modules using the identifier `yield` without a `future` statement would trigger warnings",
+      "`import generators`; modules using `yield` without it would raise a `SyntaxError` immediately",
+      "`from __future__ import yield`; nothing happened to such modules",
+      "`import yield`; such modules would be ignored by the interpreter"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`yield` is a new keyword, so a `future` statement (PEP 236) was needed to phase it in: \"in the initial release, a module desiring to use generators must include the line `from __future__ import generators` near the top.\" Modules using the identifier `yield` without a `future` statement would trigger warnings. In the following release, `yield` became a language keyword and the `future` statement was no longer needed. The grammar introduced is `yield_stmt: \"yield\" expression_list`."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about generator functions are true according to the 'Specification: Yield' section of PEP 255?",
+    "options": [
+      "A function that contains a `yield` statement is called a generator function; it is an ordinary function object in all respects, but has the new `CO_GENERATOR` flag set in the code object's `co_flags` member",
+      "When a generator function is called, the actual arguments are bound to formal argument names in the usual way, but no code in the body of the function is executed; instead a generator-iterator object is returned",
+      "The returned generator-iterator conforms to the iterator protocol, so in particular it can be used in for-loops in a natural way",
+      "Calling a generator function executes the body up to the first `yield` statement and returns its value"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "The `yield` statement may only be used inside functions; a function containing `yield` is a generator function, \"an ordinary function object in all respects, but has the new `CO_GENERATOR` flag set in the code object's co_flags member.\" When called, arguments bind normally \"but no code in the body of the function is executed. Instead a generator-iterator object is returned; this conforms to the iterator protocol, so in particular can be used in for-loops in a natural way.\" Option 3 is wrong: calling a generator function never executes its body — execution happens only when the generator-iterator is advanced. The PEP also notes that, when intent is clear, the unqualified name \"generator\" may refer either to a generator-function or a generator-iterator."
+  },
+  {
+    "type": "multiple",
+    "question": "Regarding advancing a generator-iterator, which statements reflect the 'Specification: Yield' section of PEP 255?",
+    "options": [
+      "Each time the `.next()` method of a generator-iterator is invoked, the code in the body of the generator-function is executed until a `yield` or `return` statement is encountered, or until the end of the body is reached",
+      "If a `yield` statement is encountered, the state of the function is frozen: all local state is retained, including the current bindings of local variables, the instruction pointer, and the internal evaluation stack",
+      "The value of the `yield` statement's `expression_list` is returned to the caller of `.next()`",
+      "When suspended at a `yield`, all local state is discarded and must be reconstructed when the generator is resumed"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "The specification says each `.next()` invocation runs the body until a `yield` or `return`, or the end of the body, is reached. At a `yield`, \"the state of the function is frozen, and the value of expression_list is returned to `.next()`'s caller.\" By \"frozen\" the PEP means all local state is retained, including local variable bindings, the instruction pointer, and the internal evaluation stack — enough information is saved so the next `.next()` invocation proceeds exactly as if the `yield` statement were just another external call. Option 3 is the opposite of the truth: state is retained, not discarded."
+  },
+  {
+    "type": "multiple",
+    "question": "Which restrictions does the 'Specification: Yield' section of PEP 255 place on `yield` and generators?",
+    "options": [
+      "A `yield` statement is not allowed in the `try` clause of a `try/finally` construct, because there is no guarantee the generator will ever be resumed and hence no guarantee the `finally` block will ever execute",
+      "A generator cannot be resumed while it is actively running; attempting it raises `ValueError: generator already executing`",
+      "`yield` may not appear in `except` clauses or in `finally` clauses",
+      "A generator function may only be called once during a program's execution"
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "The PEP lists two restrictions. First: \"A `yield` statement is not allowed in the `try` clause of a `try/finally` construct. The difficulty is that there's no guarantee the generator will ever be resumed, hence no guarantee that the finally block will ever get executed; that's too much a violation of finally's purpose to bear.\" Second: \"A generator cannot be resumed while it is actively running\" — the PEP's example, where `me = g()` and `g` calls `me.next()` inside its own body, raises `ValueError: generator already executing`. Options 2 and 3 are wrong: the PEP places no such restrictions (in fact `yield` in `except` and `finally` clauses is explicitly permitted — see the Try/Except/Finally section)."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about `return` in a generator function are correct per the 'Specification: Return' section of PEP 255?",
+    "options": [
+      "A generator function can contain a bare `return` (with no expression); an `expression_list` is not allowed on return statements in the body of a generator",
+      "When a `return` statement is encountered, control proceeds as in any function return, executing the appropriate `finally` clauses (if any exist); then a `StopIteration` exception is raised, signalling that the iterator is exhausted",
+      "A `StopIteration` exception is also raised if control flows off the end of the generator without an explicit `return`",
+      "`return expr` is allowed in a generator body and delivers `expr` as the final yielded value"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "The specification allows return statements of the form `return` only: \"an expression_list is not allowed on return statements in the body of a generator\" (although they may appear in the bodies of non-generator functions nested within the generator). When `return` is executed, control proceeds as in any function return — running `finally` clauses — and then `StopIteration` is raised. `StopIteration` is also raised if control flows off the end without an explicit return. The PEP adds: \"return means 'I'm done, and have nothing interesting to return', for both generator functions and non-generator functions.\" Option 3 is false — `return expr` is not permitted in a generator."
+  },
+  {
+    "type": "single",
+    "question": "Consider the two generators from the 'Specification: Return' section of PEP 255:\n\n```python\ndef f1():\n    try:\n        return\n    except:\n        yield 1\n\ndef f2():\n    try:\n        raise StopIteration\n    except:\n        yield 42\n```\n\nWhat do `list(f1())` and `list(f2())` produce?",
+    "options": [
+      "`[]` and `[42]`",
+      "`[1]` and `[42]`",
+      "`[]` and `[]`",
+      "`[1]` and `[]`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "This example demonstrates that \"return isn't always equivalent to raising `StopIteration`: the difference lies in how enclosing `try/except` constructs are treated.\" In `f1`, `return` simply exits the function, so the `except` clause (which would `yield 1`) never runs — `list(f1())` is `[]`. In `f2`, `raise StopIteration` inside the `try` is captured by the bare `except`, which yields 42 — so `list(f2())` is `[42]`. The PEP notes this is \"because `StopIteration` is captured by a bare `except`, as is any exception.\""
+  },
+  {
+    "type": "single",
+    "question": "Consider this example from the 'Specification: Generators and Exception Propagation' section of PEP 255:\n\n```python\ndef f():\n    return 1/0\n\ndef g():\n    yield f()   # the zero division exception propagates\n    yield 42    # and we'll never get here\n\nk = g()\nk.next()\nk.next()\n```\n\nWhat happens when `k.next()` is invoked twice?",
+    "options": [
+      "The first call raises `ZeroDivisionError`; the second call raises `StopIteration`",
+      "The first call raises `ZeroDivisionError`; the second call yields 42",
+      "Both calls raise `ZeroDivisionError`",
+      "The first call yields 42; the second call raises `StopIteration`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Per the PEP: \"If an unhandled exception — including, but not limited to, `StopIteration` — is raised by, or passes through, a generator function, then the exception is passed on to the caller in the usual way, and subsequent attempts to resume the generator function raise `StopIteration`. In other words, an unhandled exception terminates a generator's useful life.\" Here evaluating `f()` raises `ZeroDivisionError`, which propagates out of `g`, so the first `k.next()` raises `ZeroDivisionError` and the second raises `StopIteration` (the generator cannot be resumed). Note `k.next()` is the Python 2-era spelling; modern Python uses the builtin `next(k)` or `k.__next__()`."
+  },
+  {
+    "type": "single",
+    "question": "According to the 'Specification: Try/Except/Finally' section of PEP 255, in which construct is a `yield` statement NOT allowed?",
+    "options": [
+      "In the `try` clause of a `try/finally` construct",
+      "In a `finally` clause",
+      "In an `except` clause",
+      "In the `try` clause of a `try/except` construct"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The PEP repeats the restriction from the Yield section: \"`yield` is not allowed in the `try` clause of a `try/finally` construct,\" because there is no guarantee the generator will ever be resumed, hence no guarantee the `finally` block will ever execute. A consequence the PEP draws is that \"generators should allocate critical resources with great care.\" Importantly, there is \"no restriction on `yield` otherwise appearing in `finally` clauses, `except` clauses, or in the `try` clause of a `try/except` construct\" — so the other three options are all permitted. (This rule applied to the simple generators of PEP 255's era; later PEPs relaxed it once generator finalization made `finally` clauses reliable.)"
+  },
+  {
+    "type": "single",
+    "question": "Consider the generator `f` from the 'Specification: Try/Except/Finally' section of PEP 255:\n\n```python\ndef f():\n    try:\n        yield 1\n        try:\n            yield 2\n            1/0\n            yield 3  # never get here\n        except ZeroDivisionError:\n            yield 4\n            yield 5\n            raise\n        except:\n            yield 6\n        yield 7     # the \"raise\" above stops this\n    except:\n        yield 8\n    yield 9\n    try:\n        x = 12\n    finally:\n        yield 10\n    yield 11\n```\n\nWhat does `list(f())` produce?",
+    "options": [
+      "`[1, 2, 4, 5, 8, 9, 10, 11]`",
+      "`[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]`",
+      "`[1, 2, 4, 5, 6, 7, 8, 9, 10, 11]`",
+      "`[1, 2, 4, 5, 8, 9, 10]`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Walk through the PEP's example: `f` yields 1, then 2; the statement `1/0` raises `ZeroDivisionError`, which the inner `except ZeroDivisionError` clause catches, yielding 4 and 5 before re-raising. The re-raised exception propagates to the outer `except:` clause, which yields 8. Then `f` yields 9, enters a `try/finally` whose `finally` clause yields 10, and finally yields 11. The result is `[1, 2, 4, 5, 8, 9, 10, 11]` — exactly the output printed in the PEP. Note that `yield 3`, `yield 6`, and `yield 7` are never reached: 3 is skipped by the exception, 6 by the more specific `except ZeroDivisionError`, and 7 by the `raise`. This example illustrates that `yield` is allowed in `except` clauses and in `finally` clauses (but not, per PEP 255, in the `try` clause of `try/finally`)."
+  },
+  {
+    "type": "single",
+    "question": "The Example section of PEP 255 defines a `Tree` class and two versions of an `inorder` generator — one recursive and one non-recursive:\n\n```python\nclass Tree:\n    def __init__(self, label, left=None, right=None):\n        self.label = label\n        self.left = left\n        self.right = right\n\ndef inorder(t):\n    if t:\n        for x in inorder(t.left):\n            yield x\n        yield t.label\n        for x in inorder(t.right):\n            yield x\n```\n\nFor a tree built from the string 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', in what order does the generator produce the labels?",
+    "options": [
+      "In-order: `A B C D E F G H I J K L M N O P Q R S T U V W X Y Z`",
+      "Pre-order (label first): `A B C D E F G H I J K L M N O P Q R S T U V W X Y Z`",
+      "Post-order (label last): `Z Y X W V U T S R Q P O N M L K J I H G F E D C B A`",
+      "In-order: `Z Y X W V U T S R Q P O N M L K J I H G F E D C B A`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The recursive generator yields the left subtree's labels, then the node's own label, then the right subtree's labels — that is, an in-order traversal. The PEP also provides a non-recursive version that keeps an explicit stack of nodes and uses `except IndexError: return` to terminate; \"Both output blocks display: A B C D E F G H I J K L M N O P Q R S T U V W X Y Z.\" The same output rules out pre-order/post-order and reversed orderings. The `Tree` class defines `__iter__` to return `inorder(self)`, which is what makes `for x in t` work."
+  },
+  {
+    "type": "single",
+    "question": "In the Example section of PEP 255, how does the non-recursive `inorder` generator keep track of traversal state, and what does `Tree.__iter__` return?",
+    "options": [
+      "It maintains an explicit stack list of nodes it has pushed while descending left subtrees, popping when it runs out of right children (and returning when the stack is empty); `Tree.__iter__` returns `inorder(self)`",
+      "It uses recursion to traverse the tree; `Tree.__iter__` returns `self`",
+      "It records state in global variables; `Tree.__iter__` returns a list of labels",
+      "It spawns a thread per subtree; `Tree.__iter__` returns `None`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The non-recursive `inorder(node)` starts with `stack = []` and, while a node exists, pushes nodes onto the stack while descending left, yields the current node's label, then pops from the stack while there is no right child — terminating with a bare `return` when `IndexError` is raised on an empty stack. This is the PEP's demonstration that a generator can replace recursion with an explicit stack while remaining natural to write. `Tree.__iter__` is defined as `return inorder(self)`, so iterating a `Tree` with a for-loop drives the generator, and both versions print the same in-order output `A B C ... Z`."
+  },
+  {
+    "type": "single",
+    "question": "In the Q & A section of PEP 255, why was a new keyword chosen for `yield` rather than making it a builtin function?",
+    "options": [
+      "Control flow is much better expressed via keyword in Python, and `yield` is a control construct; it was also believed that efficient implementation in Jython requires the compiler to be able to determine potential suspension points at compile-time, and a new keyword makes that easy",
+      "A builtin function would be slower at runtime than a keyword",
+      "Keywords are the only way the CPython bytecode compiler can generate code",
+      "A builtin named `yield` would conflict with an existing standard-library function"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The PEP answers: \"Control flow is much better expressed via keyword in Python, and yield is a control construct. It's also believed that efficient implementation in Jython requires that the compiler be able to determine potential suspension points at compile-time, and a new keyword makes that easy.\" The CPython reference implementation also exploits the keyword heavily \"to detect which functions are generator-functions\" (via the `CO_GENERATOR` flag)."
+  },
+  {
+    "type": "single",
+    "question": "Some proposals suggested special syntax without a new keyword, such as `return 3 and continue`, `return generating 3`, `return >> 3`, or `>> 3`, instead of `yield 3`. What did the PEP author say about such alternatives?",
+    "options": [
+      "It would be nice not to need a new keyword, but nicer to make `yield` very clear — he did not want to have to deduce that a yield is occurring from making sense of a previously senseless sequence of keywords or operators",
+      "Such alternatives were adopted in the final PEP because they avoid adding a keyword",
+      "The alternatives were rejected because they conflict with the existing `return` grammar",
+      "The author refused to consider any alternative syntax at all"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Out of hundreds of messages, the author counted only three suggesting such alternatives and extracted the listed forms from them. He wrote: \"It would be nice not to need a new keyword, but nicer to make `yield` very clear – I don't want to have to *deduce* that a yield is occurring from making sense of a previously senseless sequence of keywords or operators.\" He added that if this attracts enough interest, proponents should settle on a single consensus suggestion and \"Guido will Pronounce on it.\""
+  },
+  {
+    "type": "single",
+    "question": "Why does PEP 255 allow a bare `return` in a generator instead of forcing termination to be spelled `raise StopIteration`?",
+    "options": [
+      "The mechanics of `StopIteration` are low-level details, much like the mechanics of `IndexError` in Python 2.1; `return` means \"I'm done\" in any kind of function and is easy to explain and to use",
+      "`raise StopIteration` is a syntax error inside a function body",
+      "A `return` statement executes faster than raising an exception",
+      "`StopIteration` can never be raised inside a generator, so `return` is the only option"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The PEP explains that \"the mechanics of `StopIteration` are low-level details, much like the mechanics of `IndexError` in Python 2.1: the implementation needs to do *something* well-defined under the covers, and Python exposes these mechanisms for advanced users. That's not an argument for forcing everyone to work at that level, though. `return` means 'I'm done' in any kind of function, and that's easy to explain and to use.\" It further notes that `return` isn't always equivalent to `raise StopIteration` in a `try/except` construct (see the 'Specification: Return' examples), reinforcing why both spellings exist."
+  },
+  {
+    "type": "single",
+    "question": "Why did PEP 255 not allow an expression on `return` (such as `return expr`) in generator functions?",
+    "options": [
+      "In the absence of compelling uses for `return expr`, it was simply cleaner to use `yield` exclusively for delivering values; the PEP says 'Perhaps we will someday' allow it",
+      "The Python grammar forbids expressions in all `return` statements, generator or not",
+      "Icon's `return expr` semantics were rejected because Icon is not a Python-compatible language",
+      "Returning a value would break the iterator protocol by raising `StopIteration` with a payload"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The PEP answers: \"Perhaps we will someday. In Icon, `return expr` means both 'I'm done', and 'but I have one final useful value to return too, and this is it'. At the start, and in the absence of compelling uses for `return expr`, it's simply cleaner to use `yield` exclusively for delivering values.\" So the choice was a design decision for clarity, not a grammar limitation (a bare `return` is legal, and `return expr` is specifically disallowed only in generator bodies) nor a Python-3-only concern."
+  },
+  {
+    "type": "single",
+    "question": "What was the Issue considered in the 'BDFL Pronouncements' section of PEP 255?",
+    "options": [
+      "Introduce another new keyword (say, `gen` or `generator`) in place of `def`, or otherwise alter the syntax, to distinguish generator-functions from non-generator functions",
+      "Decide whether `yield` should be an operator instead of a keyword",
+      "Decide whether generators should be removed from the language",
+      "Decide whether `return` should be allowed to carry an expression in generators"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Issue is stated as: \"Introduce another new keyword (say, `gen` or `generator`) in place of `def`, or otherwise alter the syntax, to distinguish generator-functions from non-generator functions.\" This is the debate that the Con, Pro, and BDFL subsections then address — and it is the same question the Q & A section answers with 'Why not a new keyword instead of reusing `def`?'."
+  },
+  {
+    "type": "multiple",
+    "question": "Which arguments were made in the 'Con' and 'Pro' subsections of the BDFL Pronouncements regarding the proposed new keyword instead of `def`?",
+    "options": [
+      "Con: in practice, generators *are* functions, but with the twist that they're resumable; introducing a new keyword would unhelpfully overemphasize the mechanics of how generators get started — a vital but tiny part of a generator's life",
+      "Pro: in reality, generator-functions are actually factory functions that produce generator-iterators as if by magic, acting more like a constructor than a function, so reusing `def` is at best confusing; a `yield` statement buried in the body is not enough warning that the semantics are so different",
+      "Con: the `yield` keyword itself is too confusing and should be renamed",
+      "Pro: a `yield` statement buried in the body is sufficient warning that the semantics are radically different, so `def` is fine"
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "The Con argument: \"In practice (how you think about them), generators *are* functions, but with the twist that they're resumable. The mechanics of how they're set up is a comparatively minor technical issue, and introducing a new keyword would unhelpfully overemphasize the mechanics of how generators get started (a vital but tiny part of a generator's life).\" The Pro argument: \"In reality (how you think about them), generator-functions are actually factory functions that produce generator-iterators as if by magic... acting more like a constructor than a function, so reusing `def` is at best confusing. A `yield` statement buried in the body is not enough warning that the semantics are so different.\" Option 3 is the exact opposite of the Pro argument, and option 2 invents a claim about renaming `yield`."
+  },
+  {
+    "type": "single",
+    "question": "The Q & A section asks 'Why not a new keyword instead of reusing `def`?' and points to the BDFL Pronouncements. What was the BDFL's pronouncement on the issue?",
+    "options": [
+      "\"`def` it stays\" — the syntax proposed in the PEP is exactly right, per the BDFL's language designer's intuition (like the Oracle at Delphi, it doesn't tell him why)",
+      "A new keyword such as `gen` should be introduced in a later release",
+      "The decision was deferred until a reference implementation existed",
+      "The BDFL agreed with the Pro argument and rejected `def`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The BDFL wrote: \"`def` it stays. No argument on either side is totally convincing, so I have consulted my language designer's intuition. It tells me that the syntax proposed in the PEP is exactly right - not too hot, not too cold. But, like the Oracle at Delphi in Greek mythology, it doesn't tell me why, so I don't have a rebuttal for the arguments against the PEP syntax. The best I can come up with... is 'FUD'. If this had been part of the language from day one, I very much doubt it would have made Andrew Kuchling's 'Python Warts' page.\" This pronouncement is the answer the Q & A section defers to for 'Why not a new keyword instead of reusing `def`?'."
+  },
+  {
+    "type": "single",
+    "question": "How was the reference implementation of PEP 255 made available at the time, and where did it come from?",
+    "options": [
+      "The current implementation, in a preliminary state (no docs, but well tested and solid), was part of Python's CVS development tree, and using it required building Python from source; it was derived from an earlier patch by Neil Schemenauer",
+      "It was distributed as a PyPI package installable with `pip`",
+      "It was implemented only in the Jython interpreter",
+      "It was a pure-Python module importable without rebuilding Python"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Reference Implementation section states: \"The current implementation, in a preliminary state (no docs, but well tested and solid), is part of Python's CVS development tree. Using this requires that you build Python from source.\" It adds: \"This was derived from an earlier patch by Neil Schemenauer.\" The PEP also notes that the standard test `Lib/test/test_generators.py` contains many examples, including all those in the PEP."
+  },
+  {
+    "type": "single",
+    "question": "According to the language reference, Python provides special syntax called *displays* for constructing lists, sets and dictionaries. A display comes in two flavors. What are they?",
+    "options": [
+      "Either the container contents are listed explicitly, or they are computed via a set of looping and filtering instructions called a *comprehension*.",
+      "Either a literal enclosed in square brackets, or a literal enclosed in curly braces.",
+      "Either a tuple of expressions, or a generator function based on `yield`.",
+      "Either an iterable passed to the built-in `list()`, or an iterator chain built with `iter()`."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.5 states that for constructing a list, set or dictionary, Python provides special syntax called displays, each in two flavors: either the container contents are listed explicitly, or they are computed via a set of looping and filtering instructions called a comprehension. The other options misstate the two flavors."
+  },
+  {
+    "type": "single",
+    "question": "Consider the comprehension `[x*y for x in range(10) for y in range(x, x+10)]`. Which part of it is evaluated directly in the enclosing scope rather than in the comprehension's implicitly nested scope?",
+    "options": [
+      "The iterable expression in the leftmost `for` clause (`range(10)`), because subsequent `for` clauses and any filter condition in the leftmost `for` clause may depend on values obtained from it.",
+      "Every `for` clause, because comprehensions do not introduce any new scope.",
+      "Only the filter conditions, which always run in the enclosing scope.",
+      "None of it - the whole comprehension is evaluated inside the built-in `list` constructor."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.5 explains that, aside from the iterable expression in the leftmost `for` clause, the comprehension is executed in a separate implicitly nested scope, which ensures that names assigned to in the target list do not leak into the enclosing scope. The iterable expression in the leftmost `for` clause is evaluated directly in the enclosing scope and then passed as an argument to the implicitly nested scope, because subsequent `for` clauses and any filter condition in the leftmost `for` clause cannot be evaluated in the enclosing scope as they may depend on the values obtained from the leftmost iterable."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about comprehensions, displays and the implicitly nested scope are correct?",
+    "options": [
+      "`yield` and `yield from` expressions are prohibited in the implicitly nested scope (changed in Python 3.8).",
+      "A comprehension that contains `async for` clauses, or `await` expressions or other asynchronous comprehensions anywhere except the iterable expression in the leftmost `for` clause, is called an *asynchronous comprehension*.",
+      "An empty set cannot be constructed with `{}`; that literal constructs an empty dictionary.",
+      "A set display is distinguished from a dictionary display by the use of square brackets rather than curly braces."
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Section 6.2.5 says `yield` and `yield from` are prohibited in the implicitly nested scope so the comprehension always results in a container of the appropriate type (changed in 3.8). It also defines an asynchronous comprehension as one containing `async for` clauses, or `await` expressions (or other asynchronous comprehensions) anywhere except the iterable expression in the leftmost `for` clause; in an `async def` function an `async for` clause may be used to iterate over an asynchronous iterator (since Python 3.6, PEP 530). The set display paragraph (6.2.7) notes that `{}` constructs an empty dictionary, so an empty set cannot be built with it. Option 4 is wrong: set displays use curly braces and are distinguishable from dictionary displays by the lack of colons separating keys and values."
+  },
+  {
+    "type": "single",
+    "question": "```python\niterator = (x ** 2 for x in range(10))\n```\nWhat does the expression above evaluate to, according to the reference?",
+    "options": [
+      "A generator iterator that yields the same values as the corresponding list comprehension; `list(iterator)` gives `[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]`.",
+      "A list containing the squares of the numbers 0 through 9.",
+      "A tuple containing the squares of the numbers 0 through 9.",
+      "An iterator over the `range` object itself."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.9: the syntax for generator expressions is the same as for list comprehensions except they are enclosed in parentheses instead of brackets. At runtime a generator expression evaluates to a generator iterator (shown as `<generator object <genexpr> at ...>`), which yields the same values as the corresponding list comprehension. The reference shows `list(iterator)` producing `[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]`, and the generator expression is roughly equivalent to defining and calling a generator function that yields `x ** 2` for each `x` in the iterable."
+  },
+  {
+    "type": "single",
+    "question": "```python\nsum(x ** 2 for x in range(10))\n```\nWhy does this call work without extra parentheses around the generator expression?",
+    "options": [
+      "The enclosing parentheses of a generator expression can be omitted in calls when it is the only positional argument and there are no keyword arguments.",
+      "The `sum()` built-in accepts a bare comprehension without parentheses in all cases.",
+      "Generator expressions never require parentheses when passed to any built-in function.",
+      "`sum()` implicitly converts the `range` object into a generator."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.9: the enclosing parentheses can be omitted in calls when the generator expression is the only positional argument and there are no keyword arguments. `sum(x ** 2 for x in range(10))` returns `285` (the parentheses after `sum` are part of the call syntax). When the generator expression is not the only argument it needs its own parentheses, e.g. `sum((x ** 2 for x in range(10)), start=1000)` returns `1285`."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the evaluation timing of generator expressions are correct?",
+    "options": [
+      "The iterable expression in the leftmost `for` clause is evaluated immediately, so an error raised by it is emitted at the point where the generator expression is defined rather than when the first value is retrieved.",
+      "After that expression is evaluated, an iterator is created from the result as if `iter()` were called on it, and any error raised while creating the iterator is also emitted immediately.",
+      "All other expressions in the generator expression are evaluated lazily, in the same fashion as normal generators - that is, when the iterator is asked to yield a value.",
+      "The entire body of the generator expression is executed immediately at definition time so that all errors surface right away."
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Section 6.2.9: `(x ** 2 for x in nonexistent_iterable)` raises `NameError` immediately at the point of definition, and `(x ** 2 for x in None)` raises `TypeError: 'NoneType' object is not iterable` immediately because the iterator creation (as if `iter()` were called) fails. However, `iterator = (nonexistent_value for x in range(10))` succeeds at definition time and only raises `NameError` when `list(iterator)` asks for a value - all other expressions are evaluated lazily. The reference also shows `(x*y for x in range(10) for y in nonexistent_iterable)` failing only when the iterator is consumed. Option 4 is false: only the leftmost iterable and its iterator creation are evaluated eagerly."
+  },
+  {
+    "type": "single",
+    "question": "Which of the following is true of generator expressions, according to the reference?",
+    "options": [
+      "`yield` and `yield from` expressions are prohibited inside the implicitly nested scope; and if a generator expression contains `async for` clauses or `await` expressions, it is called an asynchronous generator expression and returns a new asynchronous generator object, which is an asynchronous iterator.",
+      "A generator expression may contain a `yield` expression inside its nested scope to produce values lazily.",
+      "Asynchronous generator expressions can only appear in `async def` coroutines, even in Python 3.7 and later.",
+      "A generator expression always constructs its full container eagerly at definition time."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.9: `yield` and `yield from` are prohibited inside the implicitly nested scope (changed in 3.8) to avoid interfering with the expected operation of the generator expression itself. If a generator expression contains either `async for` clauses or `await` expressions, it is called an asynchronous generator expression, returning a new asynchronous generator object (an asynchronous iterator); asynchronous generator expressions were added in 3.6, and since 3.7 any function - not just `async def` coroutines - can use them, so option 3 is wrong."
+  },
+  {
+    "type": "single",
+    "question": "According to the reference, where may a yield expression be used, and what effect does it have?",
+    "options": [
+      "Only in the body of a function definition: using it makes the function a generator function, and using it in an `async def` function's body makes that coroutine function an asynchronous generator function.",
+      "Anywhere in a module, including at the top level of a script.",
+      "Only inside a class body, to define class-level iterators.",
+      "Only inside the implicitly nested scope that implements comprehensions and generator expressions."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10: the yield expression is used when defining a generator function or an asynchronous generator function and can only be used in the body of a function definition. The reference shows `def gen(): yield 123` (a generator function) and `async def agen(): yield 123` (an asynchronous generator function). Due to their side effects on the containing scope, yield expressions are not permitted as part of the implicitly defined scopes used to implement comprehensions and generator expressions (changed in 3.8), so option 4 is wrong."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about generator execution, suspension and resumption are correct?",
+    "options": [
+      "When a generator function is called, it returns an iterator known as a generator that controls the execution; execution starts when one of the generator's methods is called, proceeds to the first yield expression, where it is suspended again, returning the value of the yield list (or `None` if the yield list is omitted) to the caller.",
+      "While suspended, all local state is retained, including the current bindings of local variables, the instruction pointer, the internal evaluation stack, and the state of any exception handling.",
+      "When resumed with `__next__()` (typically via a `for` loop or the `next()` builtin), the current yield expression evaluates to `None`; when resumed with `send()`, it evaluates to the value passed in to that method.",
+      "The body of the generator function runs to completion when the generator function is called, before any of the generator's methods is invoked."
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Section 6.2.10: calling a generator function returns a generator that controls the execution of the function; execution starts when one of the generator's methods is called, proceeding to the first yield expression where it suspends and returns the yield-list value (or `None` if the yield list is omitted) to the caller. Suspension retains all local state - local variable bindings, the instruction pointer, the internal evaluation stack and exception-handling state. When resumed, the value of the yield expression depends on the method: `__next__()` makes it evaluate to `None`, while `send()` makes it evaluate to the value passed in. Option 4 is false: nothing runs at call time."
+  },
+  {
+    "type": "single",
+    "question": "In what way do generator functions differ from coroutines, according to the reference?",
+    "options": [
+      "They are quite similar - generators yield multiple times, have more than one entry point, and their execution can be suspended - but the only difference is that a generator function cannot control where the execution should continue after it yields; control is always transferred to the generator's caller.",
+      "Coroutines cannot be suspended, while generators can.",
+      "A generator function can yield only once, while a coroutine can yield many times.",
+      "A generator function controls exactly where execution resumes, while a coroutine does not."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10: all of this makes generator functions quite similar to coroutines; they yield multiple times, they have more than one entry point and their execution can be suspended. The only difference is that a generator function cannot control where the execution should continue after it yields - the control is always transferred to the generator's caller."
+  },
+  {
+    "type": "single",
+    "question": "Where are yield expressions allowed with respect to exception handling, and what happens if a generator is finalized without being resumed?",
+    "options": [
+      "Yield expressions are allowed anywhere in a `try` construct; if the generator is not resumed before it is finalized (by reaching a zero reference count or by being garbage collected), the generator-iterator's `close()` method will be called, allowing any pending `finally` clauses to execute.",
+      "Yield expressions are only allowed outside `try` blocks, and finalization never runs `finally` clauses.",
+      "Yield expressions are allowed only in `finally` clauses.",
+      "If a generator is garbage collected without being resumed, its pending `finally` clauses are silently skipped."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10: yield expressions are allowed anywhere in a `try` construct. If the generator is not resumed before it is finalized - by reaching a zero reference count or by being garbage collected - the generator-iterator's `close()` method will be called, allowing any pending `finally` clauses to execute."
+  },
+  {
+    "type": "single",
+    "question": "When `yield from <expr>` is used and the underlying iterator does not support the appropriate methods, what happens to `send()` and `throw()` calls?",
+    "options": [
+      "The values produced by iterating the expression are passed directly to the caller of the current generator's methods; `send()` values and `throw()` exceptions are passed to the underlying iterator if it has the appropriate methods - otherwise `send()` raises `AttributeError` or `TypeError`, while `throw()` just raises the passed-in exception immediately.",
+      "The sub-iterator is automatically wrapped so that it always supports `send()` and `throw()`.",
+      "`send()` and `throw()` silently ignore the sub-iterator's lack of support and return `None`.",
+      "`yield from` requires the supplied expression to be a generator; plain iterables are rejected."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10: when `yield from <expr>` is used, the supplied expression must be an iterable. The values produced by iterating that iterable are passed directly to the caller of the current generator's methods. Any values passed in with `send()` and any exceptions passed in with `throw()` are passed to the underlying iterator if it has the appropriate methods; if not, `send()` raises `AttributeError` or `TypeError`, while `throw()` just raises the passed-in exception immediately."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about `yield from` and yield expression syntax are correct?",
+    "options": [
+      "When the underlying iterator is complete, the `value` attribute of the raised `StopIteration` instance becomes the value of the yield expression - either set explicitly when raising `StopIteration`, or automatically when the sub-iterator is a generator (by returning a value from the sub-generator).",
+      "`yield from <expr>` was added in Python 3.3 to delegate control flow to a sub-iterator.",
+      "The parentheses may be omitted when the yield expression is the sole expression on the right hand side of an assignment statement.",
+      "`yield from` requires the supplied expression to be a list."
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Section 6.2.10: when the underlying iterator completes, the `value` attribute of the raised `StopIteration` becomes the value of the yield expression; it can be set explicitly when raising `StopIteration`, or automatically when the sub-iterator is a generator (by returning a value from the sub-generator). `yield from` was added in 3.3 to delegate control flow to a sub-iterator (PEP 380). The parentheses around a yield expression may be omitted when it is the sole expression on the right hand side of an assignment statement. Option 4 is wrong: the supplied expression must be iterable, not specifically a list."
+  },
+  {
+    "type": "single",
+    "question": "Which statement about generator-iterator methods is correct?",
+    "options": [
+      "They can be used to control the execution of a generator function, and calling any of them when the generator is already executing raises a `ValueError` exception.",
+      "They may be called at any time, including while the generator is mid-execution, without raising an error.",
+      "Only `__next__()` may be called; `send()`, `throw()` and `close()` were removed in Python 3.",
+      "They execute the entire generator function synchronously at call time."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10.1: this subsection describes the methods of a generator iterator, which can be used to control the execution of a generator function. Note that calling any of the generator methods when the generator is already executing raises a `ValueError` exception."
+  },
+  {
+    "type": "single",
+    "question": "What does `generator.__next__()` do?",
+    "options": [
+      "It starts the execution of the generator function or resumes it at the last executed yield expression; the current yield expression always evaluates to `None`, execution continues to the next yield expression where the generator is suspended again, and the value of the yield list is returned to `__next__()`'s caller; if the generator exits without yielding another value, a `StopIteration` exception is raised.",
+      "It sends a value into the generator and returns the next yielded value.",
+      "It raises a `GeneratorExit` exception at the point where the generator was paused.",
+      "It throws an exception into the generator at the point where it was paused."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10.1: `__next__()` starts or resumes the generator at the last executed yield expression; when resumed with `__next__()`, the current yield expression always evaluates to `None`. Execution then continues to the next yield expression, where the generator suspends again and the yield-list value is returned to the caller. If the generator exits without yielding another value, `StopIteration` is raised. This method is normally called implicitly, e.g. by a `for` loop or by the built-in `next()` function."
+  },
+  {
+    "type": "single",
+    "question": "Which of the following is true of `generator.send(value)`?",
+    "options": [
+      "It resumes the execution and 'sends' a value into the generator function; the value argument becomes the result of the current yield expression, and the method returns the next value yielded by the generator, or raises `StopIteration` if the generator exits without yielding another value. When `send()` is called to start the generator, it must be called with `None` as the argument, because there is no yield expression that could receive the value.",
+      "It must always be called with a non-`None` value, including on the very first call.",
+      "The value argument is ignored by the generator and is only echoed back to the caller.",
+      "It can only be called after the generator has been closed."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10.1: `send(value)` resumes execution and 'sends' a value into the generator function; the value becomes the result of the current yield expression. It returns the next value yielded by the generator, or raises `StopIteration` if the generator exits without yielding another value. When called to start the generator it must be called with `None`, because there is no yield expression that could receive the value."
+  },
+  {
+    "type": "single",
+    "question": "What does `generator.throw(value)` do, and what happens if the generator does not catch the exception?",
+    "options": [
+      "It raises the exception at the point where the generator was paused and returns the next value yielded by the generator function; if the generator exits without yielding another value, `StopIteration` is raised, and if the generator function does not catch the passed-in exception, or raises a different exception, that exception propagates to the caller. In typical use it is called with a single exception instance; the second signature `throw(type[, value[, traceback]])` is deprecated since Python 3.12.",
+      "It silently discards the exception and resumes execution from the pause point.",
+      "It always raises `RuntimeError`, regardless of what the generator does.",
+      "It can only be called before the generator has started executing."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10.1: `throw(value)` raises an exception at the point where the generator was paused and returns the next value yielded by the generator function. If the generator exits without yielding another value, `StopIteration` is raised. If the generator function does not catch the passed-in exception, or raises a different exception, then that exception propagates to the caller. In typical use it is called with a single exception instance, similar to the way the `raise` keyword is used; the backwards-compatible second signature `(type[, value[, traceback]])` is deprecated since 3.12 and may be removed in a future version."
+  },
+  {
+    "type": "single",
+    "question": "What does `generator.close()` do, and what happens in the various cases?",
+    "options": [
+      "It raises a `GeneratorExit` exception at the point where the generator function was paused (equivalent to calling `throw(GeneratorExit)`). If the generator catches the exception and returns a value, that value is returned from `close()` (changed in 3.13); if the generator is already closed or raises `GeneratorExit` by not catching it, `close()` returns `None`; if the generator yields a value, a `RuntimeError` is raised; any other exception is propagated to the caller.",
+      "It always raises `GeneratorExit` at the caller's location, never inside the generator.",
+      "It permanently deletes the generator without running any cleanup code.",
+      "It restarts the generator from the beginning and returns the first yielded value."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10.1: `close()` raises `GeneratorExit` at the point where the generator function was paused, equivalent to calling `throw(GeneratorExit)`. If the generator function catches the exception and returns a value, this value is returned from `close()` (changed in 3.13); if the generator is already closed, or raises `GeneratorExit` by not catching the exception, `close()` returns `None`. If the generator yields a value, a `RuntimeError` is raised; if it raises any other exception, that exception is propagated to the caller."
+  },
+  {
+    "type": "single",
+    "question": "```python\ndef echo(value=None):\n    print(\"Execution starts when 'next()' is called for the first time.\")\n    try:\n        while True:\n            try:\n                value = (yield value)\n            except Exception as e:\n                value = e\n    finally:\n        print(\"Don't forget to clean up when 'close()' is called.\")\n\ngenerator = echo(1)\nprint(next(generator))\n```\nWhat is the output of this code, according to the reference example?",
+    "options": [
+      "It first prints `Execution starts when 'next()' is called for the first time.` and then prints `1`.",
+      "It prints only `None`.",
+      "It prints only `1`, without the startup message.",
+      "It prints `Execution starts when 'next()' is called for the first time.` and then prints `None`."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10.2 (Examples): the first call to `next(generator)` starts the execution of the generator function, which prints the startup message and then proceeds to the first yield expression, `(yield value)`, returning the current value of `value` (1) to the caller. The reference REPL session shows exactly this output."
+  },
+  {
+    "type": "single",
+    "question": "```python\ndef echo(value=None):\n    try:\n        while True:\n            try:\n                value = (yield value)\n            except Exception as e:\n                value = e\n    finally:\n        print(\"Don't forget to clean up when 'close()' is called.\")\n\ngenerator = echo(1)\nnext(generator)                    # yields 1\nprint(next(generator))             # line A\nprint(generator.send(2))           # line B\ngenerator.throw(TypeError, \"spam\")  # line C\ngenerator.close()                  # line D\n```\nWhich description of the behavior of lines A-D is correct?",
+    "options": [
+      "Line A prints `None` (resumed with `__next__()`); line B prints `2` (the sent value becomes the result of the yield expression); line C's `TypeError` is caught by `except Exception`, stored in `value`, and re-yielded; line D triggers the `finally` cleanup message because `close()` raises `GeneratorExit`, which is a `BaseException` and is not caught by `except Exception`.",
+      "Line A prints `1`, line B prints `1`, line C propagates `TypeError` to the caller, and line D raises `GeneratorExit` to the caller.",
+      "Lines A and B both raise `StopIteration`.",
+      "Line C crashes with `RuntimeError`, and line D does nothing."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10.2: in the reference example, the second `next(generator)` resumes with `__next__()`, so `(yield value)` evaluates to `None` and `None` is printed. `generator.send(2)` makes the yield expression evaluate to `2`, so `2` is printed. `generator.throw(TypeError, \"spam\")` raises `TypeError` at the paused yield; it is caught by `except Exception as e`, assigned to `value`, and then re-yielded (the REPL shows `TypeError('spam',)`). Finally, `close()` raises `GeneratorExit` (a `BaseException`, not an `Exception`), so it is not caught; the `finally` clause prints the cleanup message and `close()` returns `None`. The reference notes that for `yield from` examples, see PEP 380 in 'What's New in Python 3.3'."
+  },
+  {
+    "type": "single",
+    "question": "What makes a function an asynchronous generator function, and what does calling it return?",
+    "options": [
+      "The presence of a yield expression in a function or method defined using `async def` makes it an asynchronous generator function; calling it returns an asynchronous iterator known as an asynchronous generator object, which is typically used in an `async for` statement in a coroutine function, analogously to how a generator object is used in a `for` statement.",
+      "Defining a function with `async def` alone - with no yield expression - makes it an asynchronous generator function.",
+      "Using `yield from` inside an `async def` function makes it an asynchronous generator function.",
+      "An asynchronous generator function returns a list of awaitable objects when called."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10.3: the presence of a yield expression in a function or method defined using `async def` further defines the function as an asynchronous generator function. When called, it returns an asynchronous iterator known as an asynchronous generator object, typically used in an `async for` statement in a coroutine function analogously to how a generator object would be used in a `for` statement. Note that `yield from <expr>` is a syntax error when used in an asynchronous generator function, so option 3 is wrong."
+  },
+  {
+    "type": "single",
+    "question": "How is an asynchronous generator's execution controlled, and what value does the yield expression evaluate to after resumption?",
+    "options": [
+      "Calling one of the asynchronous generator's methods returns an awaitable object, and the execution starts when this object is awaited on; execution proceeds to the first yield expression, where it is suspended (retaining all local state), returning the yield-list value to the awaiting coroutine. When resumed, if `__anext__()` was used the current yield expression evaluates to `None`; if `asend(value)` was used it evaluates to the value passed in.",
+      "The asynchronous generator's methods execute synchronously, exactly like a normal generator's methods.",
+      "Both `__anext__()` and `asend()` make the current yield expression evaluate to `None`.",
+      "An asynchronous generator runs to completion the first time one of its methods is awaited."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10.3: calling one of the asynchronous generator's methods returns an awaitable object, and execution starts when this object is awaited on. Execution proceeds to the first yield expression, where it is suspended again, returning the yield-list value to the awaiting coroutine; as with a generator, suspension retains all local state (local variable bindings, the instruction pointer, the internal evaluation stack, and the state of any exception handling). When resumed, the value of the yield expression depends on the method: `__anext__()` gives `None`, while `asend(value)` gives the value passed in."
+  },
+  {
+    "type": "single",
+    "question": "What are the finalization requirements for asynchronous generators, and what is the status of `yield from` inside them?",
+    "options": [
+      "If an asynchronous generator exits early (e.g. by `break`, the caller task being cancelled, or other exceptions), its async cleanup code may run in an unexpected context, so the caller must explicitly close it with `aclose()` to finalize it and detach it from the event loop; an event loop should define a finalizer (registered via `sys.set_asyncgen_hooks()`) that calls `aclose()`. Also, `yield from <expr>` is a syntax error when used in an asynchronous generator function.",
+      "Asynchronous generators are finalized automatically by the garbage collector, with no possibility of running cleanup code.",
+      "`yield from` is the preferred way to delegate control flow inside an asynchronous generator.",
+      "As long as the async generator is defined, its pending `finally` clauses are guaranteed to run even if it is never resumed."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10.3: if an asynchronous generator exits early - by `break`, the caller task being cancelled, or other exceptions - the generator's async cleanup code will run and may raise exceptions or access context variables in an unexpected context, so the caller must explicitly call `aclose()` to finalize the generator and ultimately detach it from the event loop. Yield expressions are allowed anywhere in a `try` construct, but if an async generator is not resumed before it is finalized, a yield within `try` could cause pending `finally` clauses not to execute; the event loop or scheduler must then call `aclose()` and run the resulting coroutine object. An event loop should define a finalizer, registrable via `sys.set_asyncgen_hooks()`, that calls `aclose()`. Finally, `yield from <expr>` is a syntax error when used in an asynchronous generator function."
+  },
+  {
+    "type": "single",
+    "question": "Which of the following correctly describes `agen.__anext__()`?",
+    "options": [
+      "It returns an awaitable which, when run, starts the asynchronous generator or resumes it at the last executed yield expression; the current yield expression evaluates to `None`, and the value of the yield list becomes the value of the `StopIteration` exception raised by the completing coroutine. If the asynchronous generator exits without yielding another value, the awaitable raises `StopAsyncIteration`. It is normally called implicitly by an `async for` loop.",
+      "It sends a value into the asynchronous generator and returns the next yielded value.",
+      "It raises `StopAsyncIteration` after every yielded value.",
+      "It throws an exception at the point where the asynchronous generator was paused."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Section 6.2.10.4: `__anext__()` returns an awaitable which, when run, starts the asynchronous generator or resumes it at the last executed yield expression; when resumed with `__anext__()`, the current yield expression always evaluates to `None`. The value of the yield list is the value of the `StopIteration` exception raised by the completing coroutine. If the asynchronous generator exits without yielding another value, the awaitable raises `StopAsyncIteration`, signalling that the asynchronous iteration has completed. This method is normally called implicitly by an `async for` loop."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about `asend()`, `athrow()` and `aclose()` are correct?",
+    "options": [
+      "`asend(value)` returns an awaitable that 'sends' a value into the asynchronous generator, making the value the result of the current yield expression; like `send()`, when it is called to start the asynchronous generator it must be called with `None` as the argument.",
+      "`athrow(value)` returns an awaitable that raises an exception at the point where the asynchronous generator was paused and returns the next yielded value as the value of the raised `StopIteration` exception; if the generator does not catch the passed-in exception, or raises a different one, that exception propagates to the caller of the awaitable.",
+      "`aclose()` returns an awaitable that throws `GeneratorExit` at the pause point; if the generator exits gracefully, is already closed, or raises `GeneratorExit` (by not catching it), the awaitable raises `StopIteration`, and if the generator yields a value, a `RuntimeError` is raised by the awaitable.",
+      "`athrow()` must always be called with `None` as its argument when starting the asynchronous generator."
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Section 6.2.10.4: `asend(value)` is the async counterpart of `send()` - the value becomes the result of the current yield expression, and it must be called with `None` to start the generator. `athrow(value)` raises an exception at the pause point and returns the next yielded value as the value of the raised `StopIteration`; if the generator does not catch the exception, or raises a different one, it propagates to the caller of the awaitable (the second signature `(type[, value[, traceback]])` is deprecated since 3.12). `aclose()` throws `GeneratorExit` at the pause point; if the generator exits gracefully, is already closed, or raises `GeneratorExit`, the awaitable raises `StopIteration`, while yielding a value causes `RuntimeError`; further awaitables from subsequent calls raise `StopAsyncIteration`. Option 4 is wrong: the `None`-to-start rule applies to `asend()`, not `athrow()`."
+  },
+  {
+    "type": "single",
+    "question": "According to the Abstract of PEP 3114, which two methods make up the iterator protocol in Python 2.x, and what does the PEP propose?",
+    "options": [
+      "The protocol consists of `__iter__()`, called on an iterable object to yield an iterator, and `next()`, called on an iterator object to yield the next item in the sequence; a `for` loop implicitly calls both methods. The PEP proposes renaming the `next` method to `__next__`, consistent with all the other protocols in which a method is implicitly called as part of a language-level protocol, and introducing a built-in function named `next` that invokes the `__next__` method.",
+      "The protocol consists of `__iter__()` and `__next__()`, and the PEP proposes adding a `next` method as an alias for backward compatibility.",
+      "The protocol consists of a single method, `__call__()`, and the PEP proposes removing iterators entirely from Python 3.",
+      "The protocol consists of `next()` and `has_next()`, and the PEP proposes renaming `has_next()` to `__has_next__()`."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Abstract of PEP 3114 states that the iterator protocol in Python 2.x consists of two methods: `__iter__()`, called on an iterable object to yield an iterator, and `next()`, called on an iterator object to yield the next item in the sequence; using a `for` loop to iterate over an iterable object implicitly calls both of these methods. The PEP proposes that the `next` method be renamed to `__next__`, consistent with all the other protocols in Python in which a method is implicitly called as part of a language-level protocol, and that a built-in function named `next` be introduced to invoke the `__next__` method, consistent with the manner in which other protocols are explicitly invoked."
+  },
+  {
+    "type": "single",
+    "question": "According to the 'Names With Double Underscores' section of PEP 3114, what do double underscores before and after a name signify, and which examples does the PEP give?",
+    "options": [
+      "They distinguish names that belong to the language itself: attributes and methods that are implicitly used or created by the interpreter employ this convention. Examples: `__file__` (an attribute automatically created by the interpreter), `__dict__` (an attribute with special meaning to the interpreter), and `__init__` (a method implicitly called by the interpreter).",
+      "They mark names as private to the class that defines them, so they cannot be inherited.",
+      "They are a stylistic convention indicating that a method is deprecated.",
+      "They indicate that a name is a reserved keyword that cannot be used as an identifier."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 3114 explains that in Python, double underscores before and after a name are used to distinguish names that belong to the language itself. Attributes and methods that are implicitly used or created by the interpreter employ this naming convention; the PEP's examples are `__file__` — an attribute automatically created by the interpreter, `__dict__` — an attribute with special meaning to the interpreter, and `__init__` — a method implicitly called by the interpreter. This is about names belonging to the language, not privacy, deprecation, or keywords."
+  },
+  {
+    "type": "single",
+    "question": "PEP 3114 notes that not everything called a 'protocol' is made of methods with double-underscore names. Why does `__contains__` have double underscores while the `read` method of the file protocol does not?",
+    "options": [
+      "`__contains__` has double underscores because the language construct `x in y` implicitly calls `__contains__`; `read` does not have double underscores because there is no language construct that implicitly invokes `x.read()`. The convention also covers methods the programmer defines explicitly (like `__init__`) as well as interpreter-created attributes (like `__file__`).",
+      "`__contains__` is defined in the interpreter's C code, while `read` is defined in pure Python, and only C-defined methods get double underscores.",
+      "`__contains__` predates `read` in the language and kept its original spelling when the convention was adopted.",
+      "`__contains__` is invoked by a built-in `contains()` function, while `read` is only invoked by `for` loops."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The 'Names With Double Underscores' section states that the convention applies to methods such as `__init__` that are explicitly defined by the programmer, as well as attributes such as `__file__` that can only be accessed by naming them explicitly, so it includes names that are used *or* created by the interpreter. Not all things that are called 'protocols' are made of methods with double-underscore names: `__contains__` has double underscores because the language construct `x in y` implicitly calls `__contains__`, but even though the `read` method is part of the file protocol, it does not have double underscores because there is no language construct that implicitly invokes `x.read()`."
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 3114, what purpose does the double-underscore namespace serve for programmers?",
+    "options": [
+      "It creates a separate namespace for names that are part of the Python language definition, so programmers are free to create variables, attributes, and methods that start with letters without fear of silently colliding with names that have a language-defined purpose; colliding with reserved keywords is still a concern, but at least that immediately yields a syntax error.",
+      "It guarantees that user-defined names can never collide with anything in the language, including reserved keywords.",
+      "It makes user-defined attributes invisible to the interpreter so that they are never garbage-collected.",
+      "It is required for a name to be importable from another module."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 3114 explains that the use of double underscores creates a separate namespace for names that are part of the Python language definition, so that programmers are free to create variables, attributes, and methods that start with letters without fear of silently colliding with names that have a language-defined purpose. Colliding with reserved keywords is still a concern, but at least this will immediately yield a syntax error rather than silently changing behavior."
+  },
+  {
+    "type": "single",
+    "question": "Why does PEP 3114 call the `next` method on iterators an exception to the double-underscore naming convention?",
+    "options": [
+      "Code that nowhere contains an explicit call to a `next` method can nonetheless be silently affected by the presence of such a method (a `for` loop calls it implicitly); the PEP therefore proposes that iterators have a `__next__` method instead of a `next` method, with no change in semantics.",
+      "The `next` method is the only method the interpreter never calls implicitly, so its name does not matter.",
+      "The `next` method was introduced after Python 3.0 and therefore never followed the convention.",
+      "The `next` method behaves differently from `__next__`, so the rename also changes the semantics of iteration."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The PEP argues that the naming of the `next` method on iterators is an exception to the double-underscore convention: code that nowhere contains an explicit call to a `next` method can nonetheless be silently affected by the presence of such a method (because a `for` loop implicitly calls it). Therefore the PEP proposes that iterators should have a `__next__` method instead of a `next` method, with no change in semantics — it is a pure rename, so both names denote the same operation."
+  },
+  {
+    "type": "single",
+    "question": "PEP 3114 describes how language-level protocols are implemented. For an object defined in Python, what happens when code evaluates `x[y]`?",
+    "options": [
+      "The protocol is provided by an internal method implemented as a C function in the interpreter — for `x[y]` this is `tp_getitem` — which supports customization by implicitly invoking the Python method `x.__getitem__(y)` (often doing a little bit of additional work beyond just calling the Python method).",
+      "The parser rewrites `x[y]` directly into a call to `x.__call__(y)`.",
+      "Syntactic constructs never invoke user-defined methods; only built-in functions can.",
+      "`x[y]` only works for classes written as C extensions; pure-Python classes cannot support indexing."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The 'Double-Underscore Methods and Built-In Functions' section explains that the Python language defines several protocols that are implemented or customized by defining methods with double-underscore names. In each case the protocol is provided by an internal method implemented as a C function in the interpreter; for objects defined in Python, this C function supports customization by implicitly invoking a Python method with a double-underscore name (it often does a little bit of additional work beyond just calling the Python method). The PEP's examples are: `x[y]` -> internal `tp_getitem` -> `x.__getitem__(y)`; `x + y` -> internal `nb_add` -> `x.__add__(y)`; `-x` -> internal `nb_negative` -> `x.__neg__()`."
+  },
+  {
+    "type": "single",
+    "question": "```python\nit = iter([10, 20, 30])\na = it.__next__()\nb = next(it)\n```\nPer PEP 3114, what are the values of `a` and `b`, and why?",
+    "options": [
+      "`a` is `10` and `b` is `20`: the PEP introduces a built-in `next` function that invokes the `__next__` method in exactly the same fashion as the existing pattern `len(x)` -> internal `sq_length` -> `x.__len__()` and `iter(x)` -> internal `tp_iter` -> `x.__iter__()`, so `next(x)` -> internal `tp_iternext` -> `x.__next__()`.",
+      "`a` is `10` and `b` is `10`: `next(it)` restarts the iteration from the beginning.",
+      "Both calls raise `StopIteration` because `__next__` is not a public API.",
+      "`a` is `20` and `b` is `30`: `it.__next__()` skips the first element."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Following the pattern described in PEP 3114, when there is no syntactic construct for a protocol, Python offers a built-in function of the same name but without the double underscores: `len(x)` -> internal `sq_length` -> `x.__len__()`, `hash(x)` -> internal `tp_hash` -> `x.__hash__()`, and `iter(x)` -> internal `tp_iter` -> `x.__iter__()`. The natural way to handle `next` is to add a `next` built-in function that behaves in exactly the same fashion: `next(x)` -> internal `tp_iternext` -> `x.__next__()`. So the first call, `it.__next__()`, returns `10`, and the second call, `next(it)`, invokes `__next__` again and returns `20`."
+  },
+  {
+    "type": "single",
+    "question": "```python\nit = iter([1, 2])\nnext(it, 'done')   # first call\nnext(it, 'done')   # second call\nnext(it, 'done')   # iterator exhausted\n```\nPEP 3114 proposes that the `next` built-in accept an optional sentinel as a second argument, following the style of `getattr` and `iter`. What does the third call return?",
+    "options": [
+      "The sentinel value `'done'` — when called with two arguments, `next` catches the `StopIteration` exception and returns the sentinel instead of propagating it, which creates a duality between `iter(function, sentinel)` and `next(iterator, sentinel)`.",
+      "It raises `StopIteration`, because the sentinel is only used with the two-argument form of `iter`.",
+      "It returns `None`.",
+      "It raises `ValueError` because the iterator is exhausted."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The PEP proposes that the `next` built-in function accept a sentinel value as an optional second argument, following the style of the `getattr` and `iter` built-in functions. When called with two arguments, `next` catches the `StopIteration` exception and returns the sentinel value instead of propagating the exception. This creates a nice duality between `iter` and `next`: `iter(function, sentinel)` <-> `next(iterator, sentinel)`. Here the first two calls return `1` and `2`; the third call catches `StopIteration` and returns `'done'`."
+  },
+  {
+    "type": "single",
+    "question": "What does the 'Previous Proposals' section of PEP 3114 reveal about the history of this idea?",
+    "options": [
+      "The idea is not new: it was supported by the BDFL on python-dev and is even mentioned in the original iterator PEP 234, which says in retrospect it might have been better to go for `__next__()` and have a new built-in `next(it)` that calls `it.__next__()`, but alas it was too late because `next()` had been deployed in Python 2.2 since December 2001.",
+      "The idea was first proposed by Martin von Loewis in 2007 and had never been considered before.",
+      "PEP 234 explicitly rejected `__next__` as a name because it was too long.",
+      "The idea originated in PEP 380 and was only later applied to iterators."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The 'Previous Proposals' section states: 'This proposal is not a new idea. The idea proposed here was supported by the BDFL on python-dev and is even mentioned in the original iterator PEP, PEP 234.' The PEP quotes PEP 234: '(In retrospect, it might have been better to go for `__next__()` and have a new built-in, `next(it)`, which calls `it.__next__()`. But alas, it's too late; this has been deployed in Python 2.2 since December 2001.)' So the renaming was contemplated as far back as the original iterator design."
+  },
+  {
+    "type": "single",
+    "question": "In the Objections section of PEP 3114, Martin von Loewis objects to adding more built-ins. Which of the following is one of his arguments?",
+    "options": [
+      "He dislikes the introduction of more builtins unless they have a true generality (i.e. are likely to be needed in many programs); he thinks the normal usage of `__next__` will be with a `for` loop, so one would not often need an explicit `next()` invocation.",
+      "He objects that `__next__` is too long a name and should be shortened to `nx()`.",
+      "He argues that iterators should return `None` at the end instead of raising `StopIteration`.",
+      "He wants the method renamed to `next_` so that IDEs can complete it more easily."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 3114's Objections section quotes Martin von Loewis: 'I dislike the introduction of more builtins unless they have a true generality (i.e. are likely to be needed in many programs). For this one, I think the normal usage of `__next__` will be with a `for` loop, so I don't think one would often need an explicit next() invocation.' His second argument is that it is not true that most protocols are explicitly invoked through builtin functions — instead, most protocols can be explicitly invoked through methods in the `operator` module, so following tradition it should be `operator.next`."
+  },
+  {
+    "type": "single",
+    "question": "As an alternative to adding a built-in `next` function, what did Martin von Loewis propose in the Objections section of PEP 3114?",
+    "options": [
+      "That `object` grows a `.next()` method, which calls `__next__` by default — so no new built-in would be needed.",
+      "That the method be renamed to `__iter_next__` and invoked through a new keyword `advance`.",
+      "That every iterator expose a `peek()` method so that explicit advancement becomes unnecessary.",
+      "That Python 2 keep `next()` forever and Python 3 use both names with no transition plan."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "In the Objections section, after arguing against more builtins and in favour of `operator.next`, Martin von Loewis offers: 'As an alternative, I propose that `object` grows a `.next()` method, which calls `__next__` by default.' The PEP was nevertheless accepted by Guido, and Python 3 adopted the rename to `__next__` together with the built-in `next()` function — the `for` loop and the built-in both invoke `__next__`."
+  },
+  {
+    "type": "single",
+    "question": "The Transition Plan of PEP 3114 adds two transformations to the 2to3 translation tool. What are they?",
+    "options": [
+      "Method definitions named `next` will be renamed to `__next__`, and explicit calls to the `next` method will be replaced with calls to the built-in `next` function — for example, `x.next()` will become `next(x)`.",
+      "Calls to `next(x)` will be rewritten as `x.next()`, and definitions of `__next__` will be renamed back to `next`.",
+      "Every `for` loop will be rewritten into an explicit `while` loop with manual `StopIteration` handling.",
+      "Iterator classes will be converted to generator functions, and `yield` will replace all `return` statements."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Transition Plan states that two additional transformations will be added to the 2to3 translation tool: (1) method definitions named `next` will be renamed to `__next__`; and (2) explicit calls to the `next` method will be replaced with calls to the built-in `next` function — for example, `x.next()` will become `next(x)`."
+  },
+  {
+    "type": "multiple",
+    "question": "Collin Winter investigated whether the 2to3 tool could automatically decide when to rewrite explicit `next()` method calls based on the presence of a module-level binding to `next`. What was the outcome, and which warning conditions did he propose? (Select all that apply.)",
+    "options": [
+      "He found that automatically deciding whether to perform the transformation depending on the presence of a module-level binding to `next` would be 'ugly and slow', so instead the translation tool will emit warnings upon detecting such a binding.",
+      "Warnings for module-level assignments to `next`.",
+      "Warnings for module-level definitions of a function named `next`.",
+      "Warnings for module-level imports of the name `next`.",
+      "Warnings for assignments to `__builtin__.next`.",
+      "Warnings for any occurrence of the word 'next' in a comment or docstring."
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "explanation": "The Transition Plan reports that Collin Winter looked into the possibility of automatically deciding whether to perform the second transformation (rewriting explicit `next` method calls to the built-in `next` function) depending on the presence of a module-level binding to `next` and found that it would be 'ugly and slow'. Instead, the translation tool will emit warnings upon detecting such a binding. Collin has proposed warnings for the following conditions: module-level assignments to `next`, module-level definitions of a function named `next`, module-level imports of the name `next`, and assignments to `__builtin__.next`. Warnings for the word 'next' in comments or docstrings were not proposed."
+  },
+  {
+    "type": "single",
+    "question": "What does the Approval section of PEP 3114 state?",
+    "options": [
+      "The PEP was accepted by Guido on March 6, 2007.",
+      "The PEP was rejected by Guido on March 6, 2007, because of Martin von Loewis's objections.",
+      "The PEP was accepted on April 1, 2008, after a community vote on python-ideas.",
+      "The PEP was withdrawn by its author and never formally decided."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Approval section of PEP 3114 states: 'This PEP was accepted by Guido on March 6, 2007.' The resulting change — renaming `iterator.next()` to `iterator.__next__()` and adding the built-in `next()` function — is exactly the iterator API that shipped in Python 3.0."
+  },
+  {
+    "type": "single",
+    "question": "Per the Implementation section of PEP 3114, how was the PEP implemented?",
+    "options": [
+      "A patch with the necessary changes (except the 2to3 tool) was written by Georg Brandl and committed as revision 54910.",
+      "The changes were written by Martin von Loewis and merged only into the Python 2.7 maintenance branch.",
+      "The changes were implemented by Collin Winter entirely inside the 2to3 tool, with no changes to CPython itself.",
+      "The implementation was deferred indefinitely and never committed to CPython."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Implementation section states: 'A patch with the necessary changes (except the 2to3 tool) was written by Georg Brandl and committed as revision 54910.' The 2to3 transformations described in the Transition Plan were handled separately from that patch."
+  }
+]

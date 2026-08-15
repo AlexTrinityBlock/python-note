@@ -1,0 +1,742 @@
+[
+  {
+    "type": "single",
+    "question": "Which built-in function returns a proxy object that delegates method calls to a parent class?",
+    "options": [
+      "super()",
+      "parent()",
+      "base()",
+      "this()"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "super() returns a proxy that delegates calls to the next class in the method resolution order (MRO), typically the parent class. It is used to call parent methods, e.g. `super().__init__()`."
+  },
+  {
+    "type": "single",
+    "question": "Which attribute of a class describes the order in which its methods are searched during inheritance?",
+    "options": [
+      "__mro__",
+      "__bases__",
+      "__dict__",
+      "__class__"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`__mro__` is a tuple holding the method resolution order of a class. It matters most with multiple inheritance, where the search order determines which method wins."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following are true about inheritance?",
+    "options": [
+      "It allows a class to reuse code defined in another class",
+      "It expresses an is-a relationship between classes",
+      "A subclass inherits the methods and attributes of its superclass",
+      "A subclass must override every method of its superclass"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Inheritance enables code reuse and models is-a relationships, and subclasses inherit the interface of their superclass. Overriding every method is not required — subclasses only override what they need to change."
+  },
+  {
+    "type": "single",
+    "question": "In Python 3, what is the recommended way to call the parent class constructor from a subclass?",
+    "options": [
+      "super().__init__()",
+      "parent().__init__()",
+      "super().__init__",
+      "ParentClass.__init__()"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`super().__init__()` follows the MRO and supports cooperative multiple inheritance. Calling `ParentClass.__init__(self)` directly bypasses the MRO and can break diamond-shaped hierarchies."
+  },
+  {
+    "type": "single",
+    "question": "Which statement best describes polymorphism?",
+    "options": [
+      "The same method name can have different implementations in different classes, and each object responds in its own way",
+      "A class can only define one method with a given name",
+      "Methods can never be overridden in subclasses",
+      "Inheritance always adds new methods to a class"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Polymorphism means the same interface (e.g. a method name) can be implemented differently across classes, and the correct implementation is chosen based on the actual object at runtime."
+  },
+  {
+    "type": "single",
+    "question": "Which decorator turns a method into an attribute that is computed on access?",
+    "options": [
+      "@property",
+      "@staticmethod",
+      "@classmethod",
+      "@abstractmethod"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "@property turns a method into a read-only attribute-style accessor. @staticmethod and @classmethod define methods not bound to an instance, and @abstractmethod marks methods that subclasses must implement."
+  },
+  {
+    "type": "single",
+    "question": "What happens when B() is executed?\n\n```python\nclass A:\n    pass\n\nclass B:\n    def __new__(cls):\n        return object.__new__(A)\n    def __init__(self):\n        print(\"B init\")\n\nB()\n```",
+    "options": [
+      "Nothing is printed: B.__init__ is never called because __new__ returned an instance of A, not of B",
+      "B init is printed",
+      "A.__init__ is called and the instance is initialized as an A",
+      "TypeError is raised because __new__ must return an instance of the requested class"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`__new__` creates the instance; `__init__` customizes it. Per the data model, if `__new__()` returns an instance of `cls`, then `cls.__init__()` is invoked with the same arguments. But if `__new__()` does **not** return an instance of `cls`, `__init__()` is **not** invoked at all. Here `B.__new__` returns an `A` instance, so `B.__init__` is skipped and nothing is printed — `B()` silently evaluates to an `A` object. No error is raised; Python does not validate that `__new__` returns the requested class."
+  },
+  {
+    "type": "single",
+    "question": "What happens when this code runs?\n\n```python\nclass A:\n    def __init__(self):\n        return 42\n\nA()\n```",
+    "options": [
+      "Raises TypeError at runtime because __init__ must not return a non-None value",
+      "The value 42 is silently ignored and A() returns a new instance",
+      "A() evaluates to the integer 42",
+      "Raises SyntaxError at class definition time because return with a value is not allowed in __init__"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`__new__` creates the object and `__init__` customizes it — `__init__` is not the constructor's \"return value\" mechanism. The data model states that no non-`None` value may be returned by `__init__()`; doing so raises `TypeError` at **runtime** (`__init__() should return None, not 'int'`). This is not a syntax error, and the returned value is neither silently dropped nor used as the result of the call."
+  },
+  {
+    "type": "multiple",
+    "question": "Given this class, which statements are true?\n\n```python\nclass A:\n    def __repr__(self):\n        return \"official repr\"\n```",
+    "options": [
+      "str(A()) returns 'official repr'",
+      "print(A()) outputs 'official repr'",
+      "format(A()) returns 'official repr'",
+      "str(A()) returns the default representation, such as <__main__.A object at 0x...>"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "`__repr__()` computes the \"official\" representation; `__str__()` computes the informal one. If a class defines `__repr__()` but not `__str__()`, then `__repr__()` is also used when an informal representation is required — so `str()`, `print()` and (via `object.__format__`, which delegates to `str()`) `format()` with an empty format spec all produce `'official repr'`. The default `object.__str__` would only come into play if `__repr__` were also undefined."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about this code are true?\n\n```python\nclass Point:\n    def __init__(self, x):\n        self.x = x\n    def __eq__(self, other):\n        return self.x == other.x\n\nhash(Point(1))\n```",
+    "options": [
+      "Calling hash(Point(1)) raises TypeError because Point is unhashable",
+      "Point.__hash__ is implicitly set to None",
+      "Two Point instances compare equal when their x attributes are equal",
+      "Point inherits object.__hash__, so hash(p) is based on object identity"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "A class that overrides `__eq__()` but does not define `__hash__()` has its `__hash__` implicitly set to `None`. Instances of such a class raise `TypeError` when a hash is requested and are correctly identified as unhashable. The `__eq__` override still works normally for value comparison. The old identity-based `__hash__` from `object` is **not** inherited — to keep it you must set `__hash__ = <ParentClass>.__hash__` explicitly."
+  },
+  {
+    "type": "single",
+    "question": "What does this code print?\n\n```python\nclass A:\n    def __getattr__(self, name):\n        return \"fallback\"\n\na = A()\na.x = 1\nprint(a.x, a.missing)\n```",
+    "options": [
+      "1 fallback",
+      "fallback fallback",
+      "1 AttributeError: 'A' object has no attribute 'missing'",
+      "AttributeError: 'A' object has no attribute 'x'"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`__getattr__()` is called **only** when normal attribute access (instance dictionary, then the class tree, then descriptors) fails with `AttributeError`. Because `x` is found in the instance dictionary, `__getattr__` is bypassed for it — this is an intentional asymmetry with `__setattr__`. The missing name `missing` triggers `__getattr__`, which returns `'fallback'`. Note that if `__getattr__` itself raises `AttributeError`, that exception propagates to the caller; and `__getattribute__()` (not used here) is the hook called unconditionally for every attribute access."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about this class are true?\n\n```python\nclass A:\n    __slots__ = (\"x\",)\n\na = A()\na.x = 1\n```",
+    "options": [
+      "Instances of A have no __dict__ attribute",
+      "Assigning a.y would raise AttributeError",
+      "Instances of A support weak references by default",
+      "Declaring a class attribute x = 0 on A would give the slot x a default value"
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "`__slots__` reserves space for the declared names and prevents the automatic creation of `__dict__` and `__weakref__` for each instance. Without a `__dict__`, assigning an unlisted name raises `AttributeError` (add `'__dict__'` to the slots to allow dynamic attributes). Weak references require `'__weakref__'` to be listed explicitly. Slots are implemented as class-level descriptors, so a class attribute with the same name would overwrite the slot descriptor — class attributes cannot serve as defaults for slot instance variables."
+  },
+  {
+    "type": "single",
+    "question": "What does this code print?\n\n```python\nclass N:\n    def __get__(self, o, t): return \"desc\"\nclass D(N):\n    def __set__(self, o, v): pass\nclass A: n, d = N(), D()\na = A()\na.n = a.d = \"instance\"\nprint(a.n, a.d)\n```",
+    "options": [
+      "instance desc",
+      "desc desc",
+      "instance instance",
+      "desc instance"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "A descriptor that defines `__set__()` (and/or `__delete__()`) is a **data descriptor**; one with only `__get__()` is a **non-data descriptor**. Data descriptors always override a redefinition in the instance dictionary, while non-data descriptors can be overridden by instances. Here `D` inherits `__get__` and adds `__set__`, so it is a data descriptor: `a.d = ...` does not hide it, and `a.d` yields `'desc'`. `N` is a non-data descriptor, so the instance attribute `a.n = 'instance'` shadows it. This is why methods (non-data descriptors) can be overridden per instance, while `@property` (a data descriptor) cannot."
+  },
+  {
+    "type": "single",
+    "question": "What happens when this code runs?\n\n```python\nclass C:\n    pass\n\nc = C()\nc.__len__ = lambda: 5\nprint(len(c))\n```",
+    "options": [
+      "Raises TypeError: object of type 'C' has no len()",
+      "Prints 5",
+      "Raises AttributeError: 'C' object has no attribute '__len__'",
+      "Prints 0 because object provides a default __len__"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Implicit invocations of special methods (via language syntax or built-ins like `len()`) are only guaranteed to work when the method is defined on the object's **type**, not in the instance dictionary. `c.__len__` lives only in the instance's `__dict__`, so `len(c)` bypasses it and raises `TypeError`. The same bypass applies to `__hash__`, `__repr__`, and others, and implicit special-method lookup also bypasses `__getattribute__` of the object's class and even of its metaclass. This is exactly the example given in the data model's *Special method lookup* section."
+  },
+  {
+    "type": "single",
+    "question": "What does this code print?\n\n```python\nclass D(dict):\n    def __missing__(self, key):\n        return \"fallback\"\n\nd = D()\nd[\"x\"] = 1\nprint(d[\"x\"], d[\"y\"], \"y\" in d)\n```",
+    "options": [
+      "1 fallback False",
+      "1 fallback True",
+      "Raises KeyError: 'y'",
+      "1 None False"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`__missing__()` is called by `dict.__getitem__()` (the `[]` operator) on **dict subclasses** when the key is not in the dictionary. For `d[\"x\"]` the key exists, so it returns `1`. For `d[\"y\"]` the key is missing, so `__missing__` returns `'fallback'` — but that value is **not inserted** into the dictionary. The `in` operator uses `__contains__`, which does **not** call `__missing__`, so `\"y\" in d` is `False`. (Also note: `dict.get()` does not invoke `__missing__` either; plain `dict` itself has no `__missing__`.)"
+  },
+  {
+    "type": "single",
+    "question": "What does this code print?\n\n```python\nclass A:\n    def __len__(self):\n        return 0\nclass B:\n    def __bool__(self):\n        return True\nprint(bool(A()), bool(B()))\n```",
+    "options": [
+      "False True",
+      "True True",
+      "False False",
+      "True False"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`__bool__()` implements truth-value testing. When `__bool__` is **not** defined, Python falls back to `__len__()`: the object is considered true if `__len__` returns a nonzero value. `A` defines only `__len__` returning `0`, so `bool(A())` is `False`. `B` defines `__bool__`, which takes precedence over `__len__`, so `bool(B())` is `True` regardless of any `__len__`. If a class defines neither, all of its instances are considered true."
+  },
+  {
+    "type": "single",
+    "question": "What happens when this code runs?\n\n```python\nclass CM:\n    def __enter__(self): pass\n    def __exit__(self, et, ev, tb):\n        print(et is None)\n        return True\nwith CM():\n    raise ValueError()\nprint(\"after\")\n```",
+    "options": [
+      "Prints False, then prints after",
+      "Prints True, then prints after",
+      "Prints False, then ValueError propagates",
+      "Prints True, then ValueError propagates"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "When a `with` block exits because of an exception, `__exit__` is called with the exception type, value and traceback as its three arguments (all three are `None` only when the block exits normally). Here an exception occurred, so `et` is `ValueError` and `et is None` prints `False`. Because `__exit__` returns a **true** value, the exception is suppressed — it does not propagate — and execution continues after the `with` statement, printing `after`. Returning `None` or `False` would let the exception propagate; `__exit__` should not re-raise the passed-in exception itself."
+  },
+  {
+    "type": "single",
+    "question": "According to the data model, which statement about object identity and mutability is correct?",
+    "options": [
+      "After c = []; d = [], c and d are guaranteed to refer to two different, newly created empty lists",
+      "After a = 1; b = 1, a and b are guaranteed to refer to the same object",
+      "The is operator compares the values of two objects, while == compares identity",
+      "id(x) returns the memory address of x in every Python implementation"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Every object has an identity, a type and a value; `is` compares identity and `==` compares value (usually via `__eq__`). For **mutable** types, operations that compute new values may not reuse existing objects, so `[]` always creates a fresh, unique list — `c` and `d` are guaranteed distinct. For **immutable** types such as `int`, an operation may return a reference to any existing object with the same value, so `a = 1; b = 1` may or may not share one object; this is implementation-dependent and must not be relied upon. The claim that `id(x)` is the memory address is a CPython implementation detail, not a language guarantee."
+  },
+  {
+    "type": "single",
+    "question": "A tuple that contains a mutable list is itself immutable. Which statement best describes what this means?",
+    "options": [
+      "The tuple cannot gain, lose, or replace elements, but its value can change if the list inside it is modified",
+      "The tuple and everything it contains can never change",
+      "A tuple is always hashable because immutability guarantees hashability",
+      "Whether a container is immutable depends on whether its elements are mutable"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Immutability of a container concerns only the collection of references it holds: you cannot add, remove, or replace elements of the tuple. However, if an element is itself mutable, changing that element changes the tuple's value — the container is still considered immutable because the collection of contained objects cannot change. Because the list can change, such a tuple is **unhashable** (a key's hash must remain constant), so immutability does not imply hashability."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about this code are true?\n\n```python\nclass Base:\n    def __init_subclass__(cls, **kwargs):\n        super().__init_subclass__(**kwargs)\n        cls.tag = \"auto\"\n\nclass Child(Base):\n    pass\n```",
+    "options": [
+      "Base.__init_subclass__ is called automatically when Child is created",
+      "Inside the hook, cls refers to the newly created subclass Child",
+      "Keyword arguments given in Child's class definition would be forwarded to Base.__init_subclass__",
+      "__init_subclass__ must be decorated with @classmethod to receive the class as its first argument"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "`__init_subclass__()` is called on a parent class whenever that parent is subclassed, and `cls` is the newly created subclass — so `Child.tag` becomes `'auto'` automatically. If defined as a normal instance method, it is implicitly converted to a class method, so no `@classmethod` decorator is needed. Keyword arguments given to the new class are passed through to the parent's `__init_subclass__` (which is why the example forwards `**kwargs` to `super().__init_subclass__`); the `metaclass=` hint is consumed by the type machinery and is never passed to `__init_subclass__`."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about this code are true?\n\n```python\nclass A:\n    def __class_getitem__(cls, item): return \"generic\"\n    def __getitem__(self, item): return \"instance\"\n\nclass Meta(type):\n    def __getitem__(cls, item): return \"meta-getitem\"\n\nclass B(metaclass=Meta): pass\na = A()\n```",
+    "options": [
+      "a[0] returns 'instance'",
+      "A[0] returns 'generic'",
+      "B[0] returns 'generic'",
+      "If A defined no __class_getitem__, the expression A[0] would raise TypeError"
+    ],
+    "answer": [
+      0,
+      1,
+      3
+    ],
+    "explanation": "Subscripting an instance calls `type(instance).__getitem__(instance, key)`, so `a[0]` invokes `A.__getitem__` and returns `'instance'`. Subscripting a **class** first checks the class's metaclass for `__getitem__`; only if the metaclass lacks it does Python fall back to the class's own `__class_getitem__`. `type` (the metaclass of `A`) defines no `__getitem__`, so `A[0]` calls `A.__class_getitem__(0)` → `'generic'`. But `Meta` defines `__getitem__`, so `B[0]` calls `Meta.__getitem__(B, 0)` → `'meta-getitem'`, not `'generic'` — the same mechanism that makes `Menu['SPAM']` work on `enum.Enum` classes."
+  },
+  {
+    "type": "single",
+    "question": "```python\nclass Dog:\n    tricks = []          # class variable\n\n    def __init__(self, name):\n        self.name = name\n\n    def add_trick(self, trick):\n        self.tricks.append(trick)\n\nd = Dog('Fido')\ne = Dog('Buddy')\nd.add_trick('roll over')\ne.add_trick('play dead')\nprint(d.tricks)\n```\n\nWhat does this code print?",
+    "options": [
+      "['roll over', 'play dead']",
+      "['roll over']",
+      "[]",
+      "['play dead', 'roll over']"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`tricks` is a **class variable**: a single list object lives in the class namespace and is shared by every instance. `self.tricks.append(...)` mutates that one shared list, so the tricks of both dogs accumulate in it. The chapter explicitly calls this a *mistaken use of a class variable*; the correct design puts the list in the instance:\n\n```python\nclass Dog:\n    def __init__(self, name):\n        self.name = name\n        self.tricks = []   # a new empty list for each dog\n```"
+  },
+  {
+    "type": "single",
+    "question": "```python\nclass A:\n    __secret = 42\n\na = A()\nprint(a.__secret)\n```\n\nWhat happens when this code runs?",
+    "options": [
+      "It prints 42",
+      "It raises AttributeError: 'A' object has no attribute '__secret'",
+      "It raises NameError: name '__secret' is not defined",
+      "It prints _A__secret"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Any identifier of the form `__secret` (at least two leading underscores, at most one trailing underscore) is **textually mangled** to `_A__secret` *within the class definition*. The class namespace therefore holds `_A__secret`, not `__secret`. The reference `a.__secret` occurs at module level, outside the class body, so it is not mangled and the attribute simply does not exist, raising `AttributeError`. `a._A__secret` would print 42. Mangling is designed to avoid accidental clashes with names defined by subclasses, not to provide real privacy — the mangled name can still be accessed directly."
+  },
+  {
+    "type": "single",
+    "question": "```python\nclass A:\n    def f(self, x):\n        return x * 2\n\na = A()\nm = a.f\n```\n\nWhich of the following statements about `m` is true?",
+    "options": [
+      "m is a plain function object identical to A.f",
+      "m is a method object, and calling m(5) is equivalent to A.f(a, 5)",
+      "m is a method object, and calling m(5) is equivalent to a.f(a, 5)",
+      "m is a new function created by copying f into the instance"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "`MyClass.f` is a plain function object, but `a.f` is a **method object**: when a non-data attribute of an instance resolves to a function object in the class, the instance and the function are packed together. Calling a method with n arguments is equivalent to calling the class function with the instance inserted before the first argument, so `a.f(5)` is exactly equivalent to `A.f(a, 5)` — and `m`, having captured `a`, behaves the same. Method objects also carry `m.__self__` (the instance) and `m.__func__` (the function object)."
+  },
+  {
+    "type": "single",
+    "question": "```python\ndata = [1, 2]\nalias = data\nalias.append(3)\nprint(data)\n```\n\nWhat does this code print?",
+    "options": [
+      "[1, 2]",
+      "[1, 2, 3]",
+      "[1, 3]",
+      "[3, 2, 1]"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "`data` and `alias` are two names bound to the **same list object** — this is *aliasing*. Because lists are mutable, a change made through one name is visible through the other. The chapter notes that aliasing can safely be ignored for immutable types (numbers, strings, tuples) but has a possibly surprising effect on mutable objects such as lists and dictionaries. Reassignment (e.g. `alias = alias + [1]`) would bind `alias` to a new list and leave `data` unchanged — only in-place mutation is shared."
+  },
+  {
+    "type": "single",
+    "question": "```python\nx = 'global'\n\nclass C:\n    x = 'class'\n    def m(self):\n        return x\n\nprint(C().m())\n```\n\nWhat does this code print?",
+    "options": [
+      "'class'",
+      "'global'",
+      "NameError: name 'x' is not defined",
+      "None"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The **class body is not an enclosing scope for its methods**. Name lookup inside `m()` follows LEGB: local, enclosing function scopes, then the module's global scope, then builtins — the class-body namespace is never consulted. So the bare name `x` resolves to the module-level `'global'`, not the class attribute `C.x`. This is why methods must refer to class attributes via `self.x` or `C.x` explicitly; the chapter stresses that a class is never used as a global scope for its methods."
+  },
+  {
+    "type": "single",
+    "question": "```python\nclass Warehouse:\n    purpose = 'storage'\n    region = 'west'\n\nw1 = Warehouse()\nw2 = Warehouse()\nw2.region = 'east'\nprint(w1.region, w2.region, Warehouse.region)\n```\n\nWhat does this code print?",
+    "options": [
+      "west east east",
+      "west east west",
+      "east east east",
+      "west west west"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Attribute lookup on an instance checks the instance's own attributes first and only falls back to the class. `w2.region = 'east'` creates a **new instance attribute** on `w2` that shadows the class attribute `region` for that instance only. `w1` has no own `region`, so it finds the class attribute `'west'`, and `Warehouse.region` is of course still `'west'`. If the class attribute itself is assigned (`Warehouse.region = 'north'`), all instances without their own `region` would see the change."
+  },
+  {
+    "type": "single",
+    "question": "```python\nif True:\n    class A:\n        x = 1\n\nprint(A.x)\n```\n\nWhat happens when this code runs?",
+    "options": [
+      "It prints 1",
+      "It raises NameError because A is only defined inside the if block",
+      "It raises IndentationError",
+      "It prints nothing, because class definitions are not executed until the class is instantiated"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "A class definition is an **executable statement**, just like `def`: it must be executed before it has any effect, and it may legally be placed inside a branch of an `if` or inside a function. Executing the body creates a fresh namespace for the class, then a class object that is bound to the name `A` in the current scope — here the module scope, so `print(A.x)` works and prints 1. The `if` does not introduce a scope in Python, so `A` is visible afterwards. This reflects the dynamic nature of classes: they are created at runtime and can be modified further after creation (e.g. `A.answer = 42`)."
+  },
+  {
+    "type": "multiple",
+    "question": "```python\nclass Reverse:\n    def __init__(self, data):\n        self.data = data\n        self.index = len(data)\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if self.index == 0:\n            raise StopIteration\n        self.index = self.index - 1\n        return self.data[self.index]\n```\n\nWhich of the following statements about this class and the iterator protocol are TRUE?",
+    "options": [
+      "A for loop over an instance of Reverse calls iter() on it behind the scenes to obtain the iterator",
+      "Returning self from __iter__() is valid here because the same object also defines __next__()",
+      "When __next__() raises StopIteration, the for loop terminates normally instead of erroring",
+      "Calling next(rev) after all elements have been consumed raises an IndexError"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "The `for` statement calls `iter()` on the container, which must return an iterator object that defines `__next__()`, accessing elements one at a time. If a class defines `__next__()` itself, `__iter__()` can simply `return self`. When there are no more elements, `__next__()` raises `StopIteration`, which tells the `for` loop to terminate — it is not an error. The `next()` built-in calls `__next__()` directly; exhausting the iterator raises `StopIteration` (the same exception), never `IndexError`."
+  },
+  {
+    "type": "multiple",
+    "question": "```python\ndef counter(n):\n    i = 0\n    while i < n:\n        yield i\n        i += 1\n\nc = counter(3)\nprint(next(c))\nprint(next(c))\n```\n\nWhich of the following statements about generators are TRUE?",
+    "options": [
+      "Each call to next(c) resumes execution where yield left off, remembering all local variables",
+      "Local variables and the execution state are saved automatically between calls",
+      "When a generator terminates, it automatically raises StopIteration",
+      "The programmer must manually define __iter__() and __next__() on the generator object"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Generators are written like regular functions but use `yield` whenever they want to return data. Each time `next()` is called, the generator **resumes where it left off**, remembering all data values and which statement was last executed. A key feature is that local variables and execution state are saved automatically between calls, and when a generator terminates it automatically raises `StopIteration`. Because of this, the `__iter__()` and `__next__()` methods are created automatically — the programmer does not write them. Anything a generator does could also be done with a class-based iterator, but with much more boilerplate."
+  },
+  {
+    "type": "multiple",
+    "question": "```python\nsquares_lc = [i * i for i in range(10)]\nsquares_ge = (i * i for i in range(10))\n```\n\nWhich of the following statements about these two expressions are TRUE?",
+    "options": [
+      "squares_lc is a list holding 10 integers, while squares_ge is a generator object",
+      "squares_ge produces its values lazily, one at a time, only as they are requested",
+      "squares_ge tends to be more memory friendly than squares_lc for large inputs",
+      "squares_ge supports indexing, e.g. squares_ge[2]"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "A generator expression uses **parentheses instead of square brackets** and is evaluated lazily: it yields values one at a time as the enclosing code requests them, so it never builds the whole sequence in memory — hence it is more memory friendly than the equivalent list comprehension, which materializes all values immediately. The chapter also notes generator expressions are more compact but less versatile than full generator definitions. Because they are iterators, they support `next()` and `for` loops but **cannot be indexed**; `squares_ge[2]` raises a TypeError."
+  },
+  {
+    "type": "multiple",
+    "question": "Given the classes below, which of the following **return True**? (Choose all that apply.)\n\n```python\nclass Animal:\n    pass\n\nclass Dog(Animal):\n    pass\n\nd = Dog()\n```",
+    "options": [
+      "isinstance(Dog, Animal) is True",
+      "issubclass(d, Animal) is True",
+      "isinstance(d, Animal) is True",
+      "issubclass(Dog, Animal) is True"
+    ],
+    "answer": [
+      2,
+      3
+    ],
+    "explanation": "The first argument is what distinguishes the two functions: `isinstance(object, classinfo)` takes an *instance*, while `issubclass(class, classinfo)` takes a *class*. `isinstance(Dog, Animal)` is False because `Dog` is a class object (an instance of its metaclass, `type`), not an instance of `Animal`. `issubclass(d, Animal)` raises `TypeError` (arg 1 must be a class) — it does not return False. Since `d` is an instance of `Dog`, a direct subclass of `Animal`, both `isinstance(d, Animal)` and `issubclass(Dog, Animal)` are True. Note that `classinfo` may also be a tuple of classes (recursively) or a union type: `isinstance(d, (Cat, Dog))` is True."
+  },
+  {
+    "type": "single",
+    "question": "What are the values of `a` and `b` after this code runs?\n\n```python\nclass Config:\n    timeout = 0\n\ncfg = Config()\na = getattr(cfg, 'timeout', 30)\nb = getattr(cfg, 'missing', 30)\n```",
+    "options": [
+      "a = 0 and b = 30",
+      "a = 30 and b = 30",
+      "a = 0 and b raises AttributeError",
+      "a = 30 and b = 0"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`getattr(object, name, default)` returns the attribute's value when the attribute exists — even when that value is falsy (0, None, '', []). The default is used *only* when the attribute is missing, i.e. when the lookup would raise `AttributeError`. Here `'timeout'` exists on the class with value 0, so `a == 0`; `'missing'` does not exist, so `b == 30`. Without the third argument, `getattr(cfg, 'missing')` would raise `AttributeError`. Also note that `name` must be a string, and a private attribute (two leading underscores) must be manually mangled (`_ClassName__attr`) because name mangling happens at compile time."
+  },
+  {
+    "type": "single",
+    "question": "Which statement about the code below is **True**?\n\n```python\nclass C:\n    pass\n\nc = C()\nsetattr(c, 'x', 5)\ndelattr(c, 'x')\n```",
+    "options": [
+      "After delattr(c, 'x'), a later getattr(c, 'x') raises AttributeError",
+      "setattr(c, 'x', 5) only works because 'x' already exists on c",
+      "setattr(c, 'x', 5) is equivalent to calling c.setattr('x', 5)",
+      "delattr(c, 'x') is equivalent to delattr(c.x)"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`setattr(obj, name, value)` takes the attribute name as a *string* and is exactly equivalent to `c.x = 5`; it creates the attribute if it does not yet exist, so option 1 is wrong. `delattr(obj, name)` is equivalent to `del c.x` and removes the attribute, so the later `getattr(c, 'x')` raises `AttributeError`. Because the name is a string, it need not even be a Python identifier: `setattr(c, 'full name', 1)` works, but that attribute is then reachable only via `getattr(c, 'full name')`, not via dot notation. Beware that double-underscore names must be manually mangled when using `setattr`/`getattr`."
+  },
+  {
+    "type": "single",
+    "question": "What happens when the following code runs?\n\n```python\nclass C:\n    def __getattr__(self, name):\n        raise ValueError('boom')\n\nc = C()\nresult = hasattr(c, 'x')\n```",
+    "options": [
+      "result is True",
+      "result is False",
+      "The call raises ValueError",
+      "The call raises AttributeError"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "`hasattr(obj, name)` is implemented by calling `getattr(obj, name)` and checking whether it raises `AttributeError`: if it does, `hasattr` returns False; otherwise it returns True. It only swallows `AttributeError`. Here the lookup of `'x'` falls through to `__getattr__`, which raises `ValueError`, and that exception propagates out of `hasattr()` instead of being converted to False. This is why a `__getattr__` (or a property getter) that raises an unrelated exception — for example on malformed internal state — makes `hasattr` behave surprisingly."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements are **True**? (Choose all that apply.)\n\n```python\nclass Point:\n    kind = 'cartesian'\n    def __init__(self):\n        self.x = 1\nclass Slot:\n    __slots__ = ('y',)\np = Point()\ns = Slot()\n```",
+    "options": [
+      "vars(p) returns {'x': 1}",
+      "vars(p) includes the key 'kind'",
+      "vars(s) raises TypeError",
+      "vars(object()) raises TypeError"
+    ],
+    "answer": [
+      0,
+      2,
+      3
+    ],
+    "explanation": "`vars(obj)` returns the object's `__dict__`; for an instance that is its attribute namespace, so `vars(p)` is `{'x': 1}` and is the very same dict object as `p.__dict__`. Class attributes such as `'kind'` live on the class, not in the instance `__dict__` — that confusion is precisely why `dir(p)` differs from `vars(p)`: `dir()` returns a sorted list of names including the instance's attributes, its class's attributes, and (recursively) its base classes' attributes, and it can be customized via `__dir__`. `vars()` raises `TypeError` for objects without a `__dict__`: instances of `__slots__` classes and plain `object()` instances (documented: object instances do not have `__dict__`). Without an argument, `vars()` acts like `locals()`. Note that the *class* `__dict__` is a read-only mappingproxy."
+  },
+  {
+    "type": "single",
+    "question": "Which statement about the following code is **True**?\n\n```python\nX = type('X', (), {'a': 1})\nx = X()\n```",
+    "options": [
+      "type(x) is X",
+      "type(X) is X",
+      "X.__bases__ is the empty tuple ()",
+      "x is an instance of type"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The three-argument form `type(name, bases, dict)` creates a *new class* dynamically — this snippet is essentially equivalent to `class X: a = 1`. The `bases` tuple becomes `__bases__`; when it is empty, `object` (the ultimate base of all classes) is added, so `X.__bases__ == (object,)`, not `()`. The `dict` supplies the class-body namespace, so `a` is a class attribute. The one-argument form `type(obj)` returns the type of an object — the same object as `obj.__class__` — so `type(x) is X`. `X` itself is an instance of `type`, while `x` is an instance of `X`, not of `type`. For subclass-aware type tests, `isinstance()` is recommended over `type(obj) == SomeClass`."
+  },
+  {
+    "type": "single",
+    "question": "Which statement about the code below is **True**?\n\n```python\nclass C:\n    def __init__(self):\n        self._x = 1\n    def getx(self):\n        \"\"\"The current x value.\"\"\"\n        return self._x\n    x = property(getx)\n\nc = C()\n```",
+    "options": [
+      "C.x.__doc__ is 'The current x value.'",
+      "c.x = 5 succeeds and sets c._x to 5",
+      "del c.x removes the property from the class",
+      "c.x raises AttributeError"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`property()` is a plain built-in function: `property(fget=None, fset=None, fdel=None, doc=None)` — here it is called with only a getter. If `doc` is not given, the property copies `fget`'s docstring when it exists, so `C.x.__doc__` is the `getx` docstring. With no setter or deleter the property is read-only: `c.x = 5` raises `AttributeError` (\"can't set attribute\") and `del c.x` raises `AttributeError` (\"can't delete attribute\") — they are not silently ignored, and the property itself is not removed from the class. The getter works normally: `c.x` is 1. The returned property object also exposes the attributes `fget`, `fset`, and `fdel` corresponding to the constructor arguments."
+  },
+  {
+    "type": "single",
+    "question": "Given the classes below, which statement is **True**?\n\n```python\nclass C:\n    @classmethod\n    def who(cls):\n        return cls\n    @staticmethod\n    def what():\n        return 'static'\nclass D(C):\n    pass\n```",
+    "options": [
+      "D.who() is D",
+      "D.who() is C",
+      "D.what() returns D",
+      "C().what() raises TypeError because it is called on an instance"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "A class method receives the class as its implicit first argument — and when it is called on a derived class, the *derived* class is passed: \"If a class method is called for a derived class, the derived class object is passed as the implied first argument.\" So `D.who()` returns `D`, not `C`. A class method may be called on the class or on an instance (the instance is ignored except for its class). A static method, by contrast, receives *no* implicit first argument — it behaves like a plain function stored on the class and can be called on the class or on an instance, so `D.what()` returns `'static'` and `C().what()` raises nothing. This is the documented difference from classmethod: static methods are the C++/Java-style \"static\" (see the classmethod entry, which points to staticmethod for that behavior)."
+  },
+  {
+    "type": "single",
+    "question": "Which call raises a **TypeError**?\n\n```python\nclass A:\n    pass\nclass B(A):\n    pass\n\nb = B()\n```",
+    "options": [
+      "super(B, b)",
+      "super(A, b)",
+      "super(B, A())",
+      "super(A, A())"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "In the two-argument form `super(type, object_or_type)` the second argument must be consistent with the first: if it is an object, `isinstance(obj, type)` must be true; if it is a type, `issubclass(type2, type)` must be true — otherwise `TypeError` is raised. `A()` is not an instance of `B` (nor a subclass of it), so `super(B, A())` fails; the other three calls satisfy the check (`b` is an instance of both `B` and `A`; `A()` is an instance of `A`). Method lookups then start from the class right after `type` in the method resolution order, so `super(B, b)` skips `B` itself. The zero-argument form `super()` is only a convenience: it works directly inside a method defined in a class body (the compiler fills in the class and `self`); inside nested functions it does not work as expected."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements are **True**? (Choose all that apply.)\n\n```python\nclass Callable:\n    def __call__(self):\n        return 'called'\nclass Seq:\n    def __getitem__(self, i):\n        if i >= 2:\n            raise IndexError\n        return i + 10\n```",
+    "options": [
+      "callable(Callable()) is True",
+      "callable(Seq()) is True",
+      "iter(Seq()) works, falling back to the sequence protocol",
+      "next(iter(Seq())) raises StopIteration immediately"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "`callable(x)` reports whether `x` appears callable: classes are always callable (calling a class constructs a new instance), and an instance is callable exactly when its class defines `__call__` — so `Callable()` is callable but `Seq()` is not (defining `__getitem__` does not make it callable). `iter(x)` uses the `__iter__` protocol when present; otherwise it falls back to the sequence protocol, calling `__getitem__` with integer arguments starting at 0 and treating `IndexError` as the end of iteration (converted to `StopIteration`). `Seq` defines only `__getitem__`, so `iter(Seq())` succeeds and yields 10, then 11. `next(it)` calls `it.__next__()`; the two-argument form `next(it, default)` returns `default` instead of raising `StopIteration` when the iterator is exhausted. `len(x)` is yet another protocol: it requires `__len__`, so `len(Seq())` would raise `TypeError`."
+  },
+  {
+    "type": "single",
+    "question": "```python\nfrom dataclasses import dataclass\n\n@dataclass\nclass D:\n    items: list = []\n```\n\nWhat happens when this code executes and class D is defined?",
+    "options": [
+      "ValueError is raised, because the default value [] is unhashable and dataclasses assume unhashable defaults are mutable",
+      "The class is defined normally, and every instance of D created without an explicit items argument shares one and the same list",
+      "The class is defined normally, and each instance of D receives its own fresh empty list",
+      "TypeError is raised, because a plain list annotation is not allowed and a generic type such as list[int] is required"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The @dataclass decorator raises ValueError when it detects an unhashable default value, on the assumption that an unhashable value is mutable. The sharing problem it guards against is exactly what the second option describes: default values live in class attributes, so two instances created without an explicit items argument would share the same list. The fix is a zero-argument factory:\n\n```python\nitems: list = field(default_factory=list)\n```\n\nSince Python 3.11 the check is based on unhashability rather than on a fixed set of types such as list, dict or set."
+  },
+  {
+    "type": "single",
+    "question": "```python\nfrom dataclasses import dataclass\n\n@dataclass(order=True)\nclass P:\n    x: int\n```\n\nWhich statement about class P is true?",
+    "options": [
+      "The class gains __lt__, __le__, __gt__ and __ge__ methods, and also __eq__, because eq defaults to True",
+      "The class gains __lt__, __le__, __gt__ and __ge__ methods, but no __eq__, because order=True replaces the eq-related generation",
+      "ValueError is raised, because order=True must always be paired with an explicit eq=True",
+      "The class also gains a __hash__ method, so P instances can be used as dictionary keys and set members"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "order=True makes dataclasses generate __lt__, __le__, __gt__ and __ge__. Each ordering method compares the two instances as if they were tuples of their fields, in order, and both instances must be of the identical type. eq defaults to True, so __eq__ is generated as well; combining order=True with eq=False is an error (ValueError), but the default combination is legal. Because eq=True and frozen=False, no __hash__ is generated - instead __hash__ is set to None, marking instances unhashable. __hash__ would only be created automatically when eq=True and frozen=True, or when forced with unsafe_hash=True."
+  },
+  {
+    "type": "single",
+    "question": "```python\nfrom dataclasses import dataclass\n\n@dataclass(frozen=True)\nclass C:\n    x: int\n\nc = C(1)\nc.x = 2\n```\n\nWhat happens when the line c.x = 2 executes?",
+    "options": [
+      "FrozenInstanceError is raised, and it is a subclass of AttributeError",
+      "AttributeError is raised, but not the more specific FrozenInstanceError",
+      "The assignment succeeds silently, because frozen=True only affects __repr__ and __eq__ generation",
+      "TypeError is raised, because the implicitly defined __setattr__ cannot be used to assign fields"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "With frozen=True, dataclasses adds __setattr__ and __delattr__ methods that raise FrozenInstanceError when invoked, emulating read-only instances. FrozenInstanceError is documented as a subclass of AttributeError, so catching AttributeError also catches it. Assigning any field on a frozen dataclass instance raises this exception; the generated __init__ itself populates the fields through object.__setattr__, which is why frozen dataclasses carry a small performance penalty. Note that defining your own __setattr__ or __delattr__ while frozen=True makes the decorator raise TypeError at class creation time."
+  },
+  {
+    "type": "multiple",
+    "question": "```python\nfrom dataclasses import dataclass, asdict\n\n@dataclass\nclass Point:\n    x: int\n\n@dataclass\nclass Line:\n    start: Point\n    tags: list\n```\n\nAfter the calls line = Line(Point(1), ['a']) and d = asdict(line) execute, which of the following statements are true?",
+    "options": [
+      "d == {'start': {'x': 1}, 'tags': ['a']}",
+      "d['start'] is line.start, because nested dataclasses are copied by reference",
+      "d['tags'] is line.tags, because lists are copied by reference",
+      "asdict() raises TypeError when obj is not a dataclass instance"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explanation": "asdict() converts a dataclass instance into a dict of field name/value pairs. Dataclasses, dicts, lists and tuples are recursed into, so the nested Point becomes a brand-new dict and the list tags becomes a brand-new list - neither is shared with the original object. Other objects (those that are not dataclasses, dicts, lists or tuples) are copied with copy.deepcopy(). Calling asdict() on anything that is not a dataclass instance raises TypeError. If a shallow copy is what you need, the documentation suggests the workaround {field.name: getattr(obj, field.name) for field in fields(obj)}."
+  },
+  {
+    "type": "single",
+    "question": "```python\nfrom dataclasses import dataclass, InitVar, fields\n\n@dataclass\nclass C:\n    a: int\n    b: InitVar[int] = 0\n\n    def __post_init__(self, b: int) -> None:\n        self.a += b\n```\n\nWhat does fields(C) return?",
+    "options": [
+      "A tuple containing one Field object, for field a only",
+      "A tuple containing two Field objects, one for a and one for b",
+      "An empty tuple, because C contains an InitVar field and therefore has no real fields",
+      "TypeError, because fields() only accepts instances of a dataclass, not the class itself"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "A field annotated with InitVar is an init-only pseudo-field: it is neither returned by the fields() function nor stored on the instance. It is only added as a parameter of the generated __init__() and forwarded to __post_init__() in definition order. So fields(C) returns a single Field object, for a. InitVar pseudo-fields are excluded from fields() in the same way ClassVar pseudo-fields are. Calling fields() on a non-dataclass (class or instance) raises TypeError, but C here is a genuine dataclass, so no error occurs. As a side effect, C(1, 2) leaves self.a == 3 because __post_init__ adds b to a."
+  },
+  {
+    "type": "single",
+    "question": "```python\nfrom dataclasses import dataclass, field, replace\n\n@dataclass\nclass C:\n    x: int\n    y: int = field(init=False, default=0)\n\nc = C(1)\nr = replace(c, y=5)\n```\n\nWhat happens when replace(c, y=5) executes?",
+    "options": [
+      "An exception is raised, because changes cannot contain fields defined with init=False",
+      "A new C instance is returned with x == 1 and y == 5",
+      "TypeError is raised, because y is not a field of C and therefore cannot be replaced",
+      "The original object c is mutated in place so that c.y == 5, and r refers to the same object"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "replace() builds a new object of the same type by calling the dataclass __init__() with the changed field values, so __post_init__() runs as well. Passing a field that was defined with init=False in changes is an error — the reference documentation states that a ValueError will be raised in this case (CPython implementations raise TypeError with the message \"field y is declared with init=False, it cannot be specified with replace()\"). Either way, an exception is raised and no new instance is returned. Note that y is still a real field of C — it is only excluded from __init__ — so the claim that it is \"not a field\" is wrong. If the keys were not field names at all, TypeError would be raised instead. Also note that init=False fields are never copied from the source object by replace(); they are re-initialized from their default (or inside __post_init__), which is why the documentation recommends using init=False rarely and judiciously."
+  },
+  {
+    "type": "multiple",
+    "question": "```python\nfrom dataclasses import dataclass, is_dataclass\n\n@dataclass\nclass Base:\n    x: int\n\nclass Sub(Base):\n    pass\n\ns = Sub(1)\n```\n\nWhich of the following calls return True?",
+    "options": [
+      "is_dataclass(Base)",
+      "is_dataclass(Sub)",
+      "is_dataclass(s)",
+      "is_dataclass(list[int])"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "is_dataclass() returns True for a dataclass, for a subclass of a dataclass (even when the subclass is not itself decorated), and for an instance of any of those. Generic aliases such as list[int] are explicitly excluded and return False. If you need to test for an instance only and not a class, the documentation suggests the extra check is_dataclass(obj) and not isinstance(obj, type). Note that Sub inherits the generated __init__ of Base, so Sub(1) is a valid call that sets x to 1."
+  },
+  {
+    "type": "single",
+    "question": "```python\nfrom dataclasses import dataclass\nclass Base:\n    def __init__(self):\n        print(\"Base init called\")\n@dataclass\nclass D(Base):\n    x: int = 0\nd = D()\n```\n\nWhat happens when D() is created?",
+    "options": [
+      "Nothing is printed, because the __init__ generated for D does not call the base class __init__",
+      "Base init called is printed, because the generated __init__ calls super().__init__() first",
+      "TypeError is raised, because the generated __init__ tries to pass x to Base.__init__",
+      "No __init__ is generated for D, because the base class Base already defines an __init__"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The documentation states explicitly that the __init__() generated by @dataclass does not call base class __init__() methods. The generated __init__ for D is essentially def __init__(self, x: int = 0): self.x = x, and Base.__init__ is never invoked, so nothing is printed. If the base class initialization must run, the common pattern is to call it inside __post_init__(), for example super().__init__(...). This matters when the base is a plain class; if the base is itself a dataclass, the derived dataclass initializes all inherited fields by itself. Defining __init__ in the class itself (not in the base) would suppress generation of the dataclass __init__."
+  },
+  {
+    "type": "single",
+    "question": "```python\nfrom dataclasses import dataclass, KW_ONLY\n\n@dataclass\nclass Point:\n    x: float\n    _: KW_ONLY\n    y: float\n    z: float\n\np = Point(1.0, 2.0, 3.0)\n```\n\nWhat happens when Point(1.0, 2.0, 3.0) is called?",
+    "options": [
+      "TypeError is raised, because y and z are keyword-only fields and must be passed by keyword",
+      "It succeeds, and p.x == 1.0, p.y == 2.0 and p.z == 3.0, because KW_ONLY only affects __match_args__",
+      "TypeError is raised, because the KW_ONLY pseudo-field named _ must be given a value as well",
+      "It succeeds, but only x and y are stored on the instance; z is silently dropped"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "KW_ONLY is a sentinel used as a type annotation: every field declared after the pseudo-field of type KW_ONLY becomes keyword-only, meaning its parameter in the generated __init__ must be specified with a keyword. The pseudo-field itself (name and all) is otherwise completely ignored, so no argument is needed for _. The call Point(1.0, y=2.0, z=3.0) would work. Keyword-only fields are also not included in __match_args__. It is an error to declare more than one field of type KW_ONLY in a single dataclass."
+  },
+  {
+    "type": "multiple",
+    "question": "```python\nfrom dataclasses import dataclass\n\n@dataclass(slots=True)\nclass P:\n    x: int\n\np = P(1)\n```\n\nWhich of the following statements are true about @dataclass(slots=True)?",
+    "options": [
+      "The decorator returns a new class instead of the original one",
+      "Instances of P do not have a __dict__ attribute",
+      "TypeError is raised at definition time if the class already defines __slots__",
+      "Instances of P are weakly referenceable by default, because slot classes automatically get a __weakref__ slot"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "With slots=True, dataclasses generates a __slots__ attribute and, unlike the default behavior, returns a new class instead of the original one. Instances then have no __dict__ (unless a base class provides one), so attributes live in slots. If the class already defines __slots__, TypeError is raised. Weak references are not automatic: weakref_slot=True (default False) adds a slot named __weakref__ so instances can be weakly referenced, and it is an error to specify weakref_slot=True without slots=True. Since Python 3.11, a field name already present in a base class __slots__ is not duplicated in the generated __slots__, so use fields() rather than __slots__ to retrieve field names. Also, passing parameters to a base class __init_subclass__() with slots=True results in a TypeError."
+  }
+]

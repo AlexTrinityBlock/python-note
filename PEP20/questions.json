@@ -1,0 +1,626 @@
+[
+  {
+    "type": "single",
+    "question": "\"Beautiful is better than ___\" — which word completes the line from The Zen of Python?",
+    "options": [
+      "ugly",
+      "messy",
+      "complex",
+      "complicated"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The first aphorism of PEP 20 reads \"Beautiful is better than ugly.\""
+  },
+  {
+    "type": "single",
+    "question": "\"Simple is better than ___\" — which word completes the line from The Zen of Python?",
+    "options": [
+      "complex",
+      "complicated",
+      "hard",
+      "fast"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "\"Simple is better than complex.\" is the third aphorism; the next line adds \"Complex is better than complicated.\""
+  },
+  {
+    "type": "single",
+    "question": "\"Complex is better than ___\" — which word completes the line from The Zen of Python?",
+    "options": [
+      "complicated",
+      "simple",
+      "hidden",
+      "implicit"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Zen of Python reads \"Simple is better than complex. Complex is better than complicated.\""
+  },
+  {
+    "type": "single",
+    "question": "\"Readability ___\" — which word completes the line from The Zen of Python?",
+    "options": [
+      "matters",
+      "counts",
+      "is essential",
+      "wins"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The complete line is \"Readability counts.\" — one of the most quoted aphorisms from PEP 20."
+  },
+  {
+    "type": "single",
+    "question": "\"Explicit is better than ___\" — which word completes the line from The Zen of Python?",
+    "options": [
+      "implicit",
+      "hidden",
+      "vague",
+      "magic"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "\"Explicit is better than implicit.\" encourages code that states its intent clearly rather than relying on hidden behavior."
+  },
+  {
+    "type": "single",
+    "question": "\"There should be one-- and preferably only one --___ way to do it.\" — which word completes the line?",
+    "options": [
+      "obvious",
+      "simple",
+      "fast",
+      "elegant"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The full aphorism: \"There should be one-- and preferably only one --obvious way to do it. Although that way may not be obvious at first unless you're Dutch.\""
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following lines appear in The Zen of Python (PEP 20)?",
+    "options": [
+      "\"Now is better than never.\"",
+      "\"Errors should never pass silently.\"",
+      "\"Although practicality beats purity.\"",
+      "\"Always use tabs, never spaces.\""
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "The first three are genuine aphorisms from PEP 20. Tabs vs. spaces is a style debate, not a line from The Zen of Python."
+  },
+  {
+    "type": "single",
+    "question": "Which Zen of Python principle does this function most clearly violate?\n\n```python\ndef f(a, b):\n    x = [i * i for i in a if i % 2 == 0]\n    y = [i * i for i in b if i % 2 == 0]\n    return x + y\n```",
+    "options": [
+      "Sparse is better than dense.",
+      "Readability counts.",
+      "Simple is better than complex.",
+      "Explicit is better than implicit."
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The code works and is compact, but the cryptic names (`f`, `a`, `b`, `x`, `y`) force the reader to reverse-engineer what it does — exactly what 'Readability counts.' demands better. 'Sparse is better than dense.' is tempting because the lines are packed, but that aphorism is about whitespace and pacing, not naming; 'Simple is better than complex.' and 'Explicit is better than implicit.' concern scope and visibility, not clarity of names."
+  },
+  {
+    "type": "single",
+    "question": "Which Zen principle does this function most clearly violate?\n\n```python\ndef total_positive(values):\n    result = 0\n    for group in values:\n        if group is not None:\n            for number in group:\n                if number > 0:\n                    result += number\n    return result\n```",
+    "options": [
+      "Sparse is better than dense.",
+      "Complex is better than complicated.",
+      "Flat is better than nested.",
+      "Simple is better than complex."
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "The real computation sits three levels deep inside `for`/`if` blocks, which is precisely what 'Flat is better than nested.' argues against — guard clauses like `if group is None: continue` would keep the flow shallow. 'Simple is better than complex.' is close, but the problem here is structural depth, not the amount of logic, and 'Sparse is better than dense.' concerns spacing, not nesting."
+  },
+  {
+    "type": "multiple",
+    "question": "The Zen of Python contains both 'Simple is better than complex.' and 'Complex is better than complicated.' Which statements correctly capture what these two lines together mean?",
+    "options": [
+      "Prefer the simplest solution that genuinely solves the problem.",
+      "When complexity is unavoidable, prefer clear, structured code over a tangled mess.",
+      "Always pick the solution with the fewest lines of code.",
+      "Any solution that is complex is automatically better than a simple one.",
+      "The two lines contradict each other because 'complex' and 'complicated' mean the same thing."
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "'Simple is better than complex.' pushes toward the least complex solution that works, and 'Complex is better than complicated.' adds that when real complexity is needed, clarity beats convolutedness — 'complicated' means tangled and hard to follow, not merely intricate. 'Fewest lines' confuses brevity with simplicity, and the two lines are complementary, not contradictory."
+  },
+  {
+    "type": "single",
+    "question": "A colleague defends a design by saying: \"It's complex, not complicated.\" What does 'Complex is better than complicated.' imply about that claim?",
+    "options": [
+      "Complexity is acceptable when the problem genuinely requires it, as long as the code stays clear and structured.",
+      "Any solution that involves complexity is automatically superior.",
+      "All complexity is forbidden, so the design must be simplified at any cost.",
+      "A complicated solution is preferable to a complex one whenever both work."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "'Complex is better than complicated.' means that when a problem demands intricate logic, prefer well-structured complexity over a convoluted tangle — so the colleague's claim holds only if the code is genuinely clear. It is not a license for complexity for its own sake, and it never ranks 'complicated' above 'complex'."
+  },
+  {
+    "type": "single",
+    "question": "Which Zen principle is illustrated by preferring the second import here?\n\n```python\nfrom math import *            # version A\nfrom math import sqrt, pi     # version B\n```",
+    "options": [
+      "Simple is better than complex.",
+      "Flat is better than nested.",
+      "Sparse is better than dense.",
+      "Explicit is better than implicit."
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Version A pulls every name from `math` into scope implicitly, so a reader cannot tell where `sqrt` or `pi` come from; version B states exactly which names are used. That is the heart of 'Explicit is better than implicit.' — the other options concern complexity, structure, and spacing, not name visibility."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following code choices follow 'Explicit is better than implicit.'?",
+    "options": [
+      "Passing values as parameters: def area(width, height): return width * height",
+      "Reading values from module-level globals inside a function: def area(): return W * H",
+      "Naming arguments at the call site: connect(host='db', port=5432)",
+      "Letting a function silently depend on a global flag: def save(): if DEBUG: ..."
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "Explicit code makes inputs and dependencies visible: parameters and named arguments show exactly what a function needs, while hidden globals and implicit flags hide them. 'Explicit is better than implicit.' favors the versions where a reader can see what a function depends on without hunting through the module."
+  },
+  {
+    "type": "single",
+    "question": "In everyday Python, what does 'Flat is better than nested.' most directly encourage?",
+    "options": [
+      "Using guard clauses and early returns instead of deeply nested if blocks.",
+      "Storing related data in nested dictionaries rather than flat lists.",
+      "Rewriting nested if blocks as nested try/except blocks.",
+      "Merging all conditions into one long if with and to reduce indentation."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "'Flat is better than nested.' is about control-flow depth: prefer early exits over pyramids of `if`-inside-`if`:\n\n```python\n# nested\ndef send_if_active(user):\n    if user is not None:\n        if user.active:\n            send(user)\n\n# flat — guard clauses\ndef send_if_active(user):\n    if user is None:\n        return\n    if not user.active:\n        return\n    send(user)\n```\n\nIt is not a rule about data formats, `try`/`except` still nests, and one giant `and` condition hides the logic instead of flattening it."
+  },
+  {
+    "type": "single",
+    "question": "Both versions compute the same thing. Which Zen principle does the first version most clearly violate?\n\n```python\nclass EvenSquares:\n    def __init__(self, numbers):\n        self._numbers = numbers\n    def calculate(self):\n        out = []\n        for n in self._numbers:\n            if n % 2 == 0:\n                out.append(n * n)\n        return out\n\nresult = EvenSquares(data).calculate()\n```\n\nversus\n\n```python\ndef even_squares(numbers):\n    return [n * n for n in numbers if n % 2 == 0]\n\nresult = even_squares(data)\n```",
+    "options": [
+      "Sparse is better than dense.",
+      "Simple is better than complex.",
+      "Complex is better than complicated.",
+      "Beautiful is better than ugly."
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The class wrapper adds machinery — state, methods, an instance — that a plain function does not need, which is needless complexity that 'Simple is better than complex.' argues against. 'Complex is better than complicated.' does not excuse gratuitous complexity: it only prefers clear structure once complexity is genuinely required, and the issue here is neither spacing nor appearance."
+  },
+  {
+    "type": "single",
+    "question": "Which pair of aphorisms are both actual lines from the Zen of Python?",
+    "options": [
+      "'Simple is better than complex.' and 'Complex is better than complicated.'",
+      "'Simple is better than complicated.' and 'Complicated is better than complex.'",
+      "'Complex is better than simple.' and 'Simple is better than complicated.'",
+      "'Sparse is better than dense.' and 'Complex is better than simple.'"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Zen contains 'Simple is better than complex.' immediately followed by 'Complex is better than complicated.' — together they say: prefer simple, and when complexity is needed, keep it clear rather than convoluted. The other pairs scramble the words between the two lines ('Complex is better than simple', 'Simple is better than complicated'), and while 'Sparse is better than dense.' is real, it is paired here with a fake line."
+  },
+  {
+    "type": "single",
+    "question": "Which choice best reflects what 'Beautiful is better than ugly.' asks of a programmer?",
+    "options": [
+      "Prefer clean, coherent code that is pleasant to read over a messy hack that merely works.",
+      "Prioritize attractive formatting over correctness, since appearance is the goal.",
+      "Always use short one-liners, because brevity looks beautiful.",
+      "Add as many comments as possible to make code look polished."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "'Beautiful is better than ugly.' is an aesthetic preference for code that is clean and coherent — consistent naming, natural flow — not a license to trade correctness for looks:\n\n```python\n# beautiful — clear and consistent\ndef circle_area(radius):\n    return 3.14159 * radius ** 2\n\n# ugly — cramped and inconsistent\ndef   A( r ) : return 3.14159*r**2\n```\n\nOne-liners and comments can be beautiful or ugly depending on clarity; the principle targets overall craft, not decoration."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following code fragments follow 'Flat is better than nested.'?\n\n```python\n# Fragment A\nfor item in data:\n    if item is None:\n        continue\n    process(item)\n\n# Fragment B\nfor item in data:\n    if item is not None:\n        process(item)\n\n# Fragment C\ndef load(settings):\n    if not settings:\n        return {}\n    return parse(settings)\n\n# Fragment D\ndef load(settings):\n    if settings is not None:\n        if len(settings) > 0:\n            return parse(settings)\n    return {}\n```",
+    "options": [
+      "Fragment A",
+      "Fragment B",
+      "Fragment C",
+      "Fragment D"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "Fragments A and C keep control flow shallow: `continue` skips invalid items at the top of the loop, and the early `return {}` removes the need for an `else`. 'Flat is better than nested.' prefers these guard-style exits over wrapping the real work in `if` (or `if`-inside-`if`) blocks, as fragments B and D do."
+  },
+  {
+    "type": "single",
+    "question": "Which Zen principle directly addresses packing too much onto one line — several statements separated by semicolons, or a whole loop squeezed into a single line?",
+    "options": [
+      "Readability counts.",
+      "Sparse is better than dense.",
+      "Simple is better than complex.",
+      "Flat is better than nested."
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "'Sparse is better than dense.' is the aphorism about crowding: prefer a few short lines with room to breathe over one packed line:\n\n```python\n# dense — three statements on one line\nx = 1; y = 2; z = x + y\n\n# sparse — one statement per line\nx = 1\ny = 2\nz = x + y\n```\n\n'Readability counts.' is related but broader; 'Sparse is better than dense.' is the specific line about cramming too much into too little space."
+  },
+  {
+    "type": "single",
+    "question": "A junior developer wrote this handler for a user-input form:\n\n```python\ntry:\n    age = int(user_input)\nexcept:\n    pass\n```\n\nWhich Zen of Python aphorism best describes the problem with this code?",
+    "options": [
+      "Errors should never pass silently.",
+      "Explicit is better than implicit.",
+      "Special cases aren't special enough to break the rules.",
+      "In the face of ambiguity, refuse the temptation to guess."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The bare `except:` swallows every exception — including `KeyboardInterrupt` — with no log, no message, and no fallback, so the error passes completely silently. That violates \"Errors should never pass silently. Unless explicitly silenced.\" \"Explicit is better than implicit\" is a tempting near-miss because a bare `except` is implicit, but the defect here is silent error swallowing, not mere implicitness."
+  },
+  {
+    "type": "single",
+    "question": "An experienced developer rewrites the handler like this:\n\n```python\nimport logging\n\ntry:\n    age = int(user_input)\nexcept ValueError as exc:\n    logging.warning(\"invalid age input: %s\", exc)\n    age = 0\n```\n\nHow does this code relate to \"Errors should never pass silently. Unless explicitly silenced.\"?",
+    "options": [
+      "The error is explicitly silenced: logged and replaced with a documented fallback, so the \"unless explicitly silenced\" clause applies.",
+      "It still violates the aphorism, because catching any exception counts as \"passing silently\".",
+      "It should use a bare except: so the error never reaches the caller.",
+      "The logging.warning call makes it worse by drawing extra attention to the error."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The silence is deliberate and visible: the exception is narrowed to `ValueError`, recorded in a log, and replaced with a known fallback — exactly the \"unless explicitly silenced\" clause. \"Errors should never pass silently\" is not a ban on handling errors; it is a ban on letting them vanish without a trace. A bare `except: pass` would be the condemned behavior."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following code practices count as *explicitly* silencing an error, so they satisfy the \"Unless explicitly silenced.\" clause of \"Errors should never pass silently.\"? Select all that apply.",
+    "options": [
+      "Catching a specific, expected exception, logging it, and continuing with a safe fallback.",
+      "A bare except: pass that swallows everything with no log and no comment.",
+      "Catching a known exception and writing it to an error log before continuing.",
+      "Catching an exception, logging it, and then re-raising it so the caller can handle it.",
+      "Catching a broad except Exception: and calling pass because \"the error is expected sometimes\"."
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "Explicit silencing means the error is acknowledged and its fate is deliberate and visible: logged and handled with a documented fallback (options 1 and 3). Re-raising (option 4) is the opposite of silencing — the error stays loud and propagates. Bare or broad `pass` with no log (options 2 and 5) is exactly the silent passing that \"Errors should never pass silently.\" condemns."
+  },
+  {
+    "type": "single",
+    "question": "The deployment tooling always writes `state.json` as UTF-8, so a developer skips encoding detection entirely:\n\n```python\ndef load_state(path):\n    with open(path, encoding=\"utf-8\") as f:\n        return json.load(f)\n```\n\nWhich Zen of Python line best justifies this choice?",
+    "options": [
+      "Although practicality beats purity.",
+      "In the face of ambiguity, refuse the temptation to guess.",
+      "Special cases aren't special enough to break the rules.",
+      "Errors should never pass silently."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The encoding is pinned by a documented contract of the developer's own tooling — it is not a guess — so \"In the face of ambiguity, refuse the temptation to guess\" does not apply. The shortcut trades a little purity (full encoding detection) for a pragmatic, justified simplification: \"Although practicality beats purity.\""
+  },
+  {
+    "type": "single",
+    "question": "A background thread computes a result the main thread needs, and the developer \"synchronizes\" like this:\n\n```python\nimport time\n\ndef get_result():\n    time.sleep(0.5)   # give the thread time to finish...\n    return shared_result\n```\n\nWhich Zen of Python aphorism does this code violate?",
+    "options": [
+      "In the face of ambiguity, refuse the temptation to guess.",
+      "Now is better than never.",
+      "Errors should never pass silently.",
+      "Although practicality beats purity."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The fixed `sleep(0.5)` is a guess: the code has no idea when the thread actually finishes, so the delay is either too short (a race) or needlessly slow. \"In the face of ambiguity, refuse the temptation to guess\" — the correct tool is a synchronization primitive such as `threading.Event` or `join()`. \"Now is better than never\" is a tempting near-miss, but that line is about shipping promptly, not about timing."
+  },
+  {
+    "type": "single",
+    "question": "A reviewer rejects this function in a code review:\n\n```python\ndef describe(value):\n    if type(value) is int:\n        return f\"int {value}\"\n    if type(value) is str:\n        return f\"str {value!r}\"\n    if type(value) is list:\n        return f\"list of {len(value)}\"\n    raise TypeError(\"unexpected type\")\n```\n\nWhich Zen of Python line best captures the reviewer's objection?",
+    "options": [
+      "Special cases aren't special enough to break the rules.",
+      "Although practicality beats purity.",
+      "Explicit is better than implicit.",
+      "There should be one-- and preferably only one --obvious way to do it."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Each `if type(value) is ...` carve-out is a special case hacked around the normal rule — duck-typed, uniform handling. \"Special cases aren't special enough to break the rules.\" \"Although practicality beats purity\" would justify a pragmatic exception, but this rigidity has no practical payoff; these are precisely the special cases that aren't special enough."
+  },
+  {
+    "type": "single",
+    "question": "A team's style guide bans mixing these two idioms in one codebase:\n\n```python\nname = \"Ada\"\n\ngreeting_a = \"Hello, \" + name    # approach A\ngreeting_b = f\"Hello, {name}\"    # approach B\n```\n\nWhich Zen of Python line is the strongest justification for standardizing on exactly one approach?",
+    "options": [
+      "There should be one-- and preferably only one --obvious way to do it.",
+      "Although practicality beats purity.",
+      "Now is better than never.",
+      "Special cases aren't special enough to break the rules."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Two equivalent idioms for the same job leave no single obvious way, which is exactly what \"There should be one-- and preferably only one --obvious way to do it.\" condemns. The other lines do not speak to choosing between equivalent idioms: \"Although practicality beats purity\" is about pragmatic trade-offs, not style uniformity."
+  },
+  {
+    "type": "single",
+    "question": "Complete the aphorism exactly as Tim Peters wrote it: \"There should be one-- and preferably only one --obvious way to do it. Although that way may not be obvious at first ___.\"",
+    "options": [
+      "unless you're Dutch.",
+      "unless you've seen it before.",
+      "unless you wrote it yourself.",
+      "unless you read the documentation."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The exact continuation is \"Although that way may not be obvious at first unless you're Dutch.\" — a joke about Guido van Rossum, Python's Dutch creator: for him, the obvious way is obvious. The other completions sound plausible but appear nowhere in PEP 20."
+  },
+  {
+    "type": "single",
+    "question": "This function works and is tested, but a developer keeps it unreleased to add fancy chart styling:\n\n```python\ndef summarize(items):\n    # Simple version first; charts come in a later release.\n    return f\"{len(items)} items, total {sum(i.price for i in items):.2f}\"\n```\n\nWhich Zen of Python line argues for shipping it now?",
+    "options": [
+      "Now is better than never.",
+      "Although never is often better than *right* now.",
+      "Special cases aren't special enough to break the rules.",
+      "Errors should never pass silently."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "\"Now is better than never.\" urges shipping a working, tested version instead of deferring indefinitely while it stays unreleased. The exception clause \"Although never is often better than *right* now\" is the tempting distractor, but it applies only when doing it this instant is reckless — not when the work is already done and merely unpolished."
+  },
+  {
+    "type": "single",
+    "question": "A developer justifies an untested, last-minute production change with \"Now is better than never\":\n\n```python\nimport shutil\n\ndef promote(build):\n    # No tests, no staging — straight to production, right now!\n    shutil.copy(build, \"/var/www/site\")\n```\n\nWhich Zen of Python line is the strongest rebuttal?",
+    "options": [
+      "Although never is often better than *right* now.",
+      "Now is better than never.",
+      "Although practicality beats purity.",
+      "In the face of ambiguity, refuse the temptation to guess."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "\"Now is better than never\" encourages action, but its own exception clause — \"Although never is often better than *right* now.\" — warns that an untested change applied this instant can be worse than not applying it at all. The asterisks in the original mark the emphasis on *right* now: haste is the problem, not the general preference for now."
+  },
+  {
+    "type": "single",
+    "question": "Complete the aphorism exactly as written: \"Errors should never pass ___. Unless explicitly ___.\"",
+    "options": [
+      "silently / silenced",
+      "silently / caught",
+      "uncaught / silenced",
+      "silently / logged",
+      "unseen / handled"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The exact text is \"Errors should never pass silently. Unless explicitly silenced.\" \"Caught\" and \"logged\" are plausible because handling errors is related work, but they are not the words — and the distinction matters: catching an error is fine; the aphorism forbids letting it pass *silently* unless the silence is *explicit*."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following lines are actually in the Zen of Python (PEP 20)? Select all that apply.",
+    "options": [
+      "Special cases aren't special enough to break the rules.",
+      "When in doubt, ask the user.",
+      "Errors should never pass silently.",
+      "Code is read more often than it is written.",
+      "Special cases are always worth handling."
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "Only \"Special cases aren't special enough to break the rules.\" and \"Errors should never pass silently.\" are verbatim PEP 20 lines. \"When in doubt, ask the user.\" mimics the Zen style but is not in PEP 20; \"Code is read more often than it is written.\" is a well-known programming saying, not the Zen; \"Special cases are always worth handling.\" inverts the actual line's meaning."
+  },
+  {
+    "type": "single",
+    "question": "What happens when you run this code?\n\n```python\nimport this\n```",
+    "options": [
+      "It prints The Zen of Python: 19 of Tim Peters' 20 aphorisms",
+      "It prints the PEP 8 style guide for writing readable Python code",
+      "It raises ModuleNotFoundError, because 'this' is not a module shipped with Python",
+      "It prints a short message about the Python license",
+      "It prints nothing, because importing a module never produces output"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`import this` prints the Zen of Python: 20 aphorisms by Tim Peters, only 19 of which have been written down (per the PEP's abstract). PEP 8 is a separate document, so `import this` never prints the style guide; `this` ships with CPython, so there is no ModuleNotFoundError; and the import deliberately prints the text rather than staying silent."
+  },
+  {
+    "type": "single",
+    "question": "What does this code print?\n\n```python\nimport this\nprint(this.d['a'])\n```",
+    "options": [
+      "n",
+      "a",
+      "m",
+      "z",
+      "KeyError: 'a'"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`this.d` is the rotation-cipher mapping behind the Easter Egg: each letter maps to its partner 13 places later in the alphabet, so 'a' -> 'n' (the ROT13 trick, the same as `codecs.encode(s, 'rot_13')`). An offset of 12 would give 'm' and no rotation would give 'a'; `this.d` is a plain dict, so `this.d['a']` raises no KeyError."
+  },
+  {
+    "type": "single",
+    "question": "ROT13 is its own inverse. What does this code print?\n\n```python\nimport this\nprint(this.d['n'])\n```",
+    "options": [
+      "a",
+      "n",
+      "b",
+      "m"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Rotating 'n' by 13 places wraps around the alphabet to 'a'. A 14-place offset would give 'b' and no rotation would leave 'n' unchanged. Because ROT13 is its own inverse, the same `this.d` mapping both encrypts and decrypts `this.s`."
+  },
+  {
+    "type": "single",
+    "question": "What does this code print?\n\n```python\nimport this\nprint(''.join(this.d.get(c, c) for c in \"hello\"))\n```",
+    "options": [
+      "uryyb",
+      "hello",
+      "tqxxa",
+      "byyru"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Each letter is rotated 13 places: 'h' -> 'u', 'e' -> 'r', 'l' -> 'y', 'l' -> 'y', 'o' -> 'b', so the result is 'uryyb'. `this.d.get(c, c)` passes non-letters through unchanged. 'tqxxa' would be a 12-place rotation and 'byyru' is the answer reversed, not rotated."
+  },
+  {
+    "type": "single",
+    "question": "Behind the scenes, importing `this` prints `''.join(d.get(c, c) for c in s)`, where `s` holds the aphorisms obfuscated with a rotation cipher and `d` maps each letter to its rotated partner. Which of these statements reproduces exactly what `import this` prints?\n\n```python\nimport this\n```",
+    "options": [
+      "print(''.join(this.d.get(c, c) for c in this.s))",
+      "print(''.join(this.d[c] for c in this.s))",
+      "print(''.join(this.d.get(c) for c in this.s))",
+      "print(''.join(c for c in this.s if c in this.d))"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "On import, the `this` module executes `print(''.join(d.get(c, c) for c in s))`, so that exact expression reproduces the Zen output. The near-misses fail subtly: `this.d[c]` raises `KeyError` on the whitespace inside `s` (the dict maps letters only); `this.d.get(c)` without the fallback yields `None` for non-letters, which `''.join` rejects; and filtering with `if c in this.d` drops every space and newline, mangling the text."
+  },
+  {
+    "type": "single",
+    "question": "Which statement best captures why the `math.` prefix matters here?\n\n```python\nimport math\npi = 3.14\nprint(math.pi)   # 3.141592653589793\nprint(pi)        # 3.14\n```",
+    "options": [
+      "The module qualification keeps names distinct: math.pi and the local pi coexist, and the code states where each name comes from",
+      "The prefix is required because constants cannot be imported from a module",
+      "The prefix makes attribute lookup faster at runtime",
+      "Without the prefix, math.pi would silently overwrite the local pi"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`math` is a namespace, so `math.pi` and your local `pi` can coexist without collision and the code makes it explicit where each name lives — exactly what aphorism 19 celebrates: \"Namespaces are one honking great idea -- let's do more of those!\". `from math import pi` would rebind the local name and lose that distinction; the prefix affects clarity, not speed."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following statements about namespaces are true, in the spirit of the Zen of Python?\n\n```python\nimport math\nprint(math.sqrt(16))   # module-qualified\nfrom math import sqrt\nprint(sqrt(16))        # bare name\n```",
+    "options": [
+      "Namespaces let two modules define the same name (e.g. math.sqrt and numpy.sqrt) without colliding",
+      "Qualifying a name like math.sqrt(16) makes it explicit where the name comes from",
+      "Namespaces make every name in a program globally unique",
+      "\"Namespaces are one honking great idea -- let's do more of those!\"",
+      "from math import * is the most namespace-friendly way to import"
+    ],
+    "answer": [
+      0,
+      1,
+      3
+    ],
+    "explanation": "Aphorism 19: \"Namespaces are one honking great idea -- let's do more of those!\". Namespaces keep same-named attributes of different modules apart and make code explicit, as `math.sqrt(16)` shows. They do not make every name globally unique (scopes still matter), and `from math import *` pollutes the namespace rather than celebrating it."
+  },
+  {
+    "type": "single",
+    "question": "This one-liner computes the sum 10 + 9 + ... + 1 using an anonymous recursive lambda:\n\n```python\nf = lambda f, n, a: a if n == 0 else f(f, n - 1, a + n)\nresult = f(f, 10, 0)   # 55\n```\n\nPer the Zen of Python, which aphorism best applies to this code?",
+    "options": [
+      "\"If the implementation is hard to explain, it's a bad idea.\"",
+      "\"If the implementation is easy to explain, it may be a good idea.\"",
+      "\"Namespaces are one honking great idea -- let's do more of those!\"",
+      "\"Beautiful is better than ugly.\""
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The Y-combinator-style recursive lambda is nearly impossible to explain in one breath, so aphorism 15 applies: \"If the implementation is hard to explain, it's a bad idea.\" Its counterpart, aphorism 16, says a plain function with a clear docstring \"may be a good idea\" — note the 'may': easy to explain does not guarantee quality. \"Beautiful is better than ugly.\" is a real Zen line, but it is about aesthetics, not explainability."
+  },
+  {
+    "type": "single",
+    "question": "Who is the author of PEP 20, The Zen of Python?",
+    "options": [
+      "Tim Peters",
+      "Guido van Rossum",
+      "Kenneth Reitz",
+      "Raymond Hettinger",
+      "Barry Warsaw"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 20 was authored by Tim Peters, who per the abstract \"channels the BDFL's guiding principles for Python's design into 20 aphorisms\". Guido van Rossum created Python itself and authored PEP 8; Kenneth Reitz is known for the `requests` library — neither wrote the Zen."
+  },
+  {
+    "type": "single",
+    "question": "The abstract of PEP 20 describes 20 aphorisms. How many of them have actually been written down?",
+    "options": [
+      "19",
+      "20",
+      "10",
+      "15",
+      "17"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The abstract says the aphorisms number 20, \"only 19 of which have been written down\". The twentieth aphorism remains unwritten — it is not simply 20, and there is no record of it."
+  },
+  {
+    "type": "single",
+    "question": "Which combination correctly lists PEP 20's status and type?",
+    "options": [
+      "Status: Active / Type: Informational",
+      "Status: Final / Type: Standards Track",
+      "Status: Active / Type: Standards Track",
+      "Status: Draft / Type: Informational",
+      "Status: Withdrawn / Type: Informational"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 20's header lists Status: Active and Type: Informational. Informational PEPs present design philosophy or best practice without proposing a language change, so it is not Standards Track, and the PEP has never been marked Final, Draft, or Withdrawn."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following correctly describe PEP 20's metadata?",
+    "options": [
+      "Its status is Active",
+      "Its type is Standards Track",
+      "The text was originally posted to comp.lang.python under the thread \"The Way of Python\"",
+      "It was authored by Guido van Rossum",
+      "It was created on 19-Aug-2004"
+    ],
+    "answer": [
+      0,
+      2,
+      4
+    ],
+    "explanation": "PEP 20's metadata: Author: Tim Peters, Status: Active, Type: Informational, Created: 19-Aug-2004, Post-History: 22-Aug-2004. The text was originally posted to comp.lang.python under the thread \"The Way of Python\". Standards Track is wrong because the Zen is an Informational PEP, and the author is Tim Peters, not Guido van Rossum."
+  }
+]

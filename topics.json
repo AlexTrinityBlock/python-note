@@ -1,0 +1,42 @@
+[
+  {
+    "id": "OOP",
+    "name": "Object-Oriented Programming",
+    "description": "Inheritance, MRO, polymorphism, properties and advanced class mechanics."
+  },
+  {
+    "id": "PEP8",
+    "name": "Code Style — PEP 8",
+    "description": "Naming conventions, imports, line length and formatting rules."
+  },
+  {
+    "id": "PEP20",
+    "name": "The Zen of Python — PEP 20",
+    "description": "The guiding principles for writing idiomatic Python."
+  },
+  {
+    "id": "PEP257",
+    "name": "Docstrings — PEP 257",
+    "description": "Conventions for writing module, class and function docstrings."
+  },
+  {
+    "id": "PEP484",
+    "name": "Type Hints — PEP 484",
+    "description": "Static type annotations for variables and function signatures."
+  },
+  {
+    "id": "PEP252",
+    "name": "Types as Classes — PEP 252",
+    "description": "Making types look more like classes: introspection APIs and attribute descriptors."
+  },
+  {
+    "id": "PEP253",
+    "name": "Subtyping Built-in Types — PEP 253",
+    "description": "Metatypes, subtyping built-in types, multiple inheritance and MRO."
+  },
+  {
+    "id": "Generators",
+    "name": "Generators & Iterators",
+    "description": "Iterator protocol, generator functions, yield expressions, generator expressions and async generators (PEP 234, PEP 255, language reference)."
+  }
+]

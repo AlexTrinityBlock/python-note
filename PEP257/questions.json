@@ -1,0 +1,557 @@
+[
+  {
+    "type": "single",
+    "question": "What does PEP 257 describe?",
+    "options": [
+      "Conventions for writing docstrings",
+      "Type hints for function annotations",
+      "Naming conventions for variables",
+      "Rules for import ordering"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257, \"Docstring Conventions\", defines what docstrings are and how to write them for modules, classes, and functions."
+  },
+  {
+    "type": "single",
+    "question": "What does PEP 257 recommend enclosing docstrings in?",
+    "options": [
+      "Triple double quotes (\"\"\")",
+      "Triple single quotes (''')",
+      "Single quotes (')",
+      "Parentheses"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: \"For consistency, always use triple double quotes around docstrings.\" It applies even to one-line docstrings."
+  },
+  {
+    "type": "single",
+    "question": "Where does the docstring of a module conventionally appear?",
+    "options": [
+      "As the first statement of the module",
+      "At the end of the module",
+      "After all import statements",
+      "In a separate documentation file"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The module docstring is the first statement of the file, placed before any imports, so it is available as the module's `__doc__` attribute."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following statements about docstrings are true?",
+    "options": [
+      "They are stored in the __doc__ attribute",
+      "They can be displayed with help()",
+      "They are ignored by Python at runtime",
+      "A one-line docstring should end with a period"
+    ],
+    "answer": [
+      0,
+      1,
+      3
+    ],
+    "explanation": "Docstrings are real string literals stored in `__doc__` and shown by `help()`. They are not ignored like comments. PEP 257 says one-line docstrings end with a period."
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 257, what should a one-line docstring end with?",
+    "options": [
+      "A period",
+      "A semicolon",
+      "A newline character",
+      "Nothing"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "One-line docstrings should end with a period, even if the phrase is imperative, e.g. \"Return the current time.\""
+  },
+  {
+    "type": "single",
+    "question": "Which of the following is a valid docstring according to PEP 257?",
+    "options": [
+      "\"\"\"Return the current time.\"\"\"",
+      "# Return the current time.",
+      "// Return the current time.",
+      "/* Return the current time. */"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "A docstring is a string literal, written in triple double quotes. # starts a comment, and // and /* */ are not Python syntax."
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 257, what is wrong with this one-line docstring?\n\n```python\ndef kos_root():\n    \"\"\"Returns the pathname of the KOS root directory.\"\"\"\n    return _kos_root\n```",
+    "options": [
+      "It is phrased as a description; a one-line docstring should prescribe the function's effect as a command, e.g. \"Return the pathname of the KOS root directory.\"",
+      "It should be phrased as a signature that reiterates the parameters, e.g. \"kos_root() -> str\".",
+      "The summary line must start on the line after the opening quotes, not on the same line.",
+      "It should not mention the return value, because introspection can determine it."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257 says a one-line docstring \"prescribes the function or method's effect as a command ('Do this', 'Return that'), not as a description; e.g. don't write 'Returns the pathname …'.\" The preferred form is: \"\"\"Return the pathname of the KOS root directory.\"\"\""
+  },
+  {
+    "type": "single",
+    "question": "PEP 257 discourages this one-line docstring. What is the reason?\n\n```python\ndef add(a, b):\n    \"\"\"add(a, b) -> int\"\"\"\n    return a + b\n```",
+    "options": [
+      "A one-line docstring should not be a signature reiterating the parameters, which can be obtained by introspection; signature-style docstrings are only appropriate for C functions.",
+      "Docstrings must be multi-line whenever a function has more than one parameter.",
+      "The closing quotes of a one-line docstring must be placed on a line by themselves.",
+      "A docstring must spell out every argument with its type, e.g. \"add(a: int, b: int) -> int\"."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: the one-line docstring should NOT be a \"signature\" reiterating the function/method parameters (which can be obtained by introspection). This type of docstring is only appropriate for C functions (such as built-ins), where introspection is not possible. A preferred form would be \"\"\"Do X and return a list.\"\"\""
+  },
+  {
+    "type": "single",
+    "question": "Why does PEP 257 recommend writing this docstring as a raw string (r\"\"\"...\"\"\")?\n\n```python\ndef temp_path():\n    \"\"\"Return the path C:\\temp\\file.\"\"\"\n    ...\n```",
+    "options": [
+      "The backslashes would be interpreted as escape sequences, so the stored docstring would contain a tab and a form feed instead of the path text; PEP 257 says to use r\"\"\"raw triple double quotes\"\"\" if you use any backslashes in a docstring.",
+      "Triple double quotes cannot contain backslashes at all.",
+      "Raw strings are required for every docstring that spans more than one line.",
+      "A docstring that mentions a file path must always be written with single quotes instead."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: \"For consistency, always use \"\"\"triple double quotes\"\"\" around docstrings. Use r\"\"\"raw triple double quotes\"\"\" if you use any backslashes in your docstrings.\" Without the raw prefix, the sequence \\t becomes a tab character and \\f becomes a form feed inside __doc__, corrupting the path text."
+  },
+  {
+    "type": "single",
+    "question": "What does PEP 257 say about the string literal in this function?\n\n```python\ndef f():\n    x = 1\n    \"\"\"Return x.\"\"\"\n    return x\n```",
+    "options": [
+      "It is not a docstring: only a string literal that occurs as the first statement in a definition becomes the __doc__ attribute, and string literals elsewhere are not recognized by the bytecode compiler.",
+      "It becomes f.__doc__, because any string literal inside a function body is a docstring.",
+      "It is an attribute docstring, because it appears immediately after a simple assignment.",
+      "It is an additional docstring, because it follows another statement."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "A docstring is a string literal that occurs as the first statement in a module, function, class, or method definition; such a docstring becomes the __doc__ attribute. Here the string literal follows `x = 1`, so it is not a docstring and f.__doc__ is None. Attribute docstrings are string literals immediately after a simple assignment at the top level of a module, class, or __init__ method; additional docstrings come immediately after another docstring — neither applies here."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about string literals that occur elsewhere than as the first statement are true according to PEP 257?\n\n```python\n\"\"\"Module docstring.\"\"\"\n\nMAX_SIZE = 100\n\"\"\"Maximum number of items a container may hold.\"\"\"\n```",
+    "options": [
+      "They are not recognized by the Python bytecode compiler and are not accessible as runtime object attributes (i.e. not assigned to __doc__).",
+      "A string literal occurring immediately after a simple assignment at the top level of a module, class, or __init__ method is called an attribute docstring.",
+      "A string literal occurring immediately after another docstring is called an additional docstring.",
+      "Attribute docstrings are automatically assigned to the __doc__ attribute of the object they document."
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "PEP 257: string literals occurring elsewhere in Python code \"are not recognized by the Python bytecode compiler and are not accessible as runtime object attributes (i.e. not assigned to __doc__)\", but two types may be extracted by software tools: attribute docstrings (immediately after a simple assignment at the top level of a module, class, or __init__ method) and additional docstrings (immediately after another docstring). The example shows an attribute docstring for MAX_SIZE."
+  },
+  {
+    "type": "single",
+    "question": "Per the trim() algorithm in PEP 257, what does trim(foo.__doc__) return for this function?\n\n```python\ndef foo():\n    \"\"\"\n    This is the second line of the docstring.\n    \"\"\"\n```",
+    "options": [
+      "'This is the second line of the docstring.'",
+      "'\\nThis is the second line of the docstring.\\n'",
+      "'This is the second line of the docstring.\\n'",
+      "' This is the second line of the docstring. '"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "trim() removes any indentation in the first line (it is insignificant), strips a uniform amount of indentation equal to the minimum indentation of the non-blank lines after the first, and removes blank lines from the beginning and end. The PEP example yields exactly 'This is the second line of the docstring.'"
+  },
+  {
+    "type": "single",
+    "question": "After docstring processing tools apply PEP 257's trim() algorithm to both docstrings, what is true?\n\n```python\ndef foo():\n    \"\"\"A multi-line\n    docstring.\n    \"\"\"\n```\n\n```python\ndef bar():\n    \"\"\"\n    A multi-line\n    docstring.\n    \"\"\"\n```",
+    "options": [
+      "They are equivalent: indentation in the first line is insignificant and removed, and a uniform amount of indentation is stripped from the remaining lines.",
+      "They differ, because bar's docstring begins with a blank line, which is significant.",
+      "They differ, because bar's opening quotes are placed on a line by themselves.",
+      "They are equivalent only when the docstring contains a single line of text."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: \"Once trimmed, these docstrings are equivalent.\" In both cases the first line's indentation is removed entirely, the minimum indentation of the non-blank lines after the first is stripped, and leading/trailing blank lines are removed. Both reduce to 'A multi-line\\ndocstring.'"
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements correctly describe PEP 257's conventions for this multi-line docstring?\n\n```python\ndef add(a, b):\n    \"\"\"Sum two numbers.\n\n    Returns the sum of a and b.\n    This never raises an exception.\n    \"\"\"\n```",
+    "options": [
+      "The summary line should fit on one line and be separated from the more elaborate description by a blank line.",
+      "Unless the entire docstring fits on a line, the closing quotes should be placed on a line by themselves.",
+      "The summary line may be on the same line as the opening quotes or on the next line.",
+      "The description must be indented further than the summary line."
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Multi-line docstrings consist of a summary line (like a one-line docstring), followed by a blank line, followed by a more elaborate description. The summary line should fit on one line and is separated from the rest by a blank line; it may sit on the same line as the opening quotes or on the next line. Unless the whole docstring fits on a line, the closing quotes go on a line by themselves (so Emacs' fill-paragraph works). The description does not need extra indentation beyond the docstring's own."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about PEP 257's conventions for class docstrings are true?\n\n```python\nclass Stack:\n    \"\"\"A simple stack.\"\"\"\n\n    def __init__(self):\n        \"\"\"Initialize an empty stack.\"\"\"\n```",
+    "options": [
+      "The class docstring should summarize the class's behavior and list the public methods and instance variables.",
+      "The class constructor should be documented in the docstring for __init__, not in the class docstring.",
+      "A blank line is required after a class docstring to offset it from the first method.",
+      "Once a class has a docstring, its methods should not have docstrings of their own."
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "PEP 257: \"The docstring for a class should summarize its behavior and list the public methods and instance variables... The class constructor should be documented in the docstring for its __init__ method. Individual methods should be documented by their own docstring.\" It also says to insert a blank line after all docstrings that document a class, so the docstring is offset from the first method."
+  },
+  {
+    "type": "single",
+    "question": "The save method below calls the superclass method in addition to its own behavior. According to PEP 257, its docstring should say that it ___ the superclass method.\n\n```python\nclass Child(Base):\n    def save(self):\n        super().save()\n        self.log(\"saved\")\n```",
+    "options": [
+      "extends",
+      "overrides",
+      "replaces",
+      "duplicates"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: use the verb \"override\" to indicate that a subclass method replaces a superclass method and does not call the superclass method; use the verb \"extend\" to indicate that a subclass method calls the superclass method (in addition to its own behavior). Because save() calls super().save(), \"extend\" is the correct verb."
+  },
+  {
+    "type": "single",
+    "question": "Why does PEP 257 discourage documenting the arguments in upper case (REAL, IMAG) in this docstring?\n\n```python\ndef make_complex(real=0.0, imag=0.0):\n    \"\"\"Form a complex number.\n\n    Keyword arguments:\n    REAL -- the real part (default 0.0)\n    IMAG -- the imaginary part (default 0.0)\n    \"\"\"\n```",
+    "options": [
+      "Python is case sensitive and the argument names can be used for keyword arguments, so the docstring should document the correct argument names in lower case; PEP 257 recommends listing each argument on a separate line.",
+      "Upper-case identifiers are reserved for constants and cannot appear in a docstring.",
+      "Upper case is only discouraged when the function has keyword arguments with default values.",
+      "PEP 257 requires every argument name to be written in Title Case."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: \"Do not use the Emacs convention of mentioning the arguments of functions or methods in upper case in running text. Python is case sensitive and the argument names can be used for keyword arguments, so the docstring should document the correct argument names. It is best to list each argument on a separate line.\" The preferred example uses real -- ... and imag -- ... (lower case)."
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 257's Rationale, what is the worst consequence of violating the docstring conventions?",
+    "options": [
+      "The Python interpreter raises a SyntaxError when the module is imported.",
+      "Some dirty looks - the PEP contains conventions, not laws or syntax, and docstring-aware software such as Docutils gives the best results when the conventions are followed.",
+      "The docstring is automatically stripped from the compiled bytecode.",
+      "The code cannot be distributed on PyPI."
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "PEP 257's Rationale states that \"the PEP contains conventions, not laws or syntax\", and \"if you violate these conventions, the worst you'll get is some dirty looks\". Software such as the Docutils docstring processing system (PEP 256, PEP 258) is aware of the conventions, so following them gets the best results."
+  },
+  {
+    "type": "multiple",
+    "question": "According to PEP 257, which of the following should normally have docstrings?",
+    "options": [
+      "All modules.",
+      "Every local variable assignment inside a function.",
+      "All functions and classes exported by a module.",
+      "Public methods, including the __init__ constructor."
+    ],
+    "answer": [
+      0,
+      2,
+      3
+    ],
+    "explanation": "PEP 257: \"All modules should normally have docstrings, and all functions and classes exported by a module should also have docstrings. Public methods (including the __init__ constructor) should also have docstrings.\""
+  },
+  {
+    "type": "single",
+    "question": "Where does PEP 257 say a package may be documented?",
+    "options": [
+      "In the module docstring of the __init__.py file in the package directory.",
+      "In a README file placed next to the package directory.",
+      "In the docstring of the package's main class.",
+      "In a separate documentation file under a docs/ directory."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: \"A package may be documented in the module docstring of the __init__.py file in the package directory.\""
+  },
+  {
+    "type": "single",
+    "question": "String literals occurring immediately after a simple assignment at the top level of a module, class, or which method are called \"attribute docstrings\" per PEP 257?",
+    "options": [
+      "Any method whose name begins with an underscore.",
+      "__str__",
+      "__main__",
+      "__init__"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "PEP 257: \"String literals occurring immediately after a simple assignment at the top level of a module, class, or __init__ method are called 'attribute docstrings'.\""
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about one-line docstring layout are true according to PEP 257?\n\n```python\ndef kos_root():\n    \"\"\"Return the pathname of the KOS root directory.\"\"\"\n```",
+    "options": [
+      "The closing quotes must always be placed on a line by themselves.",
+      "Triple quotes are used even though the string fits on one line, which makes it easy to later expand it.",
+      "The closing quotes are on the same line as the opening quotes.",
+      "There is no blank line either before or after the docstring."
+    ],
+    "answer": [
+      1,
+      2,
+      3
+    ],
+    "explanation": "PEP 257's notes on one-line docstrings: triple quotes are used even for one-liners, which makes it easy to later expand the docstring; \"the closing quotes are on the same line as the opening quotes\"; and \"there's no blank line either before or after the docstring\". Placing the closing quotes on a line by themselves applies to multi-line docstrings."
+  },
+  {
+    "type": "single",
+    "question": "PEP 257 says a signature-style docstring (like \"function(a, b) -> list\") is only appropriate for C functions. Which aspect of a Python function cannot be determined by introspection and therefore should be mentioned in its docstring?",
+    "options": [
+      "The function's parameter names.",
+      "The module in which the function is defined.",
+      "The nature of the return value.",
+      "The function's name."
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "PEP 257: the signature-style docstring \"is only appropriate for C functions (such as built-ins), where introspection is not possible. However, the nature of the return value cannot be determined by introspection, so it should be mentioned.\" The preferred form would be something like \"\"\"Do X and return a list.\"\"\""
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 257, the summary line of a multi-line docstring may be used by ___.",
+    "options": [
+      "Automatic indexing tools, so it is important that it fits on one line and is separated from the rest of the docstring by a blank line.",
+      "The Python bytecode compiler to optimize the function.",
+      "The garbage collector to decide when the docstring can be freed.",
+      "The import system to register the module."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: \"The summary line may be used by automatic indexing tools; it is important that it fits on one line and is separated from the rest of the docstring by a blank line.\""
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 257, the entire docstring is indented the same as ___ at its first line.",
+    "options": [
+      "The def statement's keyword.",
+      "The quotes at its first line.",
+      "The closing parenthesis of the function signature.",
+      "The module's import statements."
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "PEP 257: \"The entire docstring is indented the same as the quotes at its first line (see example below).\""
+  },
+  {
+    "type": "multiple",
+    "question": "According to PEP 257, what is true about the docstring of a script (a stand-alone program)?",
+    "options": [
+      "It should be usable as the script's 'usage' message, printed when the script is invoked with incorrect or missing arguments (or perhaps with a '-h' option, for 'help').",
+      "It should document the script's function and command line syntax, environment variables, and files.",
+      "It may be fairly elaborate (several screens full) and should be sufficient for a new user to use the command properly, as well as a complete quick reference for the sophisticated user.",
+      "It must fit on a single line, just like a one-line docstring."
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "PEP 257: \"The docstring of a script (a stand-alone program) should be usable as its 'usage' message... Such a docstring should document the script's function and command line syntax, environment variables, and files. Usage messages can be fairly elaborate (several screens full) and should be sufficient for a new user to use the command properly, as well as a complete quick reference to all options and arguments for the sophisticated user.\""
+  },
+  {
+    "type": "multiple",
+    "question": "What should the docstring of a module generally list, and what should the docstring of a package additionally list, per PEP 257?",
+    "options": [
+      "The classes exported by the module, with a one-line summary of each.",
+      "The exceptions and functions (and any other objects) exported by the module.",
+      "The modules and subpackages exported by the package (for the docstring of the package's __init__.py module).",
+      "The full source code of every exported object."
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "PEP 257: \"The docstring for a module should generally list the classes, exceptions and functions (and any other objects) that are exported by the module, with a one-line summary of each. (These summaries generally give less detail than the summary line in the object's docstring.) The docstring for a package (i.e., the docstring of the package's __init__.py module) should also list the modules and subpackages exported by the package.\""
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following should the docstring for a function or method document, per PEP 257 (all if applicable)?",
+    "options": [
+      "Its arguments and return value(s).",
+      "Its side effects, exceptions raised, and restrictions on when it can be called.",
+      "The local variable names used inside the implementation.",
+      "Optional arguments, and whether keyword arguments are part of the interface."
+    ],
+    "answer": [
+      0,
+      1,
+      3
+    ],
+    "explanation": "PEP 257: \"The docstring for a function or method should summarize its behavior and document its arguments, return value(s), side effects, exceptions raised, and restrictions on when it can be called (all if applicable). Optional arguments should be indicated. It should be documented whether keyword arguments are part of the interface.\""
+  },
+  {
+    "type": "single",
+    "question": "If a class is intended to be subclassed and has an additional interface for subclasses, where does PEP 257 say this interface should be listed?",
+    "options": [
+      "Separately, in the class's docstring.",
+      "Only in the __init__ method's docstring.",
+      "In a comment above the class definition.",
+      "In the module docstring instead of the class docstring."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: \"If the class is intended to be subclassed, and has an additional interface for subclasses, this interface should be listed separately (in the docstring).\""
+  },
+  {
+    "type": "single",
+    "question": "If a class subclasses another class and its behavior is mostly inherited from that class, what does PEP 257 say its docstring should do?",
+    "options": [
+      "Mention this and summarize the differences.",
+      "Repeat the superclass's docstring verbatim.",
+      "Only name the superclass, with no other text.",
+      "Be omitted, since the superclass already has a docstring."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: \"If a class subclasses another class and its behavior is mostly inherited from that class, its docstring should mention this and summarize the differences.\""
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 257, use the verb 'override' to indicate that a subclass method ___.",
+    "options": [
+      "Replaces a superclass method and does not call the superclass method.",
+      "Calls the superclass method in addition to its own behavior.",
+      "Is inherited unchanged from the superclass.",
+      "Is only defined in C code."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: \"Use the verb 'override' to indicate that a subclass method replaces a superclass method and does not call the superclass method; use the verb 'extend' to indicate that a subclass method calls the superclass method (in addition to its own behavior).\""
+  },
+  {
+    "type": "single",
+    "question": "Unless the entire docstring fits on a line, PEP 257 says to place the closing quotes on a line by themselves. Why?",
+    "options": [
+      "So that Emacs' fill-paragraph command can be used on it.",
+      "So the docstring is not treated as a string literal.",
+      "So the summary line is separated from the description by a blank line.",
+      "So automatic indexing tools can recognize the docstring."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257: \"Unless the entire docstring fits on a line, place the closing quotes on a line by themselves. This way, Emacs' fill-paragraph command can be used on it.\""
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about PEP 257's rules for handling docstring indentation are true?",
+    "options": [
+      "Docstring processing tools strip a uniform amount of indentation from the second and further lines, equal to the minimum indentation of all non-blank lines after the first line.",
+      "Any indentation in the first line of the docstring (up to the first newline) is insignificant and removed.",
+      "Relative indentation of later lines in the docstring is retained.",
+      "Blank lines should be removed from the beginning and end of the docstring.",
+      "Blank lines in the middle of the docstring are also removed by the trim() algorithm."
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "explanation": "PEP 257: \"Docstring processing tools will strip a uniform amount of indentation from the second and further lines of the docstring, equal to the minimum indentation of all non-blank lines after the first line. Any indentation in the first line of the docstring (i.e., up to the first newline) is insignificant and removed. Relative indentation of later lines in the docstring is retained. Blank lines should be removed from the beginning and end of the docstring.\" The trim() implementation only removes leading and trailing blank lines, so blank lines in the middle remain."
+  },
+  {
+    "type": "multiple",
+    "question": "In PEP 257's trim() implementation, which lines do NOT contribute to the computed minimum indentation?",
+    "options": [
+      "The first line of the docstring, because the loop starts at lines[1:].",
+      "Blank lines, because their stripped form is empty and they are skipped.",
+      "Lines containing tab characters.",
+      "The last line of the docstring."
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "In the trim() implementation, indent starts at sys.maxsize as a sentinel and the loop `for line in lines[1:]` skips the first line. Inside the loop, `stripped = line.lstrip()` is computed and blank lines are skipped by the `if stripped:` check. Only non-blank lines after the first line contribute `min(indent, len(line) - len(stripped))`."
+  },
+  {
+    "type": "single",
+    "question": "In PEP 257's trim() implementation, what happens to tab characters in the docstring?\n\n```python\nlines = docstring.expandtabs().splitlines()\n```",
+    "options": [
+      "They are converted to spaces following the normal Python rules (via expandtabs) before the docstring is split into lines.",
+      "Each tab counts as a single character of indentation, regardless of column.",
+      "They raise a ValueError and trim() aborts.",
+      "They are removed entirely before indentation is computed."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The trim() implementation begins with `lines = docstring.expandtabs().splitlines()`, with the comment \"Convert tabs to spaces (following the normal Python rules) and split into a list of lines\". Tab-expanded indentation is then used when computing the minimum indentation."
+  },
+  {
+    "type": "single",
+    "question": "What is the copyright status of PEP 257?",
+    "options": [
+      "It has been placed in the public domain.",
+      "It is licensed under the MIT license.",
+      "It is covered by the PSF license agreement.",
+      "It remains under the copyright of its authors."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257's Copyright section reads: \"This document has been placed in the public domain.\""
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 257's Acknowledgements, the Specification text comes mostly verbatim from which document?",
+    "options": [
+      "PEP 8, 'Style Guide for Python Code', by Guido van Rossum.",
+      "PEP 256, 'Docstring Processing System Framework'.",
+      "PEP 258, 'Docutils Design Specification'.",
+      "The archives of the Python Doc-SIG mailing list."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257's Acknowledgements: \"The 'Specification' text comes mostly verbatim from PEP 8 by Guido van Rossum.\" PEP 256 and PEP 258 are referenced elsewhere in the PEP, and the Doc-SIG archives were a source of ideas."
+  },
+  {
+    "type": "single",
+    "question": "What does PEP 257 explicitly say it does not touch on?",
+    "options": [
+      "Any markup syntax within docstrings.",
+      "What a docstring should contain.",
+      "How a docstring should say it.",
+      "The placement of a docstring as the first statement."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 257's Rationale: \"The aim of this PEP is to standardize the high-level structure of docstrings: what they should contain, and how to say it (without touching on any markup syntax within docstrings).\""
+  }
+]

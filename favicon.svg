@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="hex" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4B8BBE"/>
+      <stop offset="1" stop-color="#306998"/>
+    </linearGradient>
+  </defs>
+  <!-- Regular flat-top hexagon, circumradius 28, centered at (32, 32) -->
+  <polygon points="60,32 46,56.25 18,56.25 4,32 18,7.75 46,7.75" fill="url(#hex)"/>
+  <!-- Four-leaf clover emoji -->
+  <text x="32" y="34" text-anchor="middle" dominant-baseline="central"
+        font-family="'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif"
+        font-size="30">🍀</text>
+</svg>

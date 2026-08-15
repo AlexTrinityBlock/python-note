@@ -1,0 +1,432 @@
+[
+  {
+    "type": "multiple",
+    "question": "According to the **Abstract** of PEP 252, which of the following statements describe the proposed changes to the introspection API for types?",
+    "options": [
+      "`type(x)` will be equivalent to `x.__class__` for most built-in types",
+      "When `C` is `x.__class__`, `x.meth(a)` will generally be equivalent to `C.meth(x, a)`",
+      "`C.__dict__` contains `x`'s methods and other attributes when `C` is `x.__class__`",
+      "`type(x)` will return a tuple of the base classes of `x`"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "The Abstract states that `type(x)` will be equivalent to `x.__class__` for most built-in types, that when `C` is `x.__class__`, `x.meth(a)` will generally be equivalent to `C.meth(x, a)`, and that `C.__dict__` contains x's methods and other attributes. Option 3 is wrong: the PEP says nothing about `type(x)` returning a tuple of base classes — that is what `__bases__` is for."
+  },
+  {
+    "type": "single",
+    "question": "According to the Abstract, what do **attribute descriptors** (descriptors for short) unify and generalize?",
+    "options": [
+      "Several different common mechanisms used for describing attributes: a descriptor can describe a method, a typed field in the object structure, or a generalized attribute represented by getter and setter functions",
+      "The `__members__` and `__methods__` attributes of built-in types",
+      "The class-based and type-based introspection APIs",
+      "The `getattr`/`setattr` built-in functions"
+    ],
+    "answer": [0],
+    "explanation": "The Abstract says this PEP introduces a new approach to specifying attributes using attribute descriptors, which unify and generalize mechanisms for describing attributes: a descriptor can describe a method, a typed field in the object structure, or a generalized attribute represented by getter and setter functions. The other options describe different mechanisms that are not unified by descriptors."
+  },
+  {
+    "type": "multiple",
+    "question": "Based on the generalized descriptor API, what does PEP 252 also introduce, and what does the Editor's note say about the PEP?",
+    "options": [
+      "A way to declare class methods and static methods",
+      "The ideas described in the PEP have been incorporated into Python",
+      "The PEP no longer accurately describes the implementation",
+      "A way to subclass built-in types such as `dict`"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "The Abstract says the PEP introduces a way to declare class methods and static methods based on the generalized descriptor API. The Editor's note states the ideas have been incorporated into Python and that the PEP no longer accurately describes the implementation. Subclassing built-in types is not on the table for this PEP (it is the domain of PEP 253, per the Introduction)."
+  },
+  {
+    "type": "single",
+    "question": "The Introduction identifies one of Python's oldest language warts. What is it?",
+    "options": [
+      "The difference between classes and types",
+      "The absence of a `switch` statement",
+      "The Global Interpreter Lock",
+      "Operator overloading on built-in types"
+    ],
+    "answer": [0],
+    "explanation": "The Introduction calls the difference between classes and types one of Python's oldest language warts, noting for example that you can't directly subclass the dictionary type, and that the introspection interface for finding out what methods and instance variables an object has is different for types and for classes."
+  },
+  {
+    "type": "single",
+    "question": "Which scope does PEP 252 set for itself in the Introduction?",
+    "options": [
+      "Making the introspection API for types look the same as that for classes",
+      "Making classes look more like types",
+      "Making it possible to subclass built-in types",
+      "Healing the class/type split completely in one step"
+    ],
+    "answer": [0],
+    "explanation": "Healing the class/type split is a big effort because it affects many aspects of how Python is implemented. This PEP concerns itself only with making the introspection API for types look the same as that for classes; making classes look more like types and subclassing from built-in types are proposed by other PEPs and are explicitly not on the table for this PEP."
+  },
+  {
+    "type": "single",
+    "question": "According to the 'Introspection APIs' section, which two conventions have appeared for finding out what attributes an object has?",
+    "options": [
+      "The class-based introspection API and the type-based introspection API",
+      "The `dir()` API and the `vars()` API",
+      "The `__dict__` API and the `__slots__` API",
+      "The descriptor API and the metaclass API"
+    ],
+    "answer": [0],
+    "explanation": "The section notes that Python's very general getattr/setattr API makes it impossible to guarantee there is always a way to get a list of all attributes supported by an object, but in practice two conventions work for almost all objects: the class-based introspection API and the type-based introspection API (class API and type API for short)."
+  },
+  {
+    "type": "single",
+    "question": "In the class-based introspection API, how are the attributes of an object `x` discovered?",
+    "options": [
+      "All data attributes are stored in the dictionary `x.__dict__`, and all methods and class variables are found by inspection of `x.__class__`",
+      "Data attribute names are listed in `x.__members__` and method names in `x.__methods__`",
+      "All attributes are obtained from `x.__bases__`",
+      "Attributes are discovered by scanning the module source"
+    ],
+    "answer": [0],
+    "explanation": "The class-based API assumes all data attributes of an object x are stored in `x.__dict__` and that all methods and class variables can be found by inspection of x's class (`x.__class__`). Classes have a `__dict__` (methods and class variables defined by the class itself) and a `__bases__` attribute (a tuple of base classes to inspect recursively). This API is used primarily for class instances and also by Jim Fulton's ExtensionClasses."
+  },
+  {
+    "type": "multiple",
+    "question": "Which assumptions about attribute precedence does the class-based introspection API make?",
+    "options": [
+      "Attributes defined in the instance dict override attributes defined by the object's class",
+      "Attributes defined in a derived class override attributes defined in a base class",
+      "Attributes in an earlier base class (meaning earlier in `__bases__`) override attributes in a later base class",
+      "Attributes in a later base class always override attributes in an earlier base class"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "The three assumptions are: instance dict overrides the object's class, derived class overrides base class, and an earlier base class (earlier in `__bases__`) overrides a later base class. The last two rules together are often summarized as the left-to-right, depth-first rule — the classic Python attribute lookup rule. PEP 253 proposes to change the lookup order, and this PEP would follow suit."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the type-based introspection API are true?",
+    "options": [
+      "`__methods__`, if present, is a list of method names supported by the object",
+      "`__members__`, if present, is a list of data attribute names supported by the object",
+      "For function objects in Python 2.1, `f.__dict__` contains `f`'s dynamic attributes while `f.__members__` lists the names of `f`'s statically defined attributes",
+      "Every object lists its intrinsic attributes such as `__dict__` and `__doc__` in `__members__`"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "The type-based API uses two special attributes: `__methods__` (a list of method names) and `__members__` (a list of data attribute names), and is sometimes combined with a `__dict__` that works like for instances (e.g. function objects in Python 2.1). The PEP warns that caution is needed: some objects don't list their intrinsic attributes (like `__dict__` and `__doc__`) in `__members__` while others do, and names may occur both in `__members__`/`__methods__` and as keys in `__dict__`, making it ambiguous which value is used."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the status of the type-based introspection API are true?",
+    "options": [
+      "It has never been carefully specified and is part of Python folklore",
+      "Any type that uses `Py_FindMethod()` and/or `PyMember_Get()` in its `tp_getattr` handler supports it, because these functions special-case the names `__methods__` and `__members__`",
+      "Jim Fulton's ExtensionClasses ignore the type API and emulate the class API, which is more powerful",
+      "PEP 252 proposes to phase out the type API in favor of supporting the class API for all types",
+      "The type API is fully specified in the official Python documentation"
+    ],
+    "answer": [0, 1, 2, 3],
+    "explanation": "The PEP says the type API has never been carefully specified and is part of Python folklore; most third-party extensions support it because they follow examples that support it. Types using `Py_FindMethod()` and/or `PyMember_Get()` in their `tp_getattr` handler support it, because those functions special-case `__methods__` and `__members__` respectively. ExtensionClasses ignore the type API and emulate the class API, and this PEP proposes to phase out the type API in favor of the class API for all types."
+  },
+  {
+    "type": "single",
+    "question": "The section argues in favor of the class API using the `socket` module as an example. What is the argument?",
+    "options": [
+      "The class API does not require you to create an instance in order to find out which attributes a type supports, which is useful for documentation processors",
+      "The class API is faster because it caches attribute lookups",
+      "The class API avoids the need to import the module",
+      "The class API enables source-scanning of C extension modules"
+    ],
+    "answer": [0],
+    "explanation": "The socket module exports the SocketType object, but it doesn't tell us what methods are defined on socket objects. Using the class API, SocketType would show exactly what the methods for socket objects are, and we could even extract their docstrings without creating a socket — useful for documentation processors. Source-scanning for docstring extraction isn't feasible for a C extension module."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about static and dynamic attributes are true per the specification of the class-based introspection API?",
+    "options": [
+      "The names of static attributes are knowable by inspection of the object's type or class, accessible through `obj.__class__` or `type(obj)`",
+      "Examples of dynamic attributes are instance variables of class instances and module attributes",
+      "Examples of static attributes are the methods of built-in objects like lists and dictionaries, and the attributes of frame and code objects (`f.f_code`, `c.co_filename`)",
+      "When an object with dynamic attributes exposes them through `__dict__`, `__dict__` is a dynamic attribute"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "Objects may have two kinds of attributes: static and dynamic. Static attribute names are knowable by inspection of the object's type or class (the PEP uses 'type' and 'class' interchangeably, calling both 'meta-object'). Dynamic attributes include instance variables and module attributes; static attributes include the methods of built-in objects like lists and dictionaries and the attributes of frame and code objects. When dynamic attributes are exposed through `__dict__`, `__dict__` itself is a static attribute."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about dynamic attributes and object kinds are true?",
+    "options": [
+      "The names and values of dynamic properties are typically stored in a dictionary accessible as `obj.__dict__`",
+      "The specification distinguishes regular objects (like lists, ints and functions) from meta-objects (types and classes)",
+      "Meta-objects are also regular objects, and are referenced by the `__class__` attribute of regular objects or by the `__bases__` attribute of other meta-objects",
+      "The rest of the specification is more concerned with dynamic attributes than with static attributes"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "The names and values of dynamic properties are typically stored in a dictionary accessible as `obj.__dict__`. The specification distinguishes regular objects (lists, ints, functions) from meta-objects (types and classes); meta-objects are also regular objects, and we are mostly interested in them because they are referenced by the `__class__` attribute of regular objects or by the `__bases__` attribute of other meta-objects. The rest of the specification is more concerned with discovering static attributes — dynamic ones are easily found by inspecting `obj.__dict__`."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following are elements of the class introspection API?",
+    "options": [
+      "The `__class__` and `__dict__` attributes on regular objects",
+      "The `__bases__` and `__dict__` attributes on meta-objects",
+      "Precedence rules",
+      "Attribute descriptors",
+      "The `__methods__` attribute on all objects"
+    ],
+    "answer": [0, 1, 2, 3],
+    "explanation": "The class introspection API consists of: the `__class__` and `__dict__` attributes on regular objects; the `__bases__` and `__dict__` attributes on meta-objects; precedence rules; and attribute descriptors. Together these tell us about all attributes defined by a meta-object and help calculate the value of a specific attribute of a given object. `__methods__` belongs to the type-based API, which this PEP phases out."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the `__dict__` and `__class__` attributes on regular objects are true?",
+    "options": [
+      "`__dict__` should be a mapping (not necessarily a dictionary) supporting at least `__getitem__()`, `keys()` and `has_key()`",
+      "Typically `obj.__dict__['spam']` is `obj.spam`",
+      "`__class__` references a meta-object, which can define static attributes for the regular object",
+      "`__dict__` must be an instance of the built-in `dict` type"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "A regular object's `__dict__` should be a mapping (not necessarily a dictionary) supporting at least `__getitem__()`, `keys()` and `has_key()`; the keys give attribute names and the values their values, so typically `obj.__dict__['spam']` is `obj.spam` (though a static attribute with the same name may override the dictionary item per the precedence rules). `__class__` references a meta-object that can define static attributes for the regular object."
+  },
+  {
+    "type": "single",
+    "question": "According to the specification, if `C.__dict__['spam']` is a function, what is `C.spam`?",
+    "options": [
+      "The function itself, unchanged",
+      "An unbound method object",
+      "A bound method object",
+      "A static method object"
+    ],
+    "answer": [1],
+    "explanation": "The keys of a meta-object's `__dict__` are names of static attributes and the values are attribute descriptors; an unbound method is a special case of an attribute descriptor. `mobj.spam` is not always `mobj.__dict__['spam']` because some transformation may be applied — for classes, if `C.__dict__['spam']` is a function, `C.spam` is an unbound method object."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the `__bases__` attribute on meta-objects are true?",
+    "options": [
+      "It should be a sequence (not necessarily a tuple) of other meta-objects",
+      "An absent `__bases__` is equivalent to an empty sequence of bases",
+      "There must never be a cycle; the `__bases__` attributes define a directed acyclic graph, which is not necessarily a tree",
+      "Descriptors are first searched in the dictionary of the root meta-object, then in its bases, according to a precedence rule",
+      "`__bases__` must be a tuple"
+    ],
+    "answer": [0, 1, 2, 3],
+    "explanation": "A meta-object's `__bases__` should be a sequence (not necessarily a tuple) of other meta-objects; an absent `__bases__` is equivalent to an empty sequence. Cycles are forbidden, so `__bases__` defines a directed acyclic graph — not necessarily a tree, since multiple classes can have the same base class. Descriptors are first searched in the dictionary of the root meta-object (at the bottom of how inheritance trees are typically drawn), then in its bases, per the precedence rule."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the precedence rules of the class-based introspection API are true?",
+    "options": [
+      "When two meta-objects in the inheritance graph both define an attribute descriptor with the same name, the search order is up to the meta-object",
+      "Classic classes use the old left-to-right depth-first rule, while new-style classes use a more advanced rule",
+      "A static attribute has precedence over a dynamic attribute with the same name if the static attribute is a descriptor that defines a `__set__` method",
+      "Even read-only data descriptors have a `__set__` method: it always raises an exception",
+      "A key `'__class__'` in an instance's `__dict__` overrides the statically defined `__class__` pointer"
+    ],
+    "answer": [0, 1, 2, 3],
+    "explanation": "The search order for same-named descriptors is up to the meta-object: classic classes use the old left-to-right depth-first rule, new-style classes a more advanced rule (see PEP 253). For dynamic vs static conflicts: the static attribute has precedence if it is a descriptor with a `__set__` method (a data descriptor); otherwise the dynamic attribute has precedence. Even read-only data descriptors have a `__set__` method that always raises an exception. A key `'__class__'` in an instance's `__dict__` is ignored in favor of the statically defined `__class__` pointer; absence of `__set__` means the classic rule applies — an instance variable with the same name as a method hides the method until it is deleted."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about attribute descriptors and the nature of the introspection API are true?",
+    "options": [
+      "Descriptors are stored in the meta-object's `__dict__` (or in an ancestor's) and have two uses: getting/setting the attribute value on the regular object, and describing the attribute for documentation and introspection",
+      "For backwards compatibility, if an object found in a meta-object's `__dict__` is a Python function or an unbound method, the attribute is a method; otherwise it is the default value for a dynamic data attribute",
+      "The introspection API is a read-only API; assignment to `__dict__`, `__class__`, `__bases__` or to items of a `__dict__` is considered off-limits",
+      "PEP 252 fully specifies the effect of assigning to `__bases__`"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "Attribute descriptors have two uses: getting/setting the attribute value on the regular object and describing the attribute for documentation and introspection. Backwards compatibility dictates that a Python function or unbound method in a meta-object's `__dict__` means the attribute is a method, otherwise it is the default value for a dynamic data attribute; assignment to an attribute corresponding to a method (absent `__setattr__`) creates a data attribute shadowing the method for that instance (only required for regular classes). The introspection API is read-only — assignments to the special attributes are off-limits, and a future PEP may define some semantics."
+  },
+  {
+    "type": "single",
+    "question": "In the specification of the attribute descriptor API, which statement about the descriptor attributes is true?",
+    "options": [
+      "All attributes are optional — a specific attribute may or may not be present on a given descriptor",
+      "`__name__` and `__doc__` are required on every descriptor",
+      "`__get__()` and `__set__()` are required on every descriptor",
+      "`__objclass__` is required on method descriptors only"
+    ],
+    "answer": [0],
+    "explanation": "The specification states that all attributes are optional — a specific attribute may or may not be present on a given descriptor, and an absent attribute means the corresponding information is not available or the corresponding functionality is not implemented."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the `__name__` and `__doc__` descriptor attributes are true?",
+    "options": [
+      "`__name__` is the name under which the attribute was born; due to aliasing and renaming it may additionally or exclusively be known under a different name",
+      "For example, `C.meth.__name__ == 'meth'`",
+      "`__doc__` is the attribute's documentation string and may be `None`",
+      "`__name__` must be unique across all descriptors of a class"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "`__name__` is the name under which the attribute was born — because of aliasing and renaming the attribute may additionally or exclusively be known under a different name (example: `C.meth.__name__ == 'meth'`). `__doc__` is the attribute's documentation string and may be `None`."
+  },
+  {
+    "type": "single",
+    "question": "What does the `__objclass__` attribute of a descriptor mean?",
+    "options": [
+      "The class that declared this attribute; the descriptor only applies to objects that are instances of this class (including instances of its subclasses)",
+      "The class of the object the descriptor is currently bound to",
+      "The base class of the declaring class",
+      "The metaclass of the declaring class"
+    ],
+    "answer": [0],
+    "explanation": "`__objclass__` is the class that declared this attribute; the descriptor only applies to objects that are instances of this class, including instances of its subclasses. The PEP's example is `C.meth.__objclass__ is C`."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the `__get__()` and `__set__()` descriptor methods are true?",
+    "options": [
+      "`__get__()` is callable with one or two arguments and retrieves the attribute value; it is also referred to as a 'binding' operation because it may return a 'bound method' object for method descriptors",
+      "When `__get__()`'s first argument X is `None`, the optional second argument T should be a meta-object and the binding operation may return an unbound method restricted to instances of T",
+      "Static methods and class methods ignore the instance and bind to the type instead",
+      "`__set__()` is a function of two arguments; for a read-only attribute it may raise `TypeError` or `AttributeError`",
+      "`__get__()` always takes exactly two arguments"
+    ],
+    "answer": [0, 1, 2, 3],
+    "explanation": "`__get__()` is a binding operation callable with one or two arguments; when X is `None`, the optional second argument T should be a meta-object and the binding may return an unbound method restricted to instances of T. Exactly what is returned depends on the descriptor's semantics — static and class methods ignore the instance and bind to the type. `__set__()` sets the attribute value and may raise `TypeError` or `AttributeError` for read-only attributes (both are historically found for undefined or unsettable attributes); `C.ivar.set(x, y)` is roughly equivalent to `x.ivar = y`."
+  },
+  {
+    "type": "single",
+    "question": "Consider this example from the 'Static methods and class methods' section:\n\n```python\nclass C:\n\n    def foo(x, y):\n        print \"staticmethod\", x, y\n    foo = staticmethod(foo)\n\nC.foo(1, 2)\nc = C()\nc.foo(1, 2)\n```\n\nWhat happens when this code is executed?",
+    "options": [
+      "Both `C.foo(1, 2)` and `c.foo(1, 2)` call `foo()` with two arguments and print `staticmethod 1 2`",
+      "`C.foo(1, 2)` prints `staticmethod 1 2` but `c.foo(1, 2)` fails because an instance is required",
+      "Both calls fail because no `self` is declared in `foo`",
+      "`c.foo(1, 2)` binds `c` as the first argument, printing `staticmethod <C instance> 2`"
+    ],
+    "answer": [0],
+    "explanation": "Static methods behave pretty much like static methods in C++ or Java: no 'self' is declared in the definition of `foo()` and no instance is required in the call, so both `C.foo(1, 2)` and `c.foo(1, 2)` call `foo()` with two arguments and print `staticmethod 1 2`."
+  },
+  {
+    "type": "single",
+    "question": "Why is the line `foo = staticmethod(foo)` inside the class statement crucial?",
+    "options": [
+      "The built-in `staticmethod()` wraps its function argument in a special kind of descriptor whose `__get__()` method returns the original function unchanged",
+      "Without it, `__get__()` of the standard function object returns the original function unchanged anyway",
+      "It converts `foo` into an unbound method object",
+      "It is required for `C.foo` to be callable at all"
+    ],
+    "answer": [0],
+    "explanation": "The line `foo = staticmethod(foo)` makes `foo()` a static method: the built-in `staticmethod()` wraps its function argument in a special kind of descriptor whose `__get__()` method returns the original function unchanged. Without it, the `__get__()` method of standard function objects would have created a bound method object for `c.foo` and an unbound method object for `C.foo`."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about class methods as described in PEP 252 are true?",
+    "options": [
+      "A class method receives an implicit first argument that is the class for which it is invoked, even when the method is invoked via an instance",
+      "Class methods have no C++ or Java equivalent and are similar to 'virtual class methods' in Borland Pascal's Delphi",
+      "Calling `cls.foo(y)` inside a class method would be a mistake — it would cause infinite recursion",
+      "You can't specify an explicit 'cls' argument to a class method; if you want that, use a static method with a class as its explicit first argument (e.g. `__new__` in PEP 253)",
+      "When a subclass `D(C)` calls the inherited class method, the first argument is the class that defined the method (`C`), not the class involved in the call"
+    ],
+    "answer": [0, 1, 2, 3],
+    "explanation": "Class methods receive an implicit first argument that is the class for which they are invoked, even via an instance: in the PEP's example, `D.foo(1)` and `d.foo(1)` print `classmethod __main__.D 1` — the class passed is the class involved in the call, not the class involved in the definition. They have no C++/Java equivalent and are similar to 'virtual class methods' in Delphi. Calling `cls.foo(y)` inside a class method causes infinite recursion, and you can't pass an explicit 'cls' argument — for that, use a static method with a class as explicit first argument (as `__new__` in PEP 253 requires). In the overriding example, `C.foo()` called from `E.foo()` sees class C as its first argument because the call specifies C — stressing the difference from metaclass methods."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about declaring special data attributes in a built-in type's C implementation are true?",
+    "options": [
+      "A built-in type can declare special data attributes using a struct memberlist (defined in structmember.h) or a struct getsetlist (defined in descrobject.h)",
+      "Each memberlist descriptor record includes the attribute's name, an enum giving its type (various C types as well as `PyObject *`), an offset from the start of the instance, and a read-only flag",
+      "The getsetlist mechanism is intended for cases that don't fit the memberlist mold, because they require additional checking or are plain calculated attributes",
+      "Each getsetlist entry has a name, a getter C function pointer, a setter C function pointer and a context pointer; setting the setter pointer to `NULL` makes a read-only attribute",
+      "The getsetlist mechanism is the old mechanism put to new use"
+    ],
+    "answer": [0, 1, 2, 3],
+    "explanation": "A built-in type can declare special data attributes via a struct memberlist (structmember.h) or a struct getsetlist (descrobject.h). The memberlist is the old mechanism put to new use: each record has a name, a type enum (various C types and `PyObject *`), an offset from the start of the instance, and a read-only flag. The getsetlist mechanism is new, for cases needing additional checking or calculated attributes: each entry has a name, getter and setter C function pointers (optional — a `NULL` setter makes the attribute read-only), and a context pointer. Built-in methods are declared separately with `PyMethodDef` structures (name, C function pointer, and calling-convention flags)."
+  },
+  {
+    "type": "multiple",
+    "question": "How did built-in types traditionally implement attribute access, and what does the new generic mechanism add?",
+    "options": [
+      "Traditionally, built-in types defined their own `tp_getattro` and `tp_setattro` slot functions, and convenience functions did a linear search of the `PyMethodDef`/memberlist array using `strcmp()`",
+      "Pointers to arrays of `PyMethodDef`, memberlist and getsetlist structures are part of the new type object: `tp_methods`, `tp_members`, `tp_getset`",
+      "At type initialization time (in `PyType_InitDict()`), a descriptor object is created for each entry in those three arrays and placed in a dictionary that belongs to the type (`tp_dict`)",
+      "Descriptors are very lean objects that mostly point to the corresponding structure; all descriptors share the same object type and a discriminator field tells what kind it is (method, member, or getset)",
+      "The new mechanism still requires each built-in type to write its own `tp_getattro` implementation"
+    ],
+    "answer": [0, 1, 2, 3],
+    "explanation": "Traditionally the convenience functions had to be explicitly called by the type's `tp_getattro`/`tp_setattro` and did a linear search of the array using `strcmp()`. The new generic mechanism stores pointers to arrays of `PyMethodDef`, memberlist and getsetlist structures in the type object (`tp_methods`, `tp_members`, `tp_getset`); at type initialization time `PyType_InitDict()` creates one lean descriptor object per entry and places it in the type's dictionary `tp_dict`. All descriptors share the same object type, with a discriminator field telling whether it is a method, member, or getset descriptor."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about `PyObject_GenericGetAttr()` and `PyObject_GenericSetAttr()` are true?",
+    "options": [
+      "Almost all built-in objects place `PyObject_GenericGetAttr` and (if they have writable attributes) `PyObject_GenericSetAttr` in their `tp_getattro` and `tp_setattro` slots, or leave them `NULL` and inherit them from the default base object",
+      "In the simplest case `PyObject_GenericGetAttr()` does exactly one dictionary lookup: it looks up the attribute name in the type's dictionary (`obj->ob_type->tp_dict`)",
+      "The get and set methods of descriptors are type slots: `tp_descr_get` and `tp_descr_set`; if `tp_descr_get` is non-NULL it is called with the object as its only argument, and if it is `NULL` the descriptor itself is returned",
+      "If the `tp_descr_set` slot is `NULL`, `PyObject_GenericSetAttr()` raises `AttributeError`",
+      "`PyObject_GenericGetAttr()` does a linear `strcmp()` search over a memberlist array"
+    ],
+    "answer": [0, 1, 2, 3],
+    "explanation": "Instead of providing their own `tp_getattro`/`tp_setattro`, almost all built-in objects place `PyObject_GenericGetAttr` and (if writable) `PyObject_GenericSetAttr` in those slots, or leave them `NULL` and inherit them. In the simplest case there is exactly one dictionary lookup in `obj->ob_type->tp_dict`. For speed the descriptor get/set methods are type slots `tp_descr_get`/`tp_descr_set`: a non-NULL `tp_descr_get` is called with the object and its return value is the result, while a `NULL` slot returns the descriptor itself; a `NULL` `tp_descr_set` causes `AttributeError`."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the instance dict and the three-step attribute lookup in `PyObject_GenericGetAttr()` are true?",
+    "options": [
+      "Some object types have a dictionary in each instance that can store arbitrary attributes; when you use a class statement to subtype an existing built-in type you automatically get such a dictionary unless you explicitly turn it off with `__slots__`",
+      "Step 1: look in the type dict; if you find a data descriptor, use its `get()` method to produce the result — this takes care of special attributes like `__dict__` and `__class__`",
+      "Step 2: look in the instance dict; if you find anything, that's it",
+      "Step 3: look in the type dict again (using the saved result from step 1); if you find a descriptor use its `get()` method, and if it's not there raise `AttributeError`",
+      "Member and getset descriptors are classified as non-data descriptors even if they are read-only"
+    ],
+    "answer": [0, 1, 2, 3],
+    "explanation": "Classic Python had conflicting rules (instance dict overrides class dict except for special attributes like `__dict__` and `__class__`). The PEP resolves this in `PyObject_GenericGetAttr()` with three steps: (1) type dict — a data descriptor's `get()` wins (handles `__dict__`/`__class__`); (2) instance dict — anything found is the answer; (3) type dict again — descriptor's `get()`, or `AttributeError` if absent. The classification: member and getset descriptors are data (even read-only!), method descriptors are nondata, and non-descriptors (function pointers or plain values) are also classified as non-data."
+  },
+  {
+    "type": "single",
+    "question": "What drawback does the new generic attribute lookup have in the most common case, and how was it resolved?",
+    "options": [
+      "Referencing an instance variable stored in the instance dict does two dictionary lookups, whereas the classic scheme did a quick test for attributes starting with two underscores plus a single dictionary lookup; a benchmark verified the new scheme is as fast as classic instance variable lookup",
+      "It requires a linear `strcmp()` search of the type dict",
+      "It cannot handle special attributes like `__dict__`",
+      "It raises `AttributeError` for all instance variables"
+    ],
+    "answer": [0],
+    "explanation": "In the most common case (an instance variable stored in the instance dict) the new scheme does two dictionary lookups, while the classic scheme did a quick underscore test plus one lookup. A benchmark verified the new scheme is as fast as classic instance variable lookup. For dynamic types, steps 1 and 3 look in the dictionary of the type and all its base classes, in MRO sequence."
+  },
+  {
+    "type": "multiple",
+    "question": "Which sections of PEP 252 contain only an 'XXX' placeholder with no substantive content?",
+    "options": [
+      "Discussion",
+      "Backwards compatibility",
+      "Warnings and Errors",
+      "Examples"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "In the published PEP, the Discussion, Backwards compatibility, and Warnings and Errors sections each consist solely of the marker 'XXX' — the author left them unfinished. The Examples section, by contrast, contains full content demonstrating the new introspection API on lists."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about list introspection before and after the proposal are true?",
+    "options": [
+      "In classic Python, `[].__methods__` returned `['append', 'count', 'extend', 'index', 'insert', 'pop', 'remove', 'reverse', 'sort']`",
+      "Under the new proposal the `__methods__` attribute no longer exists and `[].__methods__` raises `AttributeError: 'list' object has no attribute '__methods__'`",
+      "The same information is available from the list type instead: `T = [].__class__` yields `<type 'list'>`, and `dir(T)` is like `T.__dict__.keys()` but sorted",
+      "Under the new proposal `[].__methods__` returns an empty list"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "In classic Python the method names of lists were available as the `__methods__` attribute of list objects; under the new proposal it no longer exists and access raises `AttributeError`. Instead you can get the same information from the list type: `T = [].__class__` yields `<type 'list'>` and `dir(T)` is like `T.__dict__.keys()` but sorted, showing names such as `__add__`, `__len__`, `append`, `count`, `sort`, etc."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the new introspection API's output for lists are true?",
+    "options": [
+      "It gives more information than the old API: in addition to the regular methods, it also shows methods normally invoked through special notations, e.g. `__iadd__` (`+=`), `__len__` (`len`) and `__ne__` (`!=`)",
+      "You can invoke any method from the list directly, e.g. `T.__len__(a)` is the same as `len(a)` and `T.append(a, 'toe')` is the same as `a.append('toe')`",
+      "This is just like it is for user-defined classes",
+      "The presence of `__init__` in the list's `dir()` output is explained within PEP 252"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "The new introspection API shows the special-notation methods too (`__iadd__` for `+=`, `__len__` for `len`, `__ne__` for `!=`), and any of them can be invoked directly, e.g. `T.__len__(a)` returns 2 for `a = ['tic', 'tac']` and `T.append(a, 'toe')` is the same as `a.append('toe')` — just like for user-defined classes. The familiar yet surprising name `__init__` in the list is the domain of PEP 253, not PEP 252."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the Implementation section of PEP 252 are true?",
+    "options": [
+      "A partial implementation of this PEP was available from CVS as a branch named 'descr-branch'",
+      "Some examples of the features described can be found in the file `Lib/test/test_descr.py`",
+      "The code in the branch goes way beyond this PEP and is also the experimentation area for PEP 253 (Subtyping Built-in Types)",
+      "The implementation was never merged into Python"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "The Implementation section says a partial implementation is available from CVS as a branch named 'descr-branch' (check out with `-r descr-branch`), with examples of the features in `Lib/test/test_descr.py`. It also notes the branch goes way beyond this PEP, serving as the experimentation area for PEP 253 (Subtyping Built-in Types). The editor's note (in the Abstract) confirms the ideas were ultimately incorporated into Python."
+  }
+]

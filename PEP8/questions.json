@@ -1,0 +1,1220 @@
+[
+  {
+    "type": "multiple",
+    "question": "Which of the following are PEP 8 recommendations?",
+    "options": [
+      "Use 4 spaces for indentation",
+      "Limit lines to 79 characters",
+      "Use camelCase for function names",
+      "Put each import statement on its own line"
+    ],
+    "answer": [
+      0,
+      1,
+      3
+    ],
+    "explanation": "PEP 8 recommends 4-space indentation, a 79-character line limit and one import per line. Function names should be `lowercase_with_underscores` (snake_case); `camelCase` is not recommended — CapWords is reserved for class names."
+  },
+  {
+    "type": "single",
+    "question": "Which naming style does PEP 8 recommend for class names?",
+    "options": [
+      "CapWords (PascalCase)",
+      "snake_case",
+      "UPPER_CASE",
+      "camelCase"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Class names use CapWords (e.g. `MyClass`). Functions, variables and module names use snake_case, while constants use UPPER_CASE."
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 8, what is the recommended maximum line length for code?",
+    "options": [
+      "79 characters",
+      "99 characters",
+      "120 characters",
+      "There is no limit"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 8 limits lines to 79 characters (72 for docstrings and comments). A team may agree to extend the limit up to 99 characters, provided comments and docstrings are still wrapped at 72. The standard library itself stays at 79."
+  },
+  {
+    "type": "single",
+    "question": "In which order does PEP 8 recommend arranging import statements?",
+    "options": [
+      "Standard library, then third-party, then local application imports, each group separated by a blank line",
+      "Alphabetical order only, in a single group",
+      "Any order, as long as imports come first",
+      "Third-party imports first, then the standard library"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 8 groups imports in three blocks — standard library, related third-party, and local application — separated by blank lines. (Sorting within each block is a tool convention, not a PEP 8 requirement.)"
+  },
+  {
+    "type": "single",
+    "question": "Which snippet follows **all** of PEP 8's import rules (placement, group order, and blank lines)?\n\n```python\n# Snippet A\n\"\"\"Module docstring.\"\"\"\n\nimport os\n\nimport requests\n\nfrom mypkg import sibling\n\nMAX_ATTEMPTS = 3\n\n# Snippet B\n\"\"\"Module docstring.\"\"\"\n\nMAX_ATTEMPTS = 3\n\nimport os\n\nimport requests\n\nfrom mypkg import sibling\n\n# Snippet C\nimport os\n\n\"\"\"Module docstring.\"\"\"\n\nimport requests\n\nfrom mypkg import sibling\n\n# Snippet D\n\"\"\"Module docstring.\"\"\"\n\nimport os\nimport requests\nfrom mypkg import sibling\n\nMAX_ATTEMPTS = 3\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Imports belong **at the top of the file, just after module comments/docstrings and before module globals and constants** — Snippet B puts `MAX_ATTEMPTS` before the imports, and Snippet C imports before the docstring. The three groups must appear in the order standard library → third-party → local with a **blank line between each group** — Snippet D is one step away: right position and order, but no blank lines between groups. Snippet A is the only fully correct layout."
+  },
+  {
+    "type": "single",
+    "question": "Which naming style does PEP 8 recommend for constants?",
+    "options": [
+      "UPPER_CASE",
+      "snake_case",
+      "CapWords",
+      "lowerCamelCase"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Constants are usually defined at module level and written in all capital letters with underscores separating words, e.g. `MAX_OVERFLOW` and `TOTAL`."
+  },
+  {
+    "type": "single",
+    "question": "How many blank lines should surround top-level class and function definitions?",
+    "options": [
+      "Two",
+      "One",
+      "Three",
+      "None"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 8 requires two blank lines around top-level class and function definitions, and one blank line between methods inside a class."
+  },
+  {
+    "type": "single",
+    "question": "Which snippet follows PEP 8's rules for splitting a long function call across lines?\n\n```python\n# Snippet A\nfoo = long_function_name(var_one, var_two,\n    var_three, var_four)\n\n# Snippet B\nfoo = long_function_name(\n    var_one, var_two,\n    var_three, var_four)\n```",
+    "options": [
+      "Snippet A only",
+      "Snippet B only",
+      "Both snippets",
+      "Neither snippet"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "With a hanging indent there should be **no arguments on the first line**, and the continuation must be clearly distinguished. Snippet A puts arguments on the first line without vertical alignment — PEP 8 marks this exact layout as wrong. Note the 4-space rule is optional for continuation lines: a hanging indent may use a different amount of indentation."
+  },
+  {
+    "type": "single",
+    "question": "What does PEP 8 say about tabs and spaces for indentation?",
+    "options": [
+      "Spaces are preferred, and mixing tabs and spaces for indentation is disallowed",
+      "Tabs are preferred because they let each developer choose an indentation width",
+      "Either is fine as long as you are consistent within a file",
+      "Tabs must be used for continuation lines and spaces for the first level"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Spaces are the preferred indentation method. Tabs should be used **only** to remain consistent with code already indented with tabs, and Python disallows mixing tabs and spaces for indentation."
+  },
+  {
+    "type": "single",
+    "question": "What encoding should code in the core Python distribution use, per PEP 8?",
+    "options": [
+      "UTF-8, with no encoding declaration",
+      "UTF-8, with a # -*- coding: utf-8 -*- declaration",
+      "ASCII, to be safe on all platforms",
+      "UTF-16, which preserves all Unicode characters"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Code in the core Python distribution should always use UTF-8 and should **not** have an encoding declaration. Non-UTF-8 encodings in the standard library are reserved for test purposes only, and standard library identifiers must be ASCII-compatible."
+  },
+  {
+    "type": "single",
+    "question": "PEP 8 discusses where to break long expressions containing binary operators. Which style is suggested for new code?\n\n```python\n# Style A: break before the operator\nincome = (gross_wages\n          + taxable_interest\n          - ira_deduction)\n\n# Style B: break after the operator\nincome = (gross_wages +\n          taxable_interest -\n          ira_deduction)\n```",
+    "options": [
+      "Style A — breaking before the operator",
+      "Style B — breaking after the operator",
+      "Style A, but only for sums; never for subtractions",
+      "Neither — binary operators must never be split across lines"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Following the mathematical tradition (Donald Knuth), breaking **before** a binary operator keeps each operator next to its operand and is suggested for new code. Breaking after is permissible as long as the convention is consistent locally."
+  },
+  {
+    "type": "single",
+    "question": "Which import style does PEP 8 reject?\n\n```python\n# Style A\nimport os\nimport sys\n\n# Style B\nimport sys, os\n\n# Style C\nfrom subprocess import Popen, PIPE\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Style C",
+      "Styles A and B"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Imports should usually be on separate lines, so `import sys, os` is wrong. However, `from subprocess import Popen, PIPE` is fine — importing several names from one module in a single `from` import is explicitly acceptable."
+  },
+  {
+    "type": "single",
+    "question": "Where should module-level dunder names such as `__all__` and `__version__` be placed?\n\n```python\n\"\"\"This is the example module.\n\nThis module does stuff.\n\"\"\"\n\nfrom __future__ import barry_as_FLUFL\n\n__all__ = ['a', 'b', 'c']\n__version__ = '0.1'\n\nimport os\nimport sys\n```",
+    "options": [
+      "After the module docstring, before import statements (except from __future__ imports)",
+      "After all import statements",
+      "Immediately before the module docstring",
+      "In a separate module named __dunder__.py"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Module-level dunders such as `__all__`, `__author__` and `__version__` go after the module docstring but before any import statements — except `from __future__` imports, which must appear before any other code except docstrings."
+  },
+  {
+    "type": "single",
+    "question": "What does PEP 8 say about single-quoted versus double-quoted strings?",
+    "options": [
+      "Both are the same; PEP 8 makes no recommendation — pick a rule and stick to it",
+      "Always use double quotes for consistency with docstrings",
+      "Always use single quotes to save keystrokes",
+      "Use double quotes, except inside f-strings"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "In Python, single- and double-quoted strings are the same, and PEP 8 does **not** recommend one over the other. If a string contains one kind of quote character, use the other kind to avoid backslashes. For **triple-quoted** strings, always use double quotes (the PEP 257 docstring convention)."
+  },
+  {
+    "type": "multiple",
+    "question": "Which snippets contain whitespace that PEP 8's \"Pet Peeves\" section forbids?\n\n```python\n# Snippet A\nspam(ham[1], {eggs: 2})\n\n# Snippet B\nspam(ham[1], {eggs: 2} )\n\n# Snippet C\nfoo = (0,)\n\n# Snippet D\nbar = (0, )\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explanation": "PEP 8 forbids extraneous whitespace immediately inside parentheses, brackets or braces (Snippet B has a stray space before `)`) and between a trailing comma and the following close parenthesis (Snippet D writes `(0, )` instead of `(0,)`)."
+  },
+  {
+    "type": "single",
+    "question": "Which set of slices follows PEP 8's whitespace rules for slice colons?\n\n```python\n# Style A\nham[1:9], ham[1:9:3], ham[:9:3]\n\n# Style B\nham[1: 9], ham[1 :9], ham[1:9 :3]\n\n# Style C\nham[lower : : step], ham[ : upper]\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Style C",
+      "Styles B and C"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "In a slice the colon acts like a binary operator and should have equal amounts of spacing on either side (`ham[1:9]`). When a slice parameter is omitted, the space is omitted too — so `ham[:9:3]` is correct. Styles B and C are the exact \"wrong\" examples from PEP 8: asymmetric spacing (`ham[1: 9]`, `ham[1 :9]`, `ham[1:9 :3]`) and misplaced spaces (`ham[lower : : step]`, `ham[ : upper]`)."
+  },
+  {
+    "type": "single",
+    "question": "Which block of assignments follows PEP 8's whitespace rules for operators?\n\n```python\n# Style A\ni = i+1\nsubmitted += 1\n\n# Style B\ni = i + 1\nsubmitted += 1\n\n# Style C\nx = x*2 - 1\nhypot2 = x*x + y*y\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Style C",
+      "Styles B and C"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Style B follows the basic rule: assignment and augmented-assignment operators are surrounded by a single space on either side. Style C is **also** correct — PEP 8 says that when operators of different priorities are mixed, you may add whitespace around the lowest-priority operators only: `x = x*2 - 1` and `hypot2 = x*x + y*y` are PEP 8's own \"Correct\" examples (\"Use your own judgment\"). Style A's `i = i+1` omits the required spaces."
+  },
+  {
+    "type": "multiple",
+    "question": "Which snippets follow PEP 8's spacing rules for keyword arguments and default values?\n\n```python\n# Snippet A\ndef complex(real, imag=0.0):\n    return magic(r=real, i=imag)\n\n# Snippet B\ndef complex(real, imag = 0.0):\n    return magic(r = real, i = imag)\n\n# Snippet C\ndef munge(sep: AnyStr = None): ...\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "Do **not** put spaces around `=` when it indicates a keyword argument or the default value of an *unannotated* parameter (Snippet A is correct; Snippet B is wrong). However, when an annotation is combined with a default value, spaces around `=` **are** used: `def munge(sep: AnyStr = None): ...`."
+  },
+  {
+    "type": "multiple",
+    "question": "Which snippets does PEP 8 discourage? (Compound statements — multiple statements on one line)\n\n```python\n# Snippet A\nif foo == 'blah':\n    do_blah_thing()\ndo_one()\ndo_two()\ndo_three()\n\n# Snippet B\nif foo == 'blah': do_blah_thing()\ndo_one(); do_two(); do_three()\n\n# Snippet C\nif foo == 'blah': do_blah_thing()\nelse: do_non_blah_thing()\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explanation": "Compound statements are generally discouraged. Snippet B puts an `if` body on the same line and chains statements with semicolons (\"Rather not\"). Snippet C is \"Definitely not\": multi-clause statements (`if`/`else`) must never be written on one line. Snippet A is the recommended layout."
+  },
+  {
+    "type": "multiple",
+    "question": "Which snippets follow PEP 8's guidance on trailing commas?\n\n```python\n# Snippet A\nFILES = ('setup.cfg',)\n\n# Snippet B\nFILES = 'setup.cfg',\n\n# Snippet C\nFILES = [\n    'setup.cfg',\n    'tox.ini',\n]\n\n# Snippet D\nFILES = ['setup.cfg', 'tox.ini',]\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "A trailing comma is **mandatory** for a one-element tuple, and PEP 8 recommends surrounding it with (technically redundant) parentheses — so `FILES = ('setup.cfg',)` is correct while `FILES = 'setup.cfg',` is wrong. When values are listed one per line, add a trailing comma and put the closing delimiter on the **next** line (Snippet C); a trailing comma on the same line as the closing delimiter (Snippet D) is wrong except for singleton tuples."
+  },
+  {
+    "type": "single",
+    "question": "Which inline comment follows PEP 8's recommendations?\n\n```python\n# Snippet A\nx = x + 1  # Increment x\n\n# Snippet B\nx = x + 1  # Compensate for border\n\n# Snippet C\nx = x + 1 # Compensate for border\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet A and Snippet B"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "An inline comment must be separated from the statement by **at least two spaces** and start with `#` plus a single space — Snippet C violates the two-space rule. Snippet A is PEP 8's \"Don't do this\" example: a comment that merely states the obvious is unnecessary and distracting. Snippet B is the reference's \"sometimes useful\" example."
+  },
+  {
+    "type": "multiple",
+    "question": "Which docstrings follow PEP 8's layout rules?\n\n```python\n# Snippet A\n\"\"\"Return a foobang.\n\nOptional plotz says to frobnicate the bizbaz first.\n\"\"\"\n\n# Snippet B\n\"\"\"Return a foobang.\n\nOptional plotz says to frobnicate the bizbaz first.\"\"\"\n\n# Snippet C\n\"\"\"Return an ex-parrot.\"\"\"\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "For a **multiline** docstring, the closing `\"\"\"` should be on a line by itself (Snippet A), not appended after the last text line (Snippet B). For a **one-liner** docstring, keep the closing `\"\"\"` on the same line (Snippet C)."
+  },
+  {
+    "type": "single",
+    "question": "Which characters does PEP 8 say to never use as single-character variable names?",
+    "options": [
+      "l (lowercase el), O (uppercase oh), I (uppercase eye)",
+      "0 (zero), 1 (one), O (uppercase oh)",
+      "l (lowercase el), o (lowercase oh), i (lowercase eye)",
+      "X, Y and Z"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "In some fonts `l`, `O` and `I` are indistinguishable from the numerals one and zero, so PEP 8 bans them as single-character variable names. When tempted to use `l`, use `L` instead. (Lowercase `o` and `i` are not banned.)"
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 8, which class name is preferable when it contains an acronym?",
+    "options": [
+      "HTTPServerError",
+      "HttpServerError",
+      "Http_Server_Error",
+      "HTTP_Server_Error"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "When using acronyms in CapWords, capitalize **all** the letters of the acronym: `HTTPServerError` is better than `HttpServerError`. The style `Capitalized_Words_With_Underscores` is described as \"ugly!\" in PEP 8."
+  },
+  {
+    "type": "single",
+    "question": "Inside class `FooBar`, the attribute `__boo` is name-mangled by Python. What is it actually stored as?",
+    "options": [
+      "_FooBar__boo",
+      "__boo",
+      "_FooBar_boo",
+      "FooBar__boo"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "A double leading underscore invokes name mangling: inside class `FooBar`, `__boo` becomes `_FooBar__boo`, so it cannot be accessed as `FooBar.__boo`. PEP 8 recommends double leading underscores mainly to avoid name clashes in classes designed to be subclassed."
+  },
+  {
+    "type": "single",
+    "question": "A function argument clashes with the keyword `class`. Which name does PEP 8 recommend?",
+    "options": [
+      "class_",
+      "clss",
+      "klass",
+      "cls"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "It is generally better to append a single trailing underscore (`class_`) than to use an abbreviation or spelling corruption (`clss`). `cls` is reserved by convention for the first argument of class methods, so it would be misleading here."
+  },
+  {
+    "type": "single",
+    "question": "What does PEP 8 say about the first argument names of methods?",
+    "options": [
+      "self for instance methods, cls for class methods",
+      "cls for instance methods, self for class methods",
+      "this for instance methods, self for class methods",
+      "Any name is fine as long as it is consistent"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Always use `self` for the first argument to instance methods and `cls` for the first argument to class methods."
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 8, what suffix should a type variable use for covariant behavior, and what for contravariant?",
+    "options": [
+      "_co for covariant, _contra for contravariant",
+      "_contra for covariant, _co for contravariant",
+      "_cov for covariant, _con for contravariant",
+      "No suffix is allowed on type variables"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Type variables (PEP 484) should normally use CapWords with short names like `T`, `AnyStr`, `Num`. Add `_co` for covariant and `_contra` for contravariant, e.g. `VT_co = TypeVar('VT_co', covariant=True)`."
+  },
+  {
+    "type": "single",
+    "question": "What suffix should be added to an exception class name if the exception actually is an error?",
+    "options": [
+      "Error",
+      "Exception",
+      "Err",
+      "Failure"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Because exceptions should be classes, the class naming convention (CapWords) applies; additionally, use the suffix `Error` when the exception is an error. Non-error exceptions used for flow control or signaling need no special suffix."
+  },
+  {
+    "type": "single",
+    "question": "What naming convention does PEP 8 recommend for modules and packages?",
+    "options": [
+      "Short, all-lowercase names for both; underscores are discouraged in package names",
+      "CapWords for modules, lowercase for packages",
+      "UPPER_CASE for packages, lowercase for modules",
+      "Any case, as long as the name is short"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Modules should have short, all-lowercase names (underscores are allowed if they improve readability). Packages should also be short and all-lowercase, but the use of underscores is discouraged. A C/C++ extension module with a Python wrapper typically gets a leading underscore, e.g. `_socket`."
+  },
+  {
+    "type": "single",
+    "question": "Which `None` check follows PEP 8?\n\n```python\n# Style A\nif foo is not None:\n    pass\n\n# Style B\nif not foo is None:\n    pass\n\n# Style C\nif foo != None:\n    pass\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Style C",
+      "Styles A and B"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Comparisons to singletons like `None` should always use `is` or `is not`, never the equality operators — so Style C is wrong. Between the two equivalent forms, PEP 8 prefers `is not` (Style A) over `not ... is` (Style B) because it reads more naturally."
+  },
+  {
+    "type": "single",
+    "question": "Which emptiness check for a sequence does PEP 8 recommend?\n\n```python\n# Style A\nif not seq:\n    pass\n\n# Style B\nif len(seq) == 0:\n    pass\n\n# Style C\nif not len(seq):\n    pass\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Style C",
+      "Styles B and C"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "For sequences (strings, lists, tuples), rely on the fact that empty sequences are false: write `if not seq:` (or `if seq:`), not `if len(seq) == 0:` or `if not len(seq):`."
+  },
+  {
+    "type": "single",
+    "question": "Which object type check does PEP 8 recommend?\n\n```python\n# Style A\nif isinstance(obj, int):\n    pass\n\n# Style B\nif type(obj) is type(1):\n    pass\n\n# Style C\nif type(obj) == int:\n    pass\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Style C",
+      "Styles A and B"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Object type comparisons should always use `isinstance()` instead of comparing types directly with `type(obj) is ...` or `type(obj) == ...`."
+  },
+  {
+    "type": "single",
+    "question": "Which prefix check does PEP 8 recommend?\n\n```python\n# Style A\nif foo.startswith('bar'):\n    pass\n\n# Style B\nif foo[:3] == 'bar':\n    pass\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Both styles",
+      "Neither style"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Use `''.startswith()` and `''.endswith()` instead of string slicing to check prefixes or suffixes — they are cleaner and less error prone."
+  },
+  {
+    "type": "multiple",
+    "question": "Which boolean checks does PEP 8 forbid?\n\n```python\n# Style A\nif greeting:\n    pass\n\n# Style B\nif greeting == True:\n    pass\n\n# Style C\nif greeting is True:\n    pass\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Style C"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explanation": "Don't compare boolean values to `True` or `False` using `==` (Style B); `if greeting is True:` (Style C) is even worse. Simply test the value itself: `if greeting:`."
+  },
+  {
+    "type": "single",
+    "question": "Which snippet does PEP 8 recommend?\n\n```python\n# Style A\ndef f(x): return 2 * x\n\n# Style B\nf = lambda x: 2 * x\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Both styles",
+      "Neither style"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Always use a `def` statement instead of an assignment that binds a `lambda` directly to an identifier. The resulting function object is then named `f` instead of `<lambda>`, which is more useful in tracebacks and string representations."
+  },
+  {
+    "type": "single",
+    "question": "From which class should user-defined exceptions be derived, per PEP 8?",
+    "options": [
+      "Exception, not BaseException",
+      "BaseException, not Exception",
+      "object, so exceptions are not accidentally caught",
+      "Any of them, it makes no difference"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Derive exceptions from `Exception` rather than `BaseException`. Direct inheritance from `BaseException` is reserved for exceptions where catching them is almost always the wrong thing to do."
+  },
+  {
+    "type": "single",
+    "question": "Which `try`/`except` block follows PEP 8?\n\n```python\n# Style A\ntry:\n    import platform_specific_module\nexcept ImportError:\n    platform_specific_module = None\n\n# Style B\ntry:\n    import platform_specific_module\nexcept:\n    platform_specific_module = None\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Both styles",
+      "Neither style"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Mention specific exceptions whenever possible instead of a bare `except:`. A bare `except:` catches `SystemExit` and `KeyboardInterrupt`, making it harder to interrupt a program with Control-C, and can disguise other problems. To catch all program errors, use `except Exception:` (a bare `except:` is equivalent to `except BaseException:`)."
+  },
+  {
+    "type": "single",
+    "question": "Which structure does PEP 8 prefer?\n\n```python\n# Style A\ntry:\n    value = collection[key]\nexcept KeyError:\n    return key_not_found(key)\nelse:\n    return handle_value(value)\n\n# Style B\ntry:\n    return handle_value(collection[key])\nexcept KeyError:\n    return key_not_found(key)\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Both structures",
+      "Neither structure"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Limit the `try` clause to the absolute minimum amount of code necessary. Style B's `try` is \"too broad\": a `KeyError` raised inside `handle_value()` would also be caught and wrongly reported as a missing key."
+  },
+  {
+    "type": "single",
+    "question": "Which use of a context manager does PEP 8 recommend?\n\n```python\n# Style A\nwith conn.begin_transaction():\n    do_stuff_in_transaction(conn)\n\n# Style B\nwith conn:\n    do_stuff_in_transaction(conn)\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Both styles",
+      "Neither style"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Context managers should be invoked through separate functions or methods whenever they do something other than acquire and release resources. `with conn:` gives no hint that `__enter__`/`__exit__` do more than close the connection — being explicit matters."
+  },
+  {
+    "type": "single",
+    "question": "Which function follows PEP 8's guidance on `return` statements?\n\n```python\n# Style A\ndef foo(x):\n    if x >= 0:\n        return math.sqrt(x)\n    else:\n        return None\n\n# Style B\ndef foo(x):\n    if x >= 0:\n        return math.sqrt(x)\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Both functions",
+      "Neither function"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Be consistent: either all `return` statements return an expression, or none do. If any returns an expression, the no-value paths must state `return None` explicitly. Style B mixes `return math.sqrt(x)` with an implicit `return None`."
+  },
+  {
+    "type": "single",
+    "question": "In performance-sensitive code, what does PEP 8 recommend for building a string from many parts?",
+    "options": [
+      "Use the ''.join() form instead of relying on in-place concatenation like a += b",
+      "Always use a += b, since CPython optimizes in-place string concatenation",
+      "Use + repeatedly, which is guaranteed to run in linear time",
+      "Build a list and call str() on it"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Do not rely on CPython's efficient implementation of in-place string concatenation (`a += b` or `a = a + b`) — the optimization is fragile and absent in implementations without reference counting. In performance-sensitive parts of the library, use `''.join()` to ensure linear-time concatenation across implementations."
+  },
+  {
+    "type": "single",
+    "question": "When implementing ordering operations with rich comparisons, how many comparison methods does PEP 8 suggest implementing?",
+    "options": [
+      "All six: __eq__, __ne__, __lt__, __le__, __gt__, __ge__",
+      "Just __eq__ and __lt__",
+      "Only __lt__, since sort() and min() only use <",
+      "All except __ne__, which is derived automatically"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Implement all six operations rather than relying on other code to exercise only a particular comparison. To minimize the effort, the `functools.total_ordering()` decorator can generate the missing comparison methods."
+  },
+  {
+    "type": "single",
+    "question": "PEP 8 discourages using `return` inside a `finally` suite. Why?\n\n```python\ndef foo():\n    try:\n        1 / 0\n    finally:\n        return 42\n```",
+    "options": [
+      "It implicitly cancels any active exception propagating through the finally suite",
+      "It is a syntax error in Python 3",
+      "It causes a RuntimeError at import time",
+      "The returned value is silently discarded"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Flow control statements (`return`/`break`/`continue`) that jump outside a `finally` suite implicitly cancel any active exception propagating through it. The example above would swallow the `ZeroDivisionError` and return `42` — PEP 8 shows this exact function as wrong."
+  },
+  {
+    "type": "single",
+    "question": "Which variable annotations follow PEP 8's spacing rules?\n\n```python\n# Style A\ncode: int\n\nclass Point:\n    coords: Tuple[int, int]\n    label: str = '<unknown>'\n\n# Style B\ncode:int\n\nclass Test:\n    result:int=0\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Both styles",
+      "Neither style"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "There should be a single space **after** the colon and no space **before** it (`code: int`). If the annotation has a right-hand side, the `=` sign gets exactly one space on both sides (`label: str = '<unknown>'`)."
+  },
+  {
+    "type": "single",
+    "question": "What does PEP 8 say about function annotations?",
+    "options": [
+      "They should use PEP 484 syntax; a # type: ignore comment near the top of the file makes type checkers ignore all annotations",
+      "They are mandatory for every public function in the standard library",
+      "Python interpreters must validate them at runtime and raise errors on mismatch",
+      "They may only be used inside stub (.pyi) files"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Function annotations should use PEP 484 syntax. The standard library should be conservative in adopting them, and code that wants to use annotations differently can put `# type: ignore` near the top of the file. Type checkers are optional, separate tools: interpreters should not issue messages or alter behavior based on annotations."
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 8, what does setting `__all__` to an empty list indicate?",
+    "options": [
+      "The module has no public API",
+      "The module exports every name it defines",
+      "The module is deprecated",
+      "The module cannot be imported by other modules"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Modules should explicitly declare the names in their public API using `__all__`. Setting `__all__` to an empty list indicates that the module has no public API. Internal interfaces should additionally be prefixed with a single leading underscore."
+  },
+  {
+    "type": "single",
+    "question": "When designing a class, if you are in doubt about whether an attribute should be public or non-public, PEP 8 advises to…",
+    "options": [
+      "Choose non-public; it is easier to make it public later than the reverse",
+      "Choose public; it is easier to make it non-public later",
+      "Always make every attribute public and wrap it in a property",
+      "Let the interpreter decide at runtime"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "If in doubt, choose non-public — it is easier to make an attribute public later than to make a public attribute non-public (which would break backward compatibility). Public attributes have no leading underscores."
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 8, when should properties be avoided?",
+    "options": [
+      "For computationally expensive operations, because attribute access looks cheap",
+      "For caching computed values",
+      "For read-only attributes",
+      "Properties should never be used in Python"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Use properties to hide functional behavior behind simple data attribute access syntax, but avoid them for computationally expensive operations — the attribute notation makes the caller believe access is relatively cheap. Side effects such as caching are generally fine."
+  },
+  {
+    "type": "multiple",
+    "question": "Which snippets follow PEP 8's layout for a multiline list?\n\n```python\n# Snippet A\nmy_list_one = [1, 2, 3,\n    4, 5, 6\n]\n\n# Snippet B\nmy_list_one = [\n    1, 2, 3,\n    4, 5, 6,\n    ]\n\n# Snippet C\nmy_list_two = [\n    1, 2, 3,\n    4, 5, 6,\n]\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explanation": "Snippet A is one step away from correct: its continuation `4, 5, 6` is neither aligned with the opening delimiter (vertical alignment) nor a hanging indent, because items already appear on the first line. PEP 8 allows two closing-bracket styles: line up `]` under the first non-whitespace character of the last line (Snippet B), or under the first character of the line that starts the construct (Snippet C)."
+  },
+  {
+    "type": "single",
+    "question": "Which function call layout follows PEP 8?\n\n```python\n# Snippet A\na = my_function_name(a, b, c,\n    d, e, f)\n\n# Snippet B\na = my_function_name(a, b, c,\n                     d, e, f)\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Both snippets",
+      "Neither snippet"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "When arguments stay on the first line, wrapped elements must be aligned vertically with the opening delimiter: `d, e, f` lines up under the first argument `a`. Snippet A's plain 4-space indent is the \"one step away\" mistake — arguments on the first line without vertical alignment."
+  },
+  {
+    "type": "multiple",
+    "question": "Which `def` layouts are acceptable per PEP 8?\n\n```python\n# Snippet A\ndef my_fun(a, b, c,\n           d, e, f):\n    return (a + b + c) * (d + e + f)\n\n# Snippet B\ndef my_fun(\n        a, b, c,\n        d, e, f):\n    return (a + b + c) * (d + e + f)\n\n# Snippet C\ndef my_fun(\n    a, b, c,\n    d, e, f):\n    return (a + b + c) * (d + e + f)\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C"
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "Snippet A uses vertical alignment with the opening delimiter (correct). Snippet B uses a hanging indent with a **double** indent (8 spaces) so the parameters are clearly distinguished from the 4-space body (correct). Snippet C looks almost identical but hangs at only 4 spaces — indistinguishable from the body, which is PEP 8's \"further indentation required\" wrong example."
+  },
+  {
+    "type": "single",
+    "question": "Ignoring compound-statement style for a moment, which line is formatted correctly?\n\n```python\n# Snippet A\nif x == 4: print(x, y); x, y = y, x\n\n# Snippet B\nif x == 4 : print(x, y) ; x, y = y, x\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Both lines",
+      "Neither line"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 8 forbids whitespace immediately before a comma, semicolon or colon. The two lines differ only by stray spaces before `:` and `;` — Snippet B is the reference's exact wrong example."
+  },
+  {
+    "type": "multiple",
+    "question": "Which snippets violate PEP 8's whitespace rules?\n\n```python\n# Snippet A\nspam(1)\n\n# Snippet B\nspam (1)\n\n# Snippet C\ndct['key'] = lst[index]\n\n# Snippet D\ndct ['key'] = lst [index]\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explanation": "There must be no space immediately before the open parenthesis that starts a function call (`spam (1)` is wrong) and none before the bracket that starts indexing or slicing (`dct ['key']` and `lst [index]` are wrong)."
+  },
+  {
+    "type": "single",
+    "question": "Which block of assignments follows PEP 8?\n\n```python\n# Snippet A\nx = 1\ny = 2\nlong_variable = 3\n\n# Snippet B\nx             = 1\ny             = 2\nlong_variable = 3\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Both snippets",
+      "Neither snippet"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Avoid using more than one space around an assignment operator just to align `=` signs with another assignment. Snippet B is the reference's exact wrong example — it looks tidy, but the extra spaces are forbidden."
+  },
+  {
+    "type": "single",
+    "question": "What position does PEP 8 take on visually distinguishing a multiline `if` condition from the nested suite?\n\n```python\nif (this_is_one_thing\n        and that_is_another_thing):\n    do_something()\n```",
+    "options": [
+      "PEP 8 takes no explicit position; several visual distinctions are acceptable",
+      "The continuation must always be indented 8 spaces",
+      "The condition must always fit on a single line",
+      "The suite must be indented 8 spaces"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "A two-character keyword (`if`) plus a space plus `(` creates a natural 4-space indent for the continuation, which can visually collide with the nested suite. PEP 8 takes **no explicit position**: acceptable options include no extra indentation, a clarifying comment, or extra indentation on the continuation line."
+  },
+  {
+    "type": "multiple",
+    "question": "Which snippets comply with PEP 8 Rule 1 (never more than one space around an operator)?\n\n```python\n# A:\na = 1\nb = a + 2\n\n# B:\na         = 1\nb         = a        + 2\n\n# C:\nmy_string = 'string' * 2\n\n# D:\na  = 1\nb  = a + 2\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "Rule 1 forbids using more than one space before and after an operator. Snippet B pads with extra spaces purely to align its columns, and Snippet D doubles the space before `=`, so only A and C comply."
+  },
+  {
+    "type": "single",
+    "question": "Which rewrite of the following is correct per PEP 8 Rule 2?\n\n```python\nx=x+3\n```",
+    "options": [
+      "x = x + 3",
+      "x = x+3",
+      "x=x + 3",
+      "x  = x + 3"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Rule 2 says to surround binary operators with a single space on both sides. `x = x + 3` spaces both `=` and `+` correctly; the other options drop the space on one side of an operator or double the space before `=`."
+  },
+  {
+    "type": "single",
+    "question": "Which form of the augmented assignment below is correct per Rule 2?\n\n```python\nx -=1\n```",
+    "options": [
+      "x -= 1",
+      "x -=1",
+      "x-= 1",
+      "x-=1"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Augmented-assignment operators are binary operators, so Rule 2 applies. The reference Bad example `x -=1` omits the space after the operator; `x-= 1` omits the space before it, and `x-=1` omits both."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following appear in PEP 8's canonical Correct examples for whitespace in expressions?",
+    "options": [
+      "i = i + 1",
+      "submitted +=1",
+      "i=i+1",
+      "submitted += 1",
+      "hypot2 = x * x + y * y"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explanation": "PEP 8's canonical Correct list includes `i = i + 1` and `submitted += 1`; its Wrong list includes `i=i+1` and `submitted +=1`. `hypot2 = x * x + y * y` is also in the Wrong list, because with mixed priorities the Correct form spaces only around the lowest-priority operator:\n\n```python\nhypot2 = x*x + y*y        # Correct\nhypot2 = x * x + y * y    # Wrong\n```"
+  },
+  {
+    "type": "single",
+    "question": "PEP 8's canonical examples list this form as Wrong:\n\n```python\nx = x * 2 - 1\n```\n\nWhich of the following is the judgement style recommended instead?",
+    "options": [
+      "x = x*2 - 1",
+      "x = x * 2 - 1",
+      "x = x*2-1",
+      "x = x *2 - 1"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Rule 2 permits a judgement call: when operators of different priorities are mixed, you may add spacing around the lowest-priority operators only. `*` binds more tightly than `-`, so the style is `x = x*2 - 1`; `x = x * 2 - 1`, which spaces every operator equally, is exactly the form PEP 8 lists as Wrong."
+  },
+  {
+    "type": "single",
+    "question": "PEP 8's canonical Wrong list includes one of the following. Which one?",
+    "options": [
+      "c = (a+b) * (a-b)",
+      "c = (a + b) * (a - b)",
+      "c = (a + b)*(a - b)",
+      "c = (a+b)*(a-b)"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Spacing every operator equally — `c = (a + b) * (a - b)` — is the form PEP 8 marks as Wrong. Since `*` binds less tightly than the inner `+` and `-`, the Correct judgement form keeps the inner operators tight and spaces only around `*`:\n\n```python\nc = (a+b) * (a-b)         # Correct\nc = (a + b) * (a - b)     # Wrong\n```"
+  },
+  {
+    "type": "multiple",
+    "question": "Comparison and boolean operators are binary operators too. Which of the following are correctly spaced per Rule 2?",
+    "options": [
+      "x == 1",
+      "x ==1",
+      "x and y",
+      "x and  y"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "`==` and `and` are binary operators, so Rule 2's single-space rule applies to them too:\n\n```python\nx == 1     # Correct\nx and y    # Correct\n```\n\n`x ==1` drops the space after `==`, and `x and  y` puts two spaces before `y`."
+  },
+  {
+    "type": "single",
+    "question": "A developer writes the following block to visually align the `=` signs:\n\n```python\ntotal      = 100\ndiscount   = 10\nfinal_price = 90\n```\n\nPer PEP 8, is this acceptable?",
+    "options": [
+      "Yes — aligning the = signs is encouraged",
+      "No — the alignment padding violates Rule 1",
+      "Yes — extra spaces after the variable name are allowed",
+      "No — assignment operators need no spaces at all"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The aligned columns look tidy, but Rule 1 forbids more than one space before or after an operator, and these extra spaces serve only visual alignment. The compliant block uses single spaces: `total = 100`, `discount = 10`, `final_price = 90`."
+  },
+  {
+    "type": "single",
+    "question": "Which statement best describes PEP 8's guidance on spacing when operators of different priorities are mixed?",
+    "options": [
+      "Always put a single space on both sides of every operator, regardless of priority",
+      "You may add spacing around the lowest-priority operators only",
+      "Give higher-priority operators more surrounding space than low-priority ones",
+      "Spacing is purely a matter of taste; PEP 8 gives no guidance"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Rule 2 says that when operators of different priorities are mixed, you may consider adding spacing around the lowest-priority operators only:\n\n```python\nx = x*2 - 1        # judgement style\nx = x * 2 - 1      # Wrong: every operator spaced equally\n```\n\nSpacing every operator equally is not safer — PEP 8 explicitly lists that form as Wrong."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following show PEP 8's judgement style — extra space only around the lowest-priority operator?",
+    "options": [
+      "x = x*2 - 1",
+      "x = x * 2 - 1",
+      "x = (x-1) * (x+2)",
+      "x = (x - 1) * (x + 2)"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "Both `x = x*2 - 1` and `x = (x-1) * (x+2)` add extra space only around the lowest-priority operator (`-` and `*`, respectively):\n\n```python\nx = x*2 - 1        # judgement style\nx = (x-1) * (x+2)  # judgement style\n```\n\nTheir alternatives space every operator equally, which PEP 8 explicitly lists as Wrong."
+  },
+  {
+    "type": "single",
+    "question": "Which call is formatted correctly per PEP 8?\n\n```python\n# Snippet A\nplot(x=1, y=2)\n\n# Snippet B\nplot(x = 1, y = 2)\n\n# Snippet C\nplot(x = 1, y=2)\n\n# Snippet D\nplot(x=1, y = 2)\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 8: \"Don't use spaces around the `=` sign when used to indicate a keyword argument.\" Inside a call, `x=1` binds the value `1` to the keyword `x` with no spaces. Snippet B spaces both `=` signs — the classic trap of carrying the assignment habit (where `=` IS spaced) over to keyword arguments. Snippets C and D are also wrong: the rule applies to every keyword argument, so mixing one spaced and one unspaced is still a violation."
+  },
+  {
+    "type": "single",
+    "question": "Which function signature is formatted correctly per PEP 8?\n\n```python\n# Snippet A\ndef my_function(x, y=2):\n    return x * y\n\n# Snippet B\ndef my_function(x, y = 2):\n    return x * y\n\n# Snippet C\ndef my_function(x, y =2):\n    return x * y\n\n# Snippet D\ndef my_function(x, y= 2):\n    return x * y\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "In a `def` signature, the `=` that introduces a default value is not surrounded by spaces: `y=2` (Snippet A). Snippet B applies the assignment-statement habit — spaces around `=` — to a default value, which is exactly the mistake the rule targets. Snippets C (`y =2`) and D (`y= 2`) are wrong too: the spaces must be absent on BOTH sides of the `=`, not just one."
+  },
+  {
+    "type": "single",
+    "question": "Which signature is formatted correctly per PEP 8?\n\n```python\n# Snippet A\ndef munge(sep: AnyStr = None): ...\n\n# Snippet B\ndef munge(sep: AnyStr= None): ...\n\n# Snippet C\ndef munge(sep: AnyStr =None): ...\n\n# Snippet D\ndef munge(sep: AnyStr=None): ...\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "This is the documented exception to the no-space rule: \"When combining an argument annotation with a default value, do use spaces around the `=` sign.\" Because `sep` is annotated (`AnyStr`), `sep: AnyStr = None` is correct. Snippets B, C and D all drop or misplace spaces — `AnyStr=None` is PEP 8's own wrong example. The presence of the annotation is what allows the spaces."
+  },
+  {
+    "type": "single",
+    "question": "Which line is formatted correctly per PEP 8?\n\n```python\n# Snippet A\nresult = compute(x=2)\n\n# Snippet B\nresult = compute(x = 2)\n\n# Snippet C\nresult= compute(x=2)\n\n# Snippet D\nresult= compute(x = 2)\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The line contains two different `=` signs. The outer one — `result = compute(...)` — is an assignment, so it correctly keeps a single space on each side. The inner one — `x=2` — is a keyword argument at the call site, so it must have NO spaces around it. Snippet B spaces the keyword (wrong), Snippet C removes the assignment spaces (wrong), and Snippet D gets both wrong. Only Snippet A treats each `=` according to its role."
+  },
+  {
+    "type": "single",
+    "question": "Which signature follows ALL of PEP 8's annotation spacing rules?\n\n```python\n# Snippet A\ndef f(x: int = 0) -> int: ...\n\n# Snippet B\ndef f(x: int = 0)-> int: ...\n\n# Snippet C\ndef f(x: int=0) -> int: ...\n\n# Snippet D\ndef f(x:int = 0) -> int: ...\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Three rules stack in this signature. The annotation colon gets a space after it but none before (`x: int`); an annotated default keeps spaces around `=` (`x: int = 0`); and the `->` arrow always has spaces on both sides (`-> int`). Snippet B breaks the arrow spacing, Snippet C drops the spaces around the annotated default, and Snippet D squeezes the colon — only Snippet A satisfies all three."
+  },
+  {
+    "type": "multiple",
+    "question": "Which snippets are formatted correctly per PEP 8?\n\n```python\n# Snippet A\ndef connect(host, port=80):\n    return open_socket(host=host, port=port)\n\n# Snippet B\ntotal = a + b\n\n# Snippet C\ndef f(x, y = 2):\n    return x * y\n\n# Snippet D\ndef g(sep: AnyStr = None): ...\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0,
+      1,
+      3
+    ],
+    "explanation": "Snippets A, B and D are correct. A uses unspaced `=` for both the default value (`port=80`) and the keyword arguments (`host=host, port=port`). B spaces the assignment and the binary operator with a single space each — assignment, augmented assignment, comparisons and Booleans always get one space on either side. D applies the annotation exception (`sep: AnyStr = None`). Snippet C is wrong: `y = 2` puts spaces around the `=` of an unannotated default value."
+  },
+  {
+    "type": "single",
+    "question": "Which snippet follows PEP 8 for BOTH the default value and the expression's operator spacing?\n\n```python\n# Snippet A\ndef f(x, factor=2):\n    return x*factor + 1\n\n# Snippet B\ndef f(x, factor=2):\n    return x*factor+1\n\n# Snippet C\ndef f(x, factor=2):\n    return x*factor +1\n\n# Snippet D\ndef f(x, factor = 2):\n    return x*factor + 1\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Snippet A gets both rules right: the default `factor=2` is unspaced, and the expression uses the judgment rule — `*` (higher priority) may drop its spaces while the lowest-priority operator `+` keeps a single space on each side, as in PEP 8's own examples `x = x*2 - 1` and `hypot2 = x*x + y*y`. B leaves `+` unspaced (the `i=i+1` mistake), C spaces only one side of `+` (violating \"the same amount of whitespace on both sides\"), and D spaces the default `=` — wrong."
+  },
+  {
+    "type": "single",
+    "question": "A reviewer flags this line. What is the problem?\n\n```python\nresult = compute(x = 2)\n```",
+    "options": [
+      "x = 2 is a keyword argument — its = must not be surrounded by spaces",
+      "The outer = in result = ... must not be surrounded by spaces",
+      "There must be a space between compute and (",
+      "The line is correct as written"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Inside the call, `x = 2` passes the value `2` as the keyword argument `x` — and per PEP 8, \"don't use spaces around the `=` sign when used to indicate a keyword argument.\" The outer `result = ...` is a plain assignment and correctly keeps single spaces. The fix is `result = compute(x=2)`."
+  },
+  {
+    "type": "single",
+    "question": "Which snippet is formatted correctly per PEP 8?\n\n```python\n# Snippet A\ndef f(x, y=2):\n    return x * y\n\n# Snippet B\ndef f(x, y = 2):\n    return x * y\n\n# Snippet C\ndef f(x, y=2) :\n    return x * y\n\n# Snippet D\ndef f(x, y=2):\n    return x  * y\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Snippet A is right: `y=2` has no spaces around the default `=`, and the body uses exactly one space on each side of `*`. B spaces the default `=` (wrong). C adds a space before the `:` that ends the signature — PEP 8 forbids whitespace immediately before a comma, semicolon or colon. D uses two spaces around `*`, violating \"never use more than one space\" and the single-space rule for binary operators."
+  },
+  {
+    "type": "multiple",
+    "question": "Each snippet uses the same token `x = 10`. Which snippets are formatted correctly per PEP 8?\n\n```python\n# Snippet A\nx = 10\n\n# Snippet B\nfunc(x = 10)\n\n# Snippet C\ndef f(x: int = 10): ...\n\n# Snippet D\ndef f(x, y=10): ...\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0,
+      2,
+      3
+    ],
+    "explanation": "The identical token `x = 10` is formatted differently depending on its role. As a plain assignment (A) it takes spaces; as a keyword argument (B) it must not; as an annotated default (C) the spaces return; as an unannotated default (D) they disappear again. Only Snippet B violates the rule — spaces around `=` in keyword-argument position are forbidden."
+  },
+  {
+    "type": "single",
+    "question": "Which multi-sentence block comment follows PEP 8's spacing rule for sentence-ending periods?\n\n```python\n# Snippet A\n# This is the first sentence.  This is the second sentence.\n# This is the final sentence of the paragraph.\n\n# Snippet B\n# This is the first sentence.  This is the second sentence.  This is the final\n# sentence of the paragraph.\n\n# Snippet C\n# This is the first sentence.This is the second sentence.\n# This is the final sentence of the paragraph.\n\n# Snippet D\n# This is the first sentence of the comment\n# This is the second sentence of the comment\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "When writing block comments with multi-sentence comments, use **two spaces after each full stop ending a sentence, except after the final sentence**. Snippet A is the model layout: two spaces after the first sentence-ending period, and no extra space after the final period. Snippet B keeps two spaces even after the final sentence — the one place the extra space is forbidden. Snippet C runs the sentences together with no space after the period at all. Snippet D fails a related rule of the same section: block comments are built out of complete sentences, each ending in a period. (The current PEP 8 wording is \"one or two spaces after a sentence-ending period in multi-sentence comments, except after the final sentence\" — the testable points are that the space appears after every sentence-ending period and never after the final one.)"
+  },
+  {
+    "type": "single",
+    "question": "Which block comment follows PEP 8's line-formatting rules for block comments?\n\n```python\n# Snippet A\n# This is the first paragraph.\n#\n# This is the second paragraph.\n\n# Snippet B\n# This is the first paragraph.\n\n# This is the second paragraph.\n\n# Snippet C\n#This is the first paragraph.\n#This is the second paragraph.\n\n# Snippet D\n#  This is the first paragraph.\n#  This is the second paragraph.\n```",
+    "options": [
+      "Snippet A",
+      "Snippet B",
+      "Snippet C",
+      "Snippet D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Each line of a block comment starts with a `#` followed by a **single space** — Snippet C omits the space entirely and Snippet D uses two spaces, so both are wrong. Paragraphs inside a block comment are separated by a line containing only a single `#` (Snippet A), not by a blank line (Snippet B). The one exception: indented text inside the comment, such as a code sample, keeps its own indentation after the `#`."
+  },
+  {
+    "type": "single",
+    "question": "Which of the following is a PEP 8-conformant module name?",
+    "options": [
+      "my_samples",
+      "MySamples",
+      "MY_SAMPLES",
+      "mySamples"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Modules should have short, all-lowercase names, and underscores can be used if they improve readability — so `my_samples` fits (the reference's examples are `samples.py` and `my_samples`). `MySamples` applies CapWords, which PEP 8 reserves for class names; `MY_SAMPLES` is the constant style (UPPER_CASE_WITH_UNDERSCORES); and `mySamples` uses camelCase, which PEP 8 does not recommend for any Python name."
+  },
+  {
+    "type": "single",
+    "question": "Which package name follows PEP 8?",
+    "options": [
+      "mypackage",
+      "my_package",
+      "MyPackage",
+      "MY_PACKAGE"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Python packages should also have short, all-lowercase names, although the use of underscores is discouraged — words are simply run together (e.g. `package`, `mypackage`), so `mypackage` is the conformant choice. `my_package` uses an underscore, which PEP 8 discourages inside package names; `MyPackage` breaks the all-lowercase rule (CapWords is for classes); and `MY_PACKAGE` is UPPER_CASE with an underscore, matching neither rule."
+  },
+  {
+    "type": "single",
+    "question": "Which type variable name follows PEP 8's convention?",
+    "options": [
+      "AnyStr",
+      "any_str",
+      "ANYSTR",
+      "a_long_descriptive_type_var_name"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Type variables introduced in PEP 484 should normally use the CapWords convention and prefer short names such as `T`, `AnyStr`, or `Num` — so `AnyStr` is correct (and `Num` would be another valid example). `any_str` is snake_case, the style for ordinary variables and functions; `ANYSTR` is all capitals, the constant style; and `a_long_descriptive_type_var_name` is both long and snake_case, violating the short CapWords rule."
+  },
+  {
+    "type": "single",
+    "question": "Which check for `None` follows PEP 8?\n\n```python\n# Style A\nif x is None:\n    pass\n\n# Style B\nif x == None:\n    pass\n\n# Style C\nif x != None:\n    pass\n\n# Style D\nif x is None == True:\n    pass\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Style C",
+      "Style D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "`None` is a singleton, so comparisons to it should always use `is` or `is not`, never the equality operators — Styles B (`x == None`) and C (`x != None`) violate that rule. Style D is a trap: `x is None == True` parses as a chained comparison, `(x is None) and (None == True)`, which is **always False** because `None == True` is False — and comparing against `True` with `==` is itself forbidden. Only Style A, `if x is None:`, is the PEP 8-recommended form."
+  },
+  {
+    "type": "single",
+    "question": "Which is the recommended way to test a boolean value per PEP 8?",
+    "options": [
+      "if my_boolean_value:",
+      "if my_boolean_value == True:",
+      "if my_boolean_value is True:",
+      "if my_boolean_value != False:"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 8 says: \"Don't compare boolean values to `True` or `False` using `==`\" — simply test the value itself, so `if my_boolean_value:` is the recommended form. `my_boolean_value == True` is the explicitly forbidden pattern, and `my_boolean_value is True` is called **even worse**: it rejects truthy non-`bool` values such as `1` or `'yes'`, which compare equal to `True` but are not the same object. `!= False` belongs to the same forbidden class — an equality comparison against a boolean literal that reads as a confusing double negation (and is not even equivalent to truthiness, since `None != False` is True while `None` is falsy)."
+  },
+  {
+    "type": "single",
+    "question": "Which version of `greet()` correctly distinguishes \"no argument passed\" from an explicitly passed empty string `\"\"`?\n\n```python\n# Style A\ndef greet(name=None):\n    if name is not None:\n        return f\"Hello, {name}!\"\n    return \"Hello, stranger!\"\n\n# Style B\ndef greet(name=None):\n    if name:\n        return f\"Hello, {name}!\"\n    return \"Hello, stranger!\"\n\n# Style C\ndef greet(name=None):\n    if name == None:\n        return f\"Hello, {name}!\"\n    return \"Hello, stranger!\"\n\n# Style D\ndef greet(name=None):\n    if not name:\n        return f\"Hello, {name}!\"\n    return \"Hello, stranger!\"\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Style C",
+      "Style D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 8 warns against writing `if x:` when you really mean `if x is not None:` — e.g. when testing whether an argument that defaults to `None` was set to some *other* value. Style B's `if name:` is exactly that trap: an explicitly passed falsy value like `\"\"` (or `0`, `[]`) is treated as \"not assigned\", so `greet(\"\")` wrongly greets a stranger. Style C compares to `None` with `==`, which PEP 8 forbids (and `\"\" == None` is False anyway), while Style D inverts the logic — `not name` is True for both `None` and `\"\"`. Only Style A, `if name is not None:`, treats `None` as the single \"unset\" marker and accepts every other assigned value, including falsy ones."
+  },
+  {
+    "type": "single",
+    "question": "Which check for a `.py` file extension follows PEP 8?\n\n```python\n# Style A\nif name.endswith('.py'):\n    pass\n\n# Style B\nif name[-3:] == '.py':\n    pass\n\n# Style C\nif name[-2:] == '.py':\n    pass\n\n# Style D\nif name[:-3] == 'py':\n    pass\n```",
+    "options": [
+      "Style A",
+      "Style B",
+      "Style C",
+      "Style D"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 8: \"Use `''.startswith()` and `''.endswith()` instead of string slicing to check for prefixes or suffixes\" — they are cleaner and less error prone, so Style A's `name.endswith('.py')` is the recommended form. Style B is the slicing pattern the rule replaces: `name[-3:] == '.py'` forces you to hand-count the suffix length and silently returns False for names shorter than 3 characters. Style C takes only the last 2 characters and compares them to the 3-character `'.py'`, so it is always False, and Style D compares the wrong part of the string (everything except the last 3 characters) to `'py'`."
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 8, what is generally preferred over importing the `string` module?",
+    "options": [
+      "Using string methods such as `startswith()` and `endswith()`",
+      "Importing `re` and writing regular expressions",
+      "Using `in` to test for substrings",
+      "Converting values with `str()`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "PEP 8 recommends using string methods over importing the `string` module: the module's functions (like `string.upper()` and `string.split()`) were long ago moved onto `str` itself, so methods such as `startswith()`, `endswith()`, `upper()` and `split()` are the idiomatic, generally preferred alternative. Importing `re` is only for regular expressions, not a general replacement; `in` covers substring membership alone; and `str()` merely converts an object to a string — none of them generalizes the module's functionality the way methods do."
+  }
+]

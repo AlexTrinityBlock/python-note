@@ -1,0 +1,9 @@
+# Downloaded Python documentation reference pages — local study material only
+reference/
+**/reference/
+
+# Saved PEP web page kept in the PEP20 topic folder
+PEP20/*.html
+
+# Saved peps.python.org pages anywhere in the repo
+**/*peps.python.org*.html
