@@ -38,10 +38,5 @@
     "id": "Generators",
     "name": "Generators & Iterators",
     "description": "Iterator protocol, generator functions, yield expressions, generator expressions and async generators (PEP 234, PEP 255, language reference)."
-  },
-  {
-    "id": "AbstractBaseClasses",
-    "name": "Abstract Base Classes",
-    "description": "PEP 3119 and the abc module: ABC, ABCMeta, abstractmethod, virtual subclasses and collections.abc."
   }
 ]
