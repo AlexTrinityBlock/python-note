@@ -1,0 +1,548 @@
+[
+  {
+    "type": "single",
+    "question": "What does PEP 484 describe?\n\n```python\ndef square(n: int) -> int:\n    return n * n\n```",
+    "options": [
+      "Type hints for function signatures and variables",
+      "Docstring conventions",
+      "Code layout rules",
+      "Naming conventions"
+    ],
+    "answer": [0],
+    "explanation": "PEP 484, \"Type Hints\", defines the syntax and semantics of type annotations for variables and function signatures.\n\n```python\ndef add(x: int, y: int) -> int:\n    return x + y\n```"
+  },
+  {
+    "type": "single",
+    "question": "Which signature correctly annotates a function that takes a string and returns an integer?\n\n```python\ndef greet(name: str, count: int) -> str:\n    return f\"{name}: {count}\"\n```",
+    "options": [
+      "def f(name: str) -> int:",
+      "def f(name -> str) -> int:",
+      "def f(str name) -> int:",
+      "def f(name: str):"
+    ],
+    "answer": [0],
+    "explanation": "Parameter annotations use `name: type`, and the return type follows `->`, e.g. `def f(name: str) -> int:`. The other forms are not valid Python syntax."
+  },
+  {
+    "type": "single",
+    "question": "What does the annotation Optional[int] mean?\n\n```python\ndef f(x: Optional[int]) -> None:\n    print(x)\n```",
+    "options": [
+      "int or None",
+      "An optional argument",
+      "A list of integers",
+      "An int that can be omitted at runtime"
+    ],
+    "answer": [0],
+    "explanation": "Optional[int] is equivalent to Union[int, None]: the value is either an int or None. It does not make the argument optional at the call site.\n\n```python\nfrom typing import Optional\n\ndef f(x: Optional[int]) -> None:\n    print(x)\n\nf(3)      # OK\nf(None)   # OK\nf(\"s\")    # type checker error\n```"
+  },
+  {
+    "type": "single",
+    "question": "Which import provides the List and Dict types used in type hints?\n\n```python\ndef scores(name: str) -> Dict[str, int]:\n    ...\n```",
+    "options": [
+      "from typing import List, Dict",
+      "from types import List, Dict",
+      "import typing.List",
+      "from typing import list, dict"
+    ],
+    "answer": [0],
+    "explanation": "The typing module provides generic containers such as List, Dict, Tuple and Set. The types module serves a different purpose, and the lowercase names are not importable from typing.\n\n```python\nfrom typing import List, Dict\n\ndef index(text: str) -> Dict[str, int]:\n    return {}\n\nnames: List[str] = [\"Ada\", \"Bob\"]\n```"
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following are valid type annotations?\n\n```python\ndef process(items: List[str]) -> int:\n    return len(items)\n```",
+    "options": [
+      "x: int = 5",
+      "def f() -> None: pass",
+      "def g(name: str) -> str: return name",
+      "x = int: 5"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "Annotations follow the form `name: type`, and function return types follow `->`. \"`x = int: 5`\" is not valid Python syntax."
+  },
+  {
+    "type": "single",
+    "question": "What does -> None in a function signature indicate?\n\n```python\ndef log(message: str) -> None:\n    print(message)\n```",
+    "options": [
+      "The function returns nothing",
+      "The function takes no arguments",
+      "The function may fail",
+      "The function returns NoneType only when called"
+    ],
+    "answer": [0],
+    "explanation": "-> None means the function is not expected to return a value. Functions without a return statement implicitly return None anyway; the annotation makes that explicit.\n\n```python\ndef log(message: str) -> None:\n    print(message)\n\nprint(log(\"hi\"))  # None\n```"
+  },
+  {
+    "type": "single",
+    "question": "What does the following code print?\n\n```python\ndef add(a: int, b: int) -> int:\n    return a + b\n\nprint(add(2, 3))\n```",
+    "options": ["5", "23", "None", "TypeError"],
+    "answer": [0],
+    "explanation": "The annotated function `add` takes two integers and returns their sum, so `add(2, 3)` prints `5`."
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following Tuple annotations are valid according to PEP 484?\n\n```python\nPoint = Tuple[float, float]  # a fixed-length pair\n```",
+    "options": [
+      "Tuple[int, str]",
+      "Tuple[()]",
+      "Tuple[int, ...]",
+      "Tuple[str | int]"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "PEP 484 lists element types one by one (`Tuple[int, int, str]`), the empty tuple can be typed as `Tuple[()]`, and arbitrary-length homogeneous tuples use one type plus a literal ellipsis (`Tuple[int, ...]`). The `X | Y` syntax comes from PEP 604 and is not part of PEP 484."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about TypeVar are correct according to PEP 484?\n\n```python\nT = TypeVar('T')\n\ndef first(items: List[T]) -> T:\n    return items[0]\n```",
+    "options": [
+      "A TypeVar() expression must be directly assigned to a variable",
+      "The string argument to TypeVar() must equal the variable name it is assigned to",
+      "Type variables must not be redefined",
+      "A TypeVar with constraints must have at least two constraints"
+    ],
+    "answer": [0, 1, 2, 3],
+    "explanation": "The PEP states: \"A TypeVar() expression must always directly be assigned to a variable\", \"The argument to TypeVar() must be a string equal to the variable name to which it is assigned\", \"Type variables must not be redefined\", and \"There should be at least two constraints, if any; specifying a single constraint is disallowed.\"\n\n```python\nT = TypeVar('T', str, bytes)  # at least two constraints\n```"
+  },
+  {
+    "type": "multiple",
+    "question": "In an annotation context, which of the following are equivalent according to PEP 484?\n\n```python\ndef f(t: Tuple):  # bare Tuple used as an annotation\n    ...\n```",
+    "options": [
+      "bare Tuple",
+      "Tuple[Any, ...]",
+      "tuple",
+      "Tuple[()]"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "\"a bare Tuple in an annotation is equivalent to Tuple[Any, ...] and, in turn, to tuple.\" Tuple[()] is the type of the empty tuple, which is not equivalent to the others.\n\n```python\nfrom typing import Tuple, Any\n\ndef f(t: Tuple) -> None: ...   # == Tuple[Any, ...] == tuple\n```"
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following will raise TypeError when used in isinstance() or issubclass(), according to PEP 484?\n\n```python\nisinstance(x, Union[int, str])  # TypeError?\n```",
+    "options": [
+      "Any",
+      "Union[int, str]",
+      "List[int]",
+      "int"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "Special type constructs such as Any, Union, and type variables are only supported in the annotation context, and parameterized generics such as List[int] also raise TypeError there. Per the PEP, all of these (except unparameterized generics) raise TypeError in isinstance() or issubclass(). A plain built-in class like int works fine.\n\n```python\nfrom typing import Any, Union, List\n\nisinstance(x, Any)              # TypeError\nisinstance(x, Union[int, str])  # TypeError\nisinstance(x, List[int])        # TypeError\nisinstance(x, int)              # OK\n```"
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following are valid type comments according to PEP 484?\n\n```python\nx = []  # type: List[int]\n```",
+    "options": [
+      "x = []  # type: List[Employee]",
+      "x, y = [], []  # type: List[int], List[str]",
+      "for x, y in points:  # type: float, float",
+      "x = []  ## type: List[Employee]"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "Type comments use the `# type:` format and should be put on the last line of the statement that contains the variable definition; they also work on for and with statements, right after the colon. `## type:` is not the syntax defined by PEP 484."
+  },
+  {
+    "type": "multiple",
+    "question": "PEP 613 introduced explicit type aliases. Which statements about the following code are correct?\n\n```python\nfrom typing import TypeAlias\n\nVector: TypeAlias = list[float]\n```",
+    "options": [
+      "TypeAlias was added to the typing module by PEP 613 and requires Python 3.10 or later",
+      "The annotation tells type checkers that Vector is an intentional type alias, whereas a plain `Vector = list[float]` is ambiguous and could be a regular variable",
+      "With TypeAlias the right-hand side is treated as a type expression, so the alias may refer to a class that is defined later in the file",
+      "The right-hand side of the assignment is evaluated lazily at runtime and only when the alias is first used"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "PEP 613, \"Explicit Type Aliases\", added `TypeAlias` to the `typing` module (Python 3.10+). Under PEP 484 an alias was just an implicit assignment — `Vector = list[float]` — which is ambiguous to a static type checker: `x = int` could equally be a regular variable holding the class `int` or a type alias. The explicit form removes that ambiguity and replaces the outdated style:\n\n```python\n# Outdated (PEP 484, implicit): ambiguous to type checkers\nVector = list[float]\n\n# Modern (PEP 613, explicit; Python 3.10+)\nfrom typing import TypeAlias\n\nVector: TypeAlias = list[float]\n```\n\nBecause the checker now sees the annotation, it interprets the right-hand side as a type expression rather than a value, which also enables forward references to types defined later in the module:\n\n```python\nAlias: TypeAlias = SomeClass   # fine for the type checker\n\nclass SomeClass:\n    pass\n```\n\nRuntime behaviour is unchanged, however: the right-hand side is still evaluated eagerly when the assignment statement runs, so the alias above would raise `NameError` unless `SomeClass` already exists — use a string form for genuine forward references (`Alias: TypeAlias = \"SomeClass\"`). Note the modern style elsewhere too: built-in generics such as `list[float]` (PEP 585) replace the old `typing.List` spelling, and `TypeAlias` itself must come from `typing`. The current typing specification also offers the `type` statement (PEP 695, Python 3.12+) as a modern alternative: `type Vector = list[float]`."
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 613, which statement about the following code is correct?\n\n```python\nfrom typing import TypeAlias\n\nVector: TypeAlias = list[float]\n```",
+    "options": [
+      "It requires Python 3.10 or later: PEP 613 added the TypeAlias special form to the typing module",
+      "It is a syntax error because type aliases must use a plain assignment such as `Vector = list[float]`",
+      "It raises TypeError at runtime because TypeAlias may only appear inside stub files",
+      "It has worked in every Python 3 release because TypeAlias was part of typing from the start"
+    ],
+    "answer": [0],
+    "explanation": "PEP 613, \"Explicit Type Aliases\" (Status: Final, Python-Version: 3.10), added the `TypeAlias` special form to the `typing` module, so `from typing import TypeAlias` requires Python 3.10 or later. The annotation is not restricted to stub files and it causes no error: at runtime the assignment still evaluates `list[float]` eagerly (a PEP 585 generic alias) and the annotation is merely stored in `__annotations__`. Under PEP 484 the same alias could only be written implicitly — `Vector = list[float]` — which is ambiguous to a type checker. The typing specification now also offers the `type` statement (PEP 695, Python 3.12+) as a modern alternative:\n\n```python\nfrom typing import TypeAlias\n\nVector: TypeAlias = list[float]  # PEP 613, Python 3.10+\ntype Vector2 = list[float]       # PEP 695, Python 3.12+\n```"
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements describe the problem PEP 613 solves and how the explicit form helps?\n\n```python\nx = int             # implicit alias under PEP 484\n\nfrom typing import TypeAlias\n\ny: TypeAlias = int  # explicit alias under PEP 613\n```",
+    "options": [
+      "Under PEP 484 the distinction was implicit: an unannotated top-level assignment whose value is a valid type was treated as a type alias, which is ambiguous for a checker",
+      "With `x = int` a type checker cannot tell whether x is a type alias or a plain variable holding the class int",
+      "With the explicit form the checker treats the right-hand side as a type expression and can report errors at the definition, e.g. `Bad: TypeAlias = MyGeneric(int)`",
+      "The explicit form changes runtime semantics: the right-hand side is no longer evaluated when the assignment runs"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "Before PEP 613, whether an assignment was a type alias was decided implicitly (PEP 484): if a top-level assignment is unannotated and the assigned value is a valid type, the name is a type alias; otherwise it is a global value. That makes `x = int` genuinely ambiguous — it could be an alias for `int` or a plain variable holding the class object. The explicit form removes the ambiguity and improves error messaging: with `Bad: TypeAlias = MyGeneric(int)` the checker can flag the definition itself (a call is not a valid type expression) instead of emitting confusing \"MyType is not a valid type\" errors at every use site. Runtime behaviour is unchanged — `int` is still evaluated eagerly and the annotation is stored in `__annotations__`:\n\n```python\nfrom typing import TypeAlias\n\nx = int                 # ambiguous: alias or variable?\ny: TypeAlias = int      # unambiguous: y is an alias for int\nprint(x, y)             # <class 'int'> <class 'int'>\n```"
+  },
+  {
+    "type": "single",
+    "question": "What does the explicit annotation change for a type checker, compared with the implicit form?\n\n```python\nMyType: TypeAlias = \"ClassName\"\n\ndef foo() -> MyType:\n    ...\n```",
+    "options": [
+      "The checker now treats MyType as a type alias instead of an unannotated global string, so it reports neither a missing annotation nor an invalid return type — and it can still report an error if ClassName is never defined",
+      "The checker resolves the string at runtime and raises NameError immediately when ClassName is missing",
+      "The annotation makes the assignment lazy, so ClassName may be defined later inside foo",
+      "The checker ignores the annotation and keeps flagging MyType as an unannotated global"
+    ],
+    "answer": [0],
+    "explanation": "With the implicit form `MyType = \"ClassName\"` a type checker must assume `MyType` is a plain string variable, so it may throw spurious errors: (1) `MyType` is an unannotated global string, and (2) `MyType` cannot be used as a return annotation because it is not a valid type. The explicit form removes that ambiguity — the checker knows `MyType` is a type alias whose right-hand side is a type expression — so neither error is raised, and if `ClassName` is in fact never defined anywhere, the checker can now report a meaningful error at the alias definition. At runtime nothing changes: the string literal is assigned eagerly and only a static checker resolves it:\n\n```python\nfrom typing import TypeAlias\n\nMyType: TypeAlias = \"ClassName\"  # forward reference, resolved by the checker\n\ndef foo() -> MyType:             # no spurious errors now\n    ...\n```"
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 613, how does a type checker treat the assignments in this code (assuming ClassName is defined)?\n\n```python\nclass Foo:\n    x = ClassName                  # implicit class-scope alias\n    y: TypeAlias = ClassName       # explicit class-scope alias\n    z: Type[ClassName] = ClassName # typed class variable\n\ndef bar() -> None:\n    x: TypeAlias = ClassName       # ???\n```",
+    "options": [
+      "x and y are accepted as class-scope type aliases (TypeAlias was allowed in class scope by the 2021 update), and the TypeAlias assignment inside bar is an error because type aliases cannot be defined inside a function",
+      "All three class attributes are errors because type aliases are only valid at module top level",
+      "z is treated as a type alias because its annotation mentions ClassName",
+      "The TypeAlias annotation inside bar is silently ignored"
+    ],
+    "answer": [0],
+    "explanation": "PEP 613 states that type aliases are valid within class scope, both implicitly and explicitly, and its version-history entry of 2021-11-16 explicitly allows `TypeAlias` inside class scope — so `x` and `y` are fine. `z: Type[ClassName] = ClassName` is a typed class variable, not an alias, because its annotation is `Type[ClassName]` rather than `TypeAlias`. Inside a function the story differs: an implicit `x = ClassName` there is interpreted as a regular local variable (roughly `x: Type[ClassName] = ClassName`), and an explicit `x: TypeAlias = ClassName` inside `bar` is an error — \"type aliases cannot be defined inside a function\". The explicit form moves that error to the definition site instead of reporting it at every subsequent use of x:\n\n```python\nx: TypeAlias = ClassName\n\ndef foo() -> None:\n    x = ClassName  # OK: a local variable, not an alias\n\ndef bar() -> None:\n    x: TypeAlias = ClassName  # type checker error: alias in function scope\n```"
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about the following assignments are correct per PEP 613 and the typing specification?\n\n```python\na = 1                     # untyped global expression\nb: int = 1                # typed global expression\nc = int                   # implicit type alias (kept for compatibility)\nd: type[int] = int        # typed global expression\ne: TypeAlias = int        # explicit type alias\nf: TypeAlias = \"MyClass\"  # explicit alias with a forward reference\n```",
+    "options": [
+      "The explicit syntax differentiates the three possible kinds of assignments: typed global expressions, untyped global expressions, and type aliases",
+      "For backwards compatibility, type checkers support both forms simultaneously, so `c = int` is still considered a valid type alias",
+      "`f: TypeAlias = \"MyClass\"` is a valid explicit alias whose string form is resolved later by the checker",
+      "`d: type[int] = int` and `e: TypeAlias = int` are equivalent for a type checker"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "The explicit syntax clearly differentiates the three kinds of assignments that were previously conflated: untyped global expressions (`a = 1`), typed global expressions (`b: int = 1`, `d: type[int] = int`), and type aliases (`e: TypeAlias = int`). For backwards compatibility the specification keeps both forms working at once, so the untyped `c = int` is still a valid (implicit) type alias. `f: TypeAlias = \"MyClass\"` is a valid explicit alias: the string form defers resolution of `MyClass` to the checker, which is how forward references are expressed. `d` and `e` are NOT equivalent: `d` is a typed global expression (a variable whose value happens to be a class object), while `e` is a type alias — the name `e` itself may be used as a type. At runtime all right-hand sides are evaluated eagerly exactly like normal assignments:\n\n```python\nfrom typing import TypeAlias\n\ne: TypeAlias = int\ndef double(x: e) -> e:  # e usable as a type\n    return x * 2\n```"
+  },
+  {
+    "type": "single",
+    "question": "Why did PEP 613 reject the alternative syntaxes shown in the comments?\n\n```python\nMyType: TypeAlias = int   # chosen syntax\n# MyType: TypeAlias[int]  # rejected\n# MyType = TypeAlias[int] # rejected\n```",
+    "options": [
+      "`MyType: TypeAlias[int]` looks like an uninitialized variable, and `MyType = TypeAlias[int]` adds confusion about the runtime value of MyType",
+      "They were rejected because only lowercase names may be used in explicit alias declarations",
+      "They were rejected because a type checker cannot parse brackets inside annotations",
+      "They were rejected because TypeAlias[int] raises TypeError at runtime"
+    ],
+    "answer": [0],
+    "explanation": "PEP 613's \"Rejected Ideas\" section explains that `MyType: TypeAlias[int]` \"looks a lot like an uninitialized variable\", while `MyType = TypeAlias[int]` \"potentially adds confusion around what the runtime value of MyType is\". The chosen syntax `MyType: TypeAlias = int` was preferred because it keeps the familiar `MyType = int` assignment shape and adds information for the type checker purely through the annotation:\n\n```python\nfrom typing import TypeAlias\n\nMyType: TypeAlias = int  # still reads like a plain assignment\n\ndef f(x: MyType) -> None: ...\n```"
+  },
+  {
+    "type": "single",
+    "question": "What does this code print, and what runtime effect does the annotation have?\n\n```python\nfrom typing import TypeAlias\n\nVector: TypeAlias = list[float]\nprint(Vector)\n```",
+    "options": [
+      "It prints list[float]; the right-hand side is evaluated eagerly exactly like a normal assignment, and the TypeAlias annotation itself has no runtime effect",
+      "It prints TypeAlias; the annotation replaces the assigned value at runtime",
+      "It raises TypeError because TypeAlias is only meaningful to static type checkers",
+      "It prints nothing because the assignment is skipped at runtime"
+    ],
+    "answer": [0],
+    "explanation": "Type annotations never change runtime behaviour. `Vector: TypeAlias = list[float]` is evaluated exactly like an ordinary annotated assignment: `list[float]` is built eagerly (a PEP 585 generic alias object), `Vector` is bound to it, and the annotation `TypeAlias` is stored in the module's `__annotations__` dict. `print(Vector)` therefore shows `list[float]`:\n\n```python\nfrom typing import TypeAlias\n\nVector: TypeAlias = list[float]\nprint(Vector)                       # list[float]\nprint(__annotations__['Vector'])    # typing.TypeAlias\n\nAlias: TypeAlias = \"SomeClass\"      # a forward reference is just a string at runtime\nprint(Alias)                        # SomeClass\n```\n\nOnly a separate static type checker interprets the annotation; the interpreter never checks or enforces it."
+  },
+  {
+    "type": "single",
+    "question": "Which statement about the `type` statement is correct according to the latest typing specification?\n\n```python\ntype Url = str\n\ntype ListOrSet[T] = list[T] | set[T]\n```",
+    "options": [
+      "Introduced by PEP 695 in Python 3.12, it defines a type alias and supports explicit type parameters, so ListOrSet is a generic alias for list[T] | set[T]",
+      "It is understood only by type checkers; at runtime the statement is ignored and Url stays undefined",
+      "It is the only supported way to define a type alias — TypeAlias and plain assignments are no longer valid",
+      "The right-hand side may be any expression, including calls such as `type v = list(range(3))`"
+    ],
+    "answer": [0],
+    "explanation": "The typing specification presents three equivalent ways to define a type alias: a plain assignment (`Url = str`), an explicit `TypeAlias` annotation (PEP 613, Python 3.10+), and the `type` statement (PEP 695, Python 3.12+). The `type` statement is not ignored at runtime — it binds the name to a `typing.TypeAliasType` object — and unlike `TypeAlias` it can declare explicit type parameters, making `ListOrSet` a generic alias for `list[T] | set[T]` (bounds are supported too, e.g. `type Vector[T: float] = ...`). The right-hand side must be a valid type expression: type checkers should flag calls, arithmetic, ternary or comparison operators, and traditional `TypeVar` variables are not allowed inside the statement:\n\n```python\nT = TypeVar(\"T\")\ntype MyList = list[T]   # type checker error: traditional type variable usage\n\nfrom typing import TypeAlias\n\nUrl: TypeAlias = str    # PEP 613 equivalent of: type Url = str\n```"
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about NewType are correct according to PEP 484?\n\n```python\nUserId = NewType('UserId', int)\n```",
+    "options": [
+      "NewType accepts exactly two arguments: a name and a base class",
+      "At runtime, NewType('Derived', Base) returns a dummy function that simply returns its argument",
+      "isinstance and issubclass fail for types created with NewType",
+      "NewType creates a runtime subclass of the base class"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "NewType creates simple unique types with almost zero runtime overhead for a static type checker, but at runtime it returns a dummy function that returns its argument unchanged. Since that is a function object, isinstance(), issubclass(), and subclassing all fail.\n\n```python\nfrom typing import NewType\n\nUserId = NewType('UserId', int)\n\ndef name_by_id(user_id: UserId) -> str: ...\n\nname_by_id(42)         # type checker error\nname_by_id(UserId(42)) # OK\n```"
+  },
+  {
+    "type": "multiple",
+    "question": "Which of the following are acceptable type hints according to PEP 484?\n\n```python\ndef f(x: int, y: SomeABC, z: MyClass) -> None:\n    ...\n```",
+    "options": [
+      "Built-in classes such as int and str",
+      "Abstract base classes",
+      "User-defined classes",
+      "Dynamically computed expressions such as (2 + 2)"
+    ],
+    "answer": [0, 1, 2],
+    "explanation": "Type hints may be built-in classes, abstract base classes, types available in the types module, and user-defined classes. Annotations should be kept simple, because dynamically computed types are unlikely to be understood by static analysis tools.\n\n```python\nfrom collections.abc import Iterable\n\ndef total(items: Iterable[int]) -> int:  # ABC as a hint\n    return sum(items)\n\nclass Point:                             # user-defined class\n    x: float\n    y: float\n\ndef dist(p: Point) -> float: ...\n```"
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 484, what happens at runtime if a function with annotations is called with an argument whose type does not match the annotation?\n\n```python\ndef f(x: int) -> None:\n    print(x)\n\nf(\"hello\")  # runtime behaviour?\n```",
+    "options": [
+      "Nothing special — no type checking happens at runtime",
+      "A TypeError is raised",
+      "A warning is printed to stderr",
+      "The annotation is removed from the function"
+    ],
+    "answer": [0],
+    "explanation": "The PEP states that \"no type checking happens at runtime\". Annotations are only available at runtime through `__annotations__`; checking is done by a separate off-line type checker, which the user runs voluntarily."
+  },
+  {
+    "type": "single",
+    "question": "Where are the annotations of a function available at runtime?\n\n```python\ndef f(x: int) -> str:\n    return str(x)\n\nprint(f.__annotations__)\n```",
+    "options": [
+      "In the `__annotations__` attribute of the function object",
+      "In a global registry in the typing module",
+      "They are not available at runtime at all",
+      "In the function's `__doc__` attribute"
+    ],
+    "answer": [0],
+    "explanation": "\"these annotations are available at runtime through the usual `__annotations__` attribute\". Evaluating the annotation expressions and storing them in `__annotations__` is the only runtime effect of type-hint annotations."
+  },
+  {
+    "type": "single",
+    "question": "For a checked function, what is the default annotation for arguments and the return type when no annotation is given?\n\n```python\ndef f(x, y: int):\n    ...  # what type does a checker assume for x?\n```",
+    "options": ["Any", "object", "None", "str"],
+    "answer": [0],
+    "explanation": "\"For a checked function, the default annotation for arguments and for the return type is Any.\" An exception is the first argument of instance and class methods, which is assumed to have the type of the containing class (or a class-object type for class methods).\n\n```python\ndef f(x, y: int):  # x defaults to Any, return type defaults to Any\n    return x\n```"
+  },
+  {
+    "type": "single",
+    "question": "Which annotation correctly describes a callback that takes one int argument and returns a str?\n\n```python\ndef handler(n: int) -> str:\n    return str(n)\n```",
+    "options": [
+      "Callable[[int], str]",
+      "Callable[int, str]",
+      "Callable[[int, str]]",
+      "Callable(str) -> int"
+    ],
+    "answer": [0],
+    "explanation": "Callable is written as Callable[[Arg1Type, Arg2Type], ReturnType]: the argument types go inside a nested list, and the return type follows. So a function taking an int and returning a str is Callable[[int], str].\n\n```python\nfrom typing import Callable\n\ndef apply(f: Callable[[int], str], n: int) -> str:\n    return f(n)\n```"
+  },
+  {
+    "type": "single",
+    "question": "Given AnyStr = TypeVar('AnyStr', str, bytes) and the following function, which calls are accepted by a type checker?\n\n```python\ndef concat(x: AnyStr, y: AnyStr) -> AnyStr:\n    return x + y\n```",
+    "options": [
+      "concat('a', 'b') and concat(b'a', b'b')",
+      "concat('a', b'b')",
+      "concat(1, 2)",
+      "concat(None, None)"
+    ],
+    "answer": [0],
+    "explanation": "\"The function concat can be called with either two str arguments or two bytes arguments, but not with a mix of str and bytes arguments.\" Constraining a TypeVar to a fixed set of types restricts which types it may stand for.\n\n```python\nAnyStr = TypeVar('AnyStr', str, bytes)\n\ndef concat(x: AnyStr, y: AnyStr) -> AnyStr:\n    return x + y\n\nconcat('a', 'b')    # OK\nconcat(b'a', b'b')  # OK\nconcat('a', b'b')   # type checker error\n```"
+  },
+  {
+    "type": "single",
+    "question": "How does PEP 484 define a user-defined generic class?\n\n```python\nT = TypeVar('T')\n\n# How do you define a user-defined generic class?\nclass LoggedVar(...):\n    def get(self) -> T: ...\n```",
+    "options": [
+      "class LoggedVar(Generic[T]): ...",
+      "class LoggedVar[T]: ...",
+      "class LoggedVar(Generic): ...",
+      "@generic class LoggedVar: ..."
+    ],
+    "answer": [0],
+    "explanation": "\"You can include a Generic base class to define a user-defined class as generic.\" Generic[T] as a base class declares that LoggedVar takes a single type parameter T and makes T valid as a type within the class body.\n\n```python\nfrom typing import TypeVar, Generic\n\nT = TypeVar('T')\n\nclass LoggedVar(Generic[T]):\n    def __init__(self, value: T) -> None:\n        self.value = value\n\nv = LoggedVar[int](42)  # v.value is int\n```"
+  },
+  {
+    "type": "single",
+    "question": "Per PEP 484, what does a type checker treat the following class as inheriting from?\n\n```python\nclass MyIterable(Iterable):\n    ...\n```",
+    "options": [
+      "Iterable[Any]",
+      "Iterable[T]",
+      "Iterable[None]",
+      "object"
+    ],
+    "answer": [0],
+    "explanation": "\"Subclassing a generic class without specifying type parameters assumes Any for each position.\" MyIterable is not generic but implicitly inherits from Iterable[Any].\n\n```python\nfrom typing import Iterable\n\nclass MyIterable(Iterable):  # treated as Iterable[Any]\n    ...\n```"
+  },
+  {
+    "type": "single",
+    "question": "Given class Node(Generic[T]), what is the runtime class of the object created by p = Node[int]()?\n\n```python\nclass Node(Generic[T]):\n    ...\n\np = Node[int]()\nprint(type(p).__name__)  # ?\n```",
+    "options": ["Node", "Node[int]", "Generic[int]", "typing.Node"],
+    "answer": [0],
+    "explanation": "\"The runtime type (class) of p and q is still just Node – Node[int] and Node[str] are distinguishable class objects, but the runtime class of the objects created by instantiating them doesn't record the distinction.\" This behavior is called \"type erasure\".\n\n```python\nclass Node(Generic[T]): ...\n\np = Node[int]()\nq = Node[str]()\n\nprint(type(p).__name__)  # Node\nprint(type(q).__name__)  # Node\n```"
+  },
+  {
+    "type": "single",
+    "question": "ST = TypeVar('ST', bound=Sized) means that ...\n\n```python\nfrom typing import TypeVar, Sized\n\nST = TypeVar('ST', bound=Sized)\n```",
+    "options": [
+      "any type substituted for ST must be a subtype of Sized",
+      "ST can only be exactly Sized",
+      "ST may only be used inside container types",
+      "ST is a type alias for Sized"
+    ],
+    "answer": [0],
+    "explanation": "\"A type variable may specify an upper bound using bound=<type>... an actual type substituted (explicitly or implicitly) for the type variable must be a subtype of the boundary type.\" An upper bound cannot be combined with type constraints.\n\n```python\nfrom typing import TypeVar, Sized, List\n\nST = TypeVar('ST', bound=Sized)\n\ndef total(xs: List[ST]) -> int:\n    return sum(len(x) for x in xs)\n```"
+  },
+  {
+    "type": "single",
+    "question": "By default, how do generic types behave with respect to their type variables, according to PEP 484?\n\n```python\nclass Employee: ...\nclass Manager(Employee): ...\n\nemployees: List[Employee] = []\nmanagers: List[Manager] = []\nemployees = managers  # allowed by a checker?\n```",
+    "options": [
+      "Invariantly — values must exactly match the type annotation",
+      "Covariantly — subclasses of the parameter are allowed",
+      "Contravariantly — superclasses of the parameter are allowed",
+      "Bivariantly — any type is allowed"
+    ],
+    "answer": [0],
+    "explanation": "\"By default generic types are considered invariant in all type variables, which means that values for variables annotated with types like List[Employee] must exactly match the type annotation – no subclasses or superclasses of the type parameter are allowed.\"\n\n```python\nclass Employee: ...\nclass Manager(Employee): ...\n\nemployees: List[Employee] = []\nmanagers: List[Manager] = []\n\nemployees = managers  # type checker error: List is invariant\n```"
+  },
+  {
+    "type": "single",
+    "question": "How does PEP 484 declare a covariant type variable?\n\n```python\nclass Stream(Generic[T_co]):  # T_co declared how?\n    ...\n```",
+    "options": [
+      "T_co = TypeVar('T_co', covariant=True)",
+      "T_co = TypeVar('T_co', variance='covariant')",
+      "T_co = Covariant('T_co')",
+      "T_co = TypeVar('T_co', covariant)"
+    ],
+    "answer": [0],
+    "explanation": "\"Type variables accept keyword arguments covariant=True or contravariant=True. At most one of these may be passed.\" By convention, names ending in _co are recommended for covariant variables and _contra for contravariant ones. Variance is a property of the generic class defined using the variable, not of the variable itself.\n\n```python\nfrom typing import TypeVar, Generic\n\nT_co = TypeVar('T_co', covariant=True)\n\nclass Box(Generic[T_co]): ...\n```"
+  },
+  {
+    "type": "single",
+    "question": "If an argument is annotated as float, which other type is also acceptable for that argument, per PEP 484's numeric tower shortcut?\n\n```python\ndef scale(x: float) -> float:\n    return x * 2.0\n\nscale(3)    # acceptable to a checker?\nscale(3.5)\n```",
+    "options": ["int", "str", "bytes", "Decimal from the decimal module"],
+    "answer": [0],
+    "explanation": "\"When an argument is annotated as having type float, an argument of type int is acceptable; similar, for an argument annotated as having type complex, arguments of type float or int are acceptable.\" This shortcut does not handle classes implementing the number ABCs or fractions.Fraction.\n\n```python\ndef scale(x: float) -> float:\n    return x * 2.0\n\nscale(3)    # OK: int is acceptable for float\nscale(3.5)  # OK\n```"
+  },
+  {
+    "type": "single",
+    "question": "Inside class Tree, how do you annotate a parameter whose type is Tree itself, before the class name is defined?\n\n```python\nclass Tree:\n    def __init__(self, left: ???, right: ???):\n        self.left = left\n        self.right = right\n```",
+    "options": [
+      "Use a string literal: left: 'Tree'",
+      "Use left: Tree[Any]",
+      "Use left: type(Tree)",
+      "This cannot be done in Python"
+    ],
+    "answer": [0],
+    "explanation": "\"When a type hint contains names that have not been defined yet, that definition may be expressed as a string literal, to be resolved later.\" The string must be a valid Python expression that evaluates without errors once the module has been fully loaded. String literals may also be used as part of a hint, e.g. List['Tree'].\n\n```python\nclass Tree:\n    def __init__(self, left: 'Tree', right: 'Tree') -> None:\n        self.left = left\n        self.right = right\n```"
+  },
+  {
+    "type": "single",
+    "question": "According to PEP 484, Union[T1, T2, ...] is ...\n\n```python\nfrom typing import Union\n\ndef f(x: Union[int, str]) -> None:\n    ...\n```",
+    "options": [
+      "a supertype of all types T1, T2, ...",
+      "a subtype of T1",
+      "exactly the same type as T1",
+      "a special form only usable inside isinstance()"
+    ],
+    "answer": [0],
+    "explanation": "\"A type factored by Union[T1, T2, ...] is a supertype of all types T1, T2, etc., so that a value that is a member of one of these types is acceptable for an argument annotated by Union[T1, T2, ...].\"\n\n```python\nfrom typing import Union\n\ndef f(x: Union[int, str]) -> None: ...\n\nf(1)     # OK\nf(\"s\")   # OK\nf(1.5)   # type checker error\n```"
+  },
+  {
+    "type": "single",
+    "question": "As a shorthand, Optional[T1] is equivalent to ...\n\n```python\nfrom typing import Optional\n\ndef lookup(key: str) -> Optional[int]:\n    ...\n```",
+    "options": ["Union[T1, None]", "Union[T1, T2]", "Any", "Tuple[T1, ...]"],
+    "answer": [0],
+    "explanation": "\"As a shorthand for Union[T1, None] you can write Optional[T1].\" The typing module defines Optional by Optional[t] == Union[t, None].\n\n```python\nfrom typing import Optional\n\ndef f(x: Optional[int]) -> None: ...\n\nf(None)  # OK\nf(3)     # OK\n```"
+  },
+  {
+    "type": "single",
+    "question": "What is the current recommendation in PEP 484 for the following signature?\n\n```python\ndef handle_employee(e: Employee = None):\n    ...\n```",
+    "options": [
+      "Make the optional type explicit, e.g. e: Optional[Employee] = None",
+      "Type checkers should still implicitly treat e as Optional[Employee]",
+      "None is not allowed as a default value at all",
+      "This signature is a syntax error"
+    ],
+    "answer": [0],
+    "explanation": "\"A past version of this PEP allowed type checkers to assume an optional type when the default value is None... This is no longer the recommended behavior. Type checkers should move towards requiring the optional type to be made explicit.\"\n\n```python\nfrom typing import Optional\n\ndef handle_employee(e: Optional[Employee] = None) -> None:\n    ...\n```"
+  },
+  {
+    "type": "single",
+    "question": "What is the difference between Any and object according to PEP 484?\n\n```python\nfrom typing import Any\n\ndef f(x: object) -> None: ...\ndef g(x: Any) -> None: ...\n```",
+    "options": [
+      "object rejects almost all operations and cannot be assigned to more specialized types, while Any allows all operations and can be assigned to any type",
+      "They are completely equivalent",
+      "object allows all operations while Any rejects them",
+      "Any cannot be used in annotations"
+    ],
+    "answer": [0],
+    "explanation": "\"Any and builtin type object are completely different. When the type of a value is object, the type checker will reject almost all operations on it... On the other hand, when a value has type Any, the type checker will allow all operations on it, and a value of type Any can be assigned to a variable (or used as a return value) of a more constrained type.\"\n\n```python\nfrom typing import Any\n\ndef f(x: object) -> int:\n    return x + 1  # type checker error: object has no +\n\ndef g(x: Any) -> int:\n    return x + 1  # allowed: Any permits all operations\n```"
+  },
+  {
+    "type": "single",
+    "question": "What does the return annotation NoReturn mean?\n\n```python\nfrom typing import NoReturn\n\ndef fail() -> NoReturn:\n    raise SystemExit(1)\n```",
+    "options": [
+      "The function never returns normally, e.g. it always raises an exception",
+      "The function returns None",
+      "The function may return any type",
+      "The function has no parameters"
+    ],
+    "answer": [0],
+    "explanation": "\"The typing module provides a special type NoReturn to annotate functions that never return normally. For example, a function that unconditionally raises an exception.\" It is suitable for functions such as sys.exit. Static type checkers verify that NoReturn functions truly never return.\n\n```python\nfrom typing import NoReturn\nimport sys\n\ndef fail() -> NoReturn:\n    raise RuntimeError(\"boom\")\n\ndef stop() -> NoReturn:\n    sys.exit(1)\n```"
+  },
+  {
+    "type": "single",
+    "question": "In which position is NoReturn valid as an annotation?\n\n```python\ndef fail() -> NoReturn: ...          # valid?\ndef f(x: NoReturn) -> None: ...      # valid?\n```",
+    "options": [
+      "Only as a return annotation of functions",
+      "Anywhere a type hint is allowed",
+      "Only for generator functions",
+      "Only in stub files"
+    ],
+    "answer": [0],
+    "explanation": "\"The NoReturn type is only valid as a return annotation of functions, and considered an error if it appears in other positions\" — e.g. as a parameter annotation, in a variable type comment, or inside List[NoReturn].\n\n```python\nfrom typing import NoReturn\n\ndef fail() -> NoReturn: ...       # valid\n\ndef f(x: NoReturn) -> None: ...  # type checker error: invalid position\n```"
+  },
+  {
+    "type": "single",
+    "question": "What does the annotation Type[C] refer to, where C is a class?\n\n```python\nclass C: ...\n\ndef make(cls: Type[C]) -> C:\n    return cls()\n```",
+    "options": [
+      "Class objects that are subclasses of C",
+      "Instances of class C",
+      "The metaclass of C",
+      "A list of C instances"
+    ],
+    "answer": [0],
+    "explanation": "\"While C (when used as an annotation) refers to instances of class C, Type[C] refers to subclasses of C. (This is a similar distinction as between object and type.)\" Plain Type is equivalent to Type[Any] and, in turn, to type.\n\n```python\nfrom typing import Type\n\nclass C: ...\n\ndef make(cls: Type[C]) -> C:\n    return cls()\n\nmake(C)    # OK: C is a class object\nmake(C())  # type checker error: an instance, not a class\n```"
+  },
+  {
+    "type": "single",
+    "question": "If the first argument of an instance method is not annotated, what type does a type checker assume for it?\n\n```python\nclass Foo:\n    def method(self, x: int) -> None:\n        ...  # what type is self assumed to be?\n```",
+    "options": [
+      "The type of the containing class",
+      "Any",
+      "object",
+      "The type of the first parameter's default value"
+    ],
+    "answer": [0],
+    "explanation": "\"An exception is the first argument of instance and class methods. If it is not annotated, then it is assumed to have the type of the containing class for instance methods, and a type object type corresponding to the containing class object for class methods.\" The first argument of an instance method may also be annotated with a type variable, making the method generic.\n\n```python\nclass Foo:\n    def method(self, x: int) -> None:\n        ...  # self is assumed to be Foo\n```"
+  },
+  {
+    "type": "single",
+    "question": "What is the value of typing.TYPE_CHECKING at runtime?\n\n```python\nimport typing\n\nif typing.TYPE_CHECKING:\n    import expensive_module\n```",
+    "options": ["False", "True", "None", "It raises an error if accessed"],
+    "answer": [0],
+    "explanation": "\"The typing module defines a constant, TYPE_CHECKING, that is considered True during type checking (or other static analysis) but False at runtime.\" It lets code that must be seen by a type checker be hidden from the interpreter, e.g. inside `if typing.TYPE_CHECKING: import expensive_mod`."
+  },
+  {
+    "type": "single",
+    "question": "Given the following definition, what types does a type checker deduce for args and kwds inside the function body?\n\n```python\ndef foo(*args: str, **kwds: int):\n    ...\n```",
+    "options": [
+      "args: Tuple[str, ...] and kwds: Dict[str, int]",
+      "args: List[str] and kwds: Dict[int, str]",
+      "args: str and kwds: int",
+      "args: Tuple[str] and kwds: Dict[str, str]"
+    ],
+    "answer": [0],
+    "explanation": "\"In the body of function foo, the type of variable args is deduced as Tuple[str, ...] and the type of variable kwds is Dict[str, int].\" The annotation on *args describes the type of each individual argument value, not of the tuple received.\n\n```python\ndef foo(*args: str, **kwds: int) -> None: ...\n\n# inside the body:\n#   args: Tuple[str, ...]\n#   kwds: Dict[str, int]\n```"
+  },
+  {
+    "type": "single",
+    "question": "What does cast(t, x) do at runtime?\n\n```python\nfrom typing import cast\n\nx = cast(int, \"hello\")\nprint(x)  # ?\n```",
+    "options": [
+      "It returns x unchanged — it does not check, convert or coerce the value",
+      "It converts x into an instance of type t",
+      "It raises TypeError if x is not of type t",
+      "It removes all annotations from x"
+    ],
+    "answer": [0],
+    "explanation": "\"At runtime a cast always returns the expression unchanged – it does not check the type, and it does not convert or coerce the value.\" The cast call tells the type checker to blindly believe that the type of x is t, unlike a type comment, where the checker still verifies consistency.\n\n```python\nfrom typing import cast\n\nx = cast(int, \"hello\")\nprint(x)  # hello — the string is returned unchanged\n```"
+  },
+  {
+    "type": "single",
+    "question": "Which annotation correctly describes a generator function that yields int values, accepts float values via send(), and returns a str?\n\n```python\ndef numbers() -> Generator[int, float, str]:\n    ...\n```",
+    "options": [
+      "Generator[int, float, str]",
+      "Generator[float, int, str]",
+      "Generator[int, str, float]",
+      "Iterator[int, float, str]"
+    ],
+    "answer": [0],
+    "explanation": "\"The return type of generator functions can be annotated by the generic type Generator[yield_type, send_type, return_type] provided by typing module.\" So a generator that yields int, accepts float through send(), and returns str is Generator[int, float, str].\n\n```python\nfrom typing import Generator\n\ndef gen() -> Generator[int, float, str]:\n    received = yield 1\n    return \"done\"\n```"
+  }
+]

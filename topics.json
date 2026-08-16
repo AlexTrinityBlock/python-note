@@ -20,14 +20,14 @@
     "description": "Conventions for writing module, class and function docstrings."
   },
   {
-    "id": "PEP484",
-    "name": "Type Hints — PEP 484",
-    "description": "Static type annotations for variables and function signatures."
+    "id": "Typing",
+    "name": "Typing — Type Hints",
+    "description": "Static type annotations: PEP 484 type hints, the typing module, PEP 613 explicit type aliases, and the modern `type` statement (PEP 695)."
   },
   {
     "id": "PEP252",
     "name": "Types as Classes — PEP 252",
-    "description": "Making types look more like classes: introspection APIs and attribute descriptors."
+    "description": "Making types look more like classes: introspection APIs and attribute descriptors — plus the class-creation machinery that followed (PEP 3115 metaclasses, PEP 487 `__init_subclass__` / `__set_name__`)."
   },
   {
     "id": "PEP253",

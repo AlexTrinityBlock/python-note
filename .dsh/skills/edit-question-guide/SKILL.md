@@ -53,6 +53,115 @@ description: Use this Skill when adding or modifying questions.
 ## Explanations
 - Must be complete, with code examples
 - Must ensure the user fully understands the whole knowledge module; for example, Typing questions should include a complete Typing code example
+- Must derive the output step by step: for code questions, trace every round of execution in clearly structured Markdown (e.g., a table of state changes followed by a numbered walkthrough) so learners can observe the details
 
 ## Language requirement
 - All English, including both text and comments
+
+## Examples that need more detail, and how to fix them
+
+### Example of an insufficient question explanation
+
+Consider this code, which uses the two-argument form of iter() described in PEP 234:
+
+```python
+counter = [0]
+
+def tick():
+    counter[0] += 1
+    return counter[0]
+
+it = iter(tick, 3)
+print(list(it))
+```
+
+```explain
+Incorrect — the correct answer is A: [1, 2]
+
+Explanation
+Per PEP 234, iter(callable, sentinel) returns a special kind of iterator that calls the callable to produce a new value and compares the return value to the sentinel. If the return value equals the sentinel, this signals the end of the iteration and StopIteration is raised rather than returning normally; if it does not equal the sentinel, it is returned as the next value from the iterator. Here tick() returns 1, then 2 (both != 3, so yielded), then 3 which equals the sentinel, so StopIteration is raised and list() stops — printing [1, 2]. The PEP also notes the callable is allowed to raise StopIteration itself as an alternative way to end the iteration, and that this functionality is available from the C API as PyCallIter_New(callable, sentinel). The one-argument form, iter(obj), simply calls PyObject_GetIter(obj).
+```
+
+### Why this explanation is not detailed enough
+- It does not introduce the full functionality of iter() together with its own example code
+- It does not derive the output of each round step by step in clearly structured Markdown, so learners cannot observe the details
+
+### How to fix it: step-by-step derivation
+
+#### Step 1 — Present the whole knowledge module with complete example code
+
+Explain the complete functionality first, with runnable example code:
+
+```python
+# One-argument form: iter(obj) — calls PyObject_GetIter(obj)
+# Two-argument form: iter(callable, sentinel) — calls PyCallIter_New(callable, sentinel)
+
+counter = [0]
+
+def tick():
+    counter[0] += 1
+    return counter[0]
+
+# Every round: call tick(), then compare the return value with the sentinel 3
+# - return value == 3 -> StopIteration is raised, iteration ends
+# - return value != 3 -> the value is yielded as the next item
+it = iter(tick, 3)
+print(list(it))  # [1, 2]
+```
+
+#### Step 2 — Derive every round step by step in structured Markdown
+
+Trace each round in a table so learners can observe every state change:
+
+| Round | Call | counter before | counter after | Return value | Equals sentinel 3? | Action |
+|-------|------|----------------|---------------|--------------|---------------------|--------|
+| 1 | `tick()` | `[0]` | `[1]` | `1` | No | Yield `1` |
+| 2 | `tick()` | `[1]` | `[2]` | `2` | No | Yield `2` |
+| 3 | `tick()` | `[2]` | `[3]` | `3` | Yes | Raise `StopIteration`, iteration ends |
+
+Then follow it with a numbered walkthrough:
+
+1. `list(it)` asks `it` for its first item. `tick()` runs: `counter` becomes `[1]`, returns `1`. Since `1 != 3`, the value `1` is yielded.
+2. `list(it)` asks for the next item. `tick()` runs: `counter` becomes `[2]`, returns `2`. Since `2 != 3`, the value `2` is yielded.
+3. `list(it)` asks for the next item. `tick()` runs: `counter` becomes `[3]`, returns `3`. Since `3 == 3`, `StopIteration` is raised and the iteration ends.
+4. `list()` collects the yielded values, so the result is `[1, 2]`.
+
+#### Step 3 — Rewrite the explanation combining both
+
+The fixed explanation covers the full concept with code, then derives the output step by step (in the real `questions.json`, the code block inside the `explanation` string is wrapped in Markdown ```python fences):
+
+```explain
+Incorrect — the correct answer is A: [1, 2]
+
+Explanation
+The two-argument form iter(callable, sentinel) (PEP 234) returns a special iterator that repeatedly calls the callable and compares each return value with the sentinel:
+- Equal to the sentinel -> StopIteration is raised and the value is NOT yielded
+- Not equal to the sentinel -> the value is yielded as the next item
+The callable may also raise StopIteration itself to end the iteration early. In C, this is PyCallIter_New(callable, sentinel); the one-argument form iter(obj) simply calls PyObject_GetIter(obj).
+
+Complete example:
+
+    counter = [0]
+
+    def tick():
+        counter[0] += 1
+        return counter[0]
+
+    it = iter(tick, 3)
+    print(list(it))  # [1, 2]
+
+Step-by-step derivation:
+
+| Round | counter before | counter after | Return value | Equals 3? | Action |
+|-------|----------------|---------------|--------------|-----------|--------|
+| 1     | [0]            | [1]           | 1            | No        | yield 1 |
+| 2     | [1]            | [2]           | 2            | No        | yield 2 |
+| 3     | [2]            | [3]           | 3            | Yes       | StopIteration, iteration ends |
+
+1. tick() -> counter becomes [1], returns 1; 1 != 3, so yield 1
+2. tick() -> counter becomes [2], returns 2; 2 != 3, so yield 2
+3. tick() -> counter becomes [3], returns 3; 3 == 3, so StopIteration is raised
+4. list() collects the yielded values: [1, 2]
+
+Correct output: [1, 2]
+```

@@ -136,6 +136,8 @@ const state = {
   progress: loadProgress(), // topic id -> saved quiz progress
   attempts: loadAttempts(), // topic id -> last MAX_ATTEMPTS completed runs
   lastAttemptAt: null,      // ISO time of the run recorded this session
+  submitted: false,         // current question was answered (review mode when index < results.length)
+  attemptRecorded: false,   // this run's score was already persisted
 };
 
 const els = {
@@ -145,6 +147,7 @@ const els = {
   errorView: document.getElementById('error-view'),
   topicGrid: document.getElementById('topic-grid'),
   backBtn: document.getElementById('back-btn'),
+  resetBtn: document.getElementById('reset-btn'),
   progressFill: document.getElementById('progress-fill'),
   progressText: document.getElementById('progress-text'),
   typeBadge: document.getElementById('type-badge'),
@@ -156,6 +159,7 @@ const els = {
   explanation: document.getElementById('explanation'),
   explanationText: document.getElementById('explanation-text'),
   submitBtn: document.getElementById('submit-btn'),
+  prevBtn: document.getElementById('prev-btn'),
   score: document.getElementById('score'),
   resultMsg: document.getElementById('result-msg'),
   resultTopic: document.getElementById('result-topic'),
@@ -385,6 +389,7 @@ async function startQuiz(topic) {
     state.questions = await loadQuestions(topic);
     state.index = 0;
     state.results = [];
+    state.attemptRecorded = false;
     restoreProgress(topic);
     if (state.results.length >= state.questions.length) {
       // All questions already answered — jump straight to the results screen.
@@ -401,9 +406,12 @@ async function startQuiz(topic) {
 function renderQuestion() {
   const q = currentQuestion();
   const total = state.questions.length;
+  // Questions before the frontier (index < results.length) were already
+  // answered — render them in review mode instead of starting fresh.
+  const answered = state.index < state.results.length;
 
-  state.selected = [];
-  state.submitted = false;
+  state.selected = answered ? state.results[state.index].selected.slice() : [];
+  state.submitted = answered;
 
   els.progressFill.style.width = `${((state.index + 1) / total) * 100}%`;
   els.progressText.textContent = `Question ${state.index + 1} of ${total}`;
@@ -412,11 +420,18 @@ function renderQuestion() {
   setMarkdown(els.questionText, q.question);
 
   renderOptions();
-  els.feedback.hidden = true;
+  els.feedback.hidden = !answered;
+  if (answered) renderFeedback();
+
   els.submitBtn.hidden = false;
-  els.submitBtn.disabled = true;
-  els.submitBtn.textContent = 'Submit Answer';
+  els.submitBtn.disabled = !answered;
+  els.submitBtn.textContent = answered
+    ? state.index === state.questions.length - 1
+      ? 'View Results'
+      : 'Next Question'
+    : 'Submit Answer';
   els.options.classList.toggle('multiple', q.type === 'multiple');
+  updatePrevBtn();
 }
 
 function renderOptions() {
@@ -512,18 +527,35 @@ function submitAnswer() {
 function nextStep() {
   if (!state.submitted) return;
   if (state.index === state.questions.length - 1) {
-    recordAttempt(); // last question answered — persist this run's score
+    // Last question answered — persist this run's score exactly once, even
+    // if the user walked back through previous questions and returns here.
+    if (!state.attemptRecorded) {
+      recordAttempt();
+      state.attemptRecorded = true;
+    }
     showResults();
   } else {
     state.index += 1;
     persistProgress();
-    renderQuestion();
+    renderQuestion(); // renders review mode if this question was answered
   }
+}
+
+/* ---------- Reviewing previous questions ---------- */
+
+function updatePrevBtn() {
+  els.prevBtn.disabled = state.index <= 0;
+}
+
+function goPrevious() {
+  if (state.index <= 0) return;
+  state.index -= 1;
+  renderQuestion(); // review mode: the previous question is already answered
 }
 
 function renderFeedback() {
   const q = currentQuestion();
-  const last = state.results[state.results.length - 1];
+  const last = state.results[state.index];
   const answerText = q.answer
     .map((i) => `${LETTERS[i]}: ${q.options[i]}`)
     .join(', ');
@@ -686,6 +718,7 @@ function restart() {
   }
   state.index = 0;
   state.results = [];
+  state.attemptRecorded = false;
   showView('quiz');
   renderQuestion();
 }
@@ -700,7 +733,15 @@ els.submitBtn.addEventListener('click', () => {
   if (state.submitted) nextStep();
   else submitAnswer();
 });
+els.prevBtn.addEventListener('click', goPrevious);
 els.backBtn.addEventListener('click', goHome);
+/* Reset restarts the current round from question 1 and clears the saved
+   in-progress answers for this topic; completed-run history is kept. */
+els.resetBtn.addEventListener('click', () => {
+  if (window.confirm('Reset this quiz? All answers for the current round will be cleared and you will start from question 1.')) {
+    restart();
+  }
+});
 els.restartBtn.addEventListener('click', restart);
 els.homeBtn.addEventListener('click', goHome);
 els.retryBtn.addEventListener('click', init);

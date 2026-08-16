@@ -7,10 +7,12 @@ built-in quiz practice. **Python Note** turns each topic into both a note area
 and a question bank for self-testing. No backend or package installation
 required.
 
-- Entry page lists question banks by topic (OOP, PEP 8, PEP 20, PEP 257, PEP 484…)
+- Entry page lists question banks by topic (OOP, PEP 8, PEP 20, PEP 257, Typing…)
 - Each topic has its own `questions.json` with single-choice and multiple-choice questions
 - Submitting an answer shows instant feedback (correct/wrong, highlighted options and an
-  explanation); you advance to the next question manually via the Next Question button
+  explanation); you advance to the next question manually via the Next Question button, and
+  the Previous Question button lets you jump back to review questions you already answered
+  (answer, feedback and explanation are restored)
 - Progress and score history persist in `localStorage` (in-progress answers per topic,
   plus the last 10 completed runs per topic with their correct-answer rates); each topic
   card on the hub shows those runs as a compact block bar chart so you can see your
@@ -147,7 +149,7 @@ jobs:
 ├── PEP8/questions.json     # Question bank: code style
 ├── PEP20/questions.json    # Question bank: The Zen of Python
 ├── PEP257/questions.json   # Question bank: docstrings
-├── PEP484/questions.json   # Question bank: type hints
+├── Typing/questions.json   # Question bank: typing & type hints (PEP 484, PEP 613, PEP 695)
 └── ...             # add more topic directories as needed
 ```
 

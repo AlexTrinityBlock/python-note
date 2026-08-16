@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <title>Python Note</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2" />
   <!-- Markdown + syntax highlighting (vendored locally, no CDN).
        marked renders the Markdown; Prism core + the Python grammar highlight
        fenced ```python blocks. `data-manual` stops Prism from scanning the
@@ -36,7 +36,10 @@
 
       <!-- Quiz view -->
       <section id="quiz-view" hidden>
-        <button class="btn btn-ghost" id="back-btn">← All Topics</button>
+        <div class="quiz-nav">
+          <button class="btn btn-ghost" id="back-btn">← All Topics</button>
+          <button class="btn btn-ghost" id="reset-btn">↺ Restart Quiz</button>
+        </div>
 
         <div class="progress-track" role="progressbar" aria-label="Quiz progress">
           <div class="progress-fill" id="progress-fill"></div>
@@ -60,6 +63,7 @@
           </div>
 
           <div class="actions">
+            <button class="btn btn-ghost" id="prev-btn" disabled>← Previous Question</button>
             <button class="btn btn-primary" id="submit-btn" disabled>Submit Answer</button>
           </div>
         </article>
@@ -96,6 +100,6 @@
     </main>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=2"></script>
 </body>
 </html>
