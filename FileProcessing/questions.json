@@ -1,0 +1,254 @@
+[
+  {
+    "type": "single",
+    "question": "Part 1 of 4: How do you import Python's SQLite interface?\n\nThis is a progressive question set: each part builds on the same program, and later parts reveal the answers to earlier parts. Answer the parts in order.\n\n```python\n# Write the first line of the program:\n```",
+    "options": [
+      "`import SQLite3`",
+      "`import sqlite3`",
+      "`from sqlite import sqlite3`",
+      "`import sqlite`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `import sqlite3`.\n\nExplanation\n\nPython's standard library provides its SQLite DB-API interface in the module named `sqlite3`, written entirely in lowercase. The first line of the program is:\n\n```python\nimport sqlite3\n```\n\nThis import binds the module object to the name `sqlite3` in the current namespace. The next part can therefore call `sqlite3.connect(...)`.\n\nStep by step:\n\n1. Python locates the standard-library module named `sqlite3`.\n2. It loads the module if it has not already been loaded.\n3. It binds the module to the name `sqlite3`.\n4. Later code can use names such as `sqlite3.connect` and `sqlite3.Connection`.\n\nWhy the other options fail:\n\n| Option | Code | Result |\n|--------|------|--------|\n| B | `import sqlite3` | Correct: imports Python's SQLite interface. |\n| A | `import SQLite3` | Fails because module names are case-sensitive and the standard name is lowercase. |\n| C | `from sqlite import sqlite3` | Fails because the standard-library module is `sqlite3`, not a package named `sqlite` containing `sqlite3`. |\n| D | `import sqlite` | Does not import the Python SQLite interface; the module name is `sqlite3`. |\n\nThe completed program after Part 1 is simply:\n\n```python\nimport sqlite3\n```"
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 4: Which line opens the database file `hello.db` and stores the connection?\n\n```python\nimport sqlite3\n\n# Write the next line of the program:\n```",
+    "options": [
+      "`conn = sqlite3.open('hello.db')`",
+      "`conn = connect.sqlite3('hello.db')`",
+      "`conn = sqlite3.connect_db('hello.db')`",
+      "`conn = sqlite3.connect('hello.db')`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Incorrect - the correct answer is D: `conn = sqlite3.connect('hello.db')`.\n\nExplanation\n\n`sqlite3.connect(database)` opens a connection to the database identified by its argument and returns a `sqlite3.Connection` object. With the relative path `'hello.db'`, SQLite uses a database file named `hello.db` in the process's current working directory, creating it if it does not already exist.\n\nThe complete program so far is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('hello.db')\n```\n\nStep by step:\n\n1. `import sqlite3` makes the module available under the name `sqlite3`.\n2. Python evaluates the expression `sqlite3.connect('hello.db')`.\n3. `connect()` opens the existing database file, or creates the file when it does not exist.\n4. `connect()` returns a `sqlite3.Connection` object.\n5. The assignment binds that object to `conn`.\n\nWhy the other options fail:\n\n| Option | Code | Result |\n|--------|------|--------|\n| D | `conn = sqlite3.connect('hello.db')` | Correct: calls the module's `connect()` function and stores its returned connection. |\n| A | `conn = sqlite3.open('hello.db')` | Fails because `sqlite3` exposes `connect()`, not `open()`, for opening a database. |\n| B | `conn = connect.sqlite3('hello.db')` | Fails because the function belongs to the `sqlite3` module; the expression reverses the module and function names. |\n| C | `conn = sqlite3.connect_db('hello.db')` | Fails because there is no `connect_db()` function in the `sqlite3` module. |\n\nThis line opens a connection, but it does not create any tables or execute SQL by itself. Those operations require later calls through `conn` or a cursor."
+  },
+  {
+    "type": "single",
+    "question": "Part 3 of 4: What is true immediately after this program runs?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('hello.db')\n```",
+    "options": [
+      "`conn` is a `sqlite3.Connection` object for the on-disk database `hello.db`; the file is created if it does not exist.",
+      "`conn` is a `sqlite3.Cursor` object that is already positioned on the first query result.",
+      "The program raises `FileNotFoundError` whenever `hello.db` does not already exist.",
+      "`conn` is the string `'hello.db'`, because `connect()` returns the argument passed to it."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `conn` is a `sqlite3.Connection` object for the on-disk database `hello.db`; the file is created if it does not exist.\n\nExplanation\n\nThe complete program is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('hello.db')\n```\n\n`sqlite3.connect()` returns a `Connection` object. Because `'hello.db'` is a relative file path, the connection targets a disk-backed SQLite database in the current working directory. If the file is absent, SQLite creates it as part of opening the connection. The call does not return the filename, and it does not create a cursor or execute a query.\n\nStep-by-step state changes:\n\n| Step | Operation | State or result |\n|------|-----------|-----------------|\n| 1 | `import sqlite3` | The module is bound to the name `sqlite3`. |\n| 2 | Evaluate `'hello.db'` | The database argument is a relative path. |\n| 3 | Call `sqlite3.connect(...)` | SQLite opens the file or creates it if missing. |\n| 4 | Assign the return value | `conn` refers to a `sqlite3.Connection` object. |\n\nNo SQL statement has run yet, so the database has no table merely because this connection was opened. A cursor can be created later, for example:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('hello.db')\ncur = conn.cursor()\ncur.execute('CREATE TABLE notes(text)')\nconn.commit()\nconn.close()\n```\n\nWhy the other options fail:\n\n- **B** is wrong because `connect()` returns a `Connection`; a cursor must be requested with `conn.cursor()` or obtained through a connection shortcut.\n- **C** is wrong because opening a nonexistent database file is a supported behavior of `sqlite3.connect()`; it does not require the file to exist first.\n- **D** is wrong because the string is only the input argument. The return value is the connection object."
+  },
+  {
+    "type": "single",
+    "question": "Part 4 of 4: Which expression should replace the blank to create a database that exists only in memory?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect(____)\n```",
+    "options": [
+      "`':memory'`",
+      "`'hello.db'`",
+      "`':memory:'`",
+      "`'memory'`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `':memory:'`.\n\nExplanation\n\nSQLite gives the exact string `':memory:'` a special meaning when it is passed as the database argument. It creates a temporary database stored in memory rather than a database file on disk. The completed program is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect(':memory:')\n```\n\nStep by step:\n\n1. `import sqlite3` loads the standard-library SQLite interface.\n2. Python evaluates the exact string `':memory:'`.\n3. `sqlite3.connect(':memory:')` recognizes the special SQLite database name.\n4. A new in-memory database is created and a `sqlite3.Connection` object is returned.\n5. `conn` refers to that connection; the database lasts while this connection remains open.\n6. Closing the connection releases the in-memory database, so its data is not available through a later independent connection.\n\nA small runnable example is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect(':memory:')\nconn.execute('CREATE TABLE notes(text)')\nconn.execute('INSERT INTO notes VALUES (?)', ('temporary',))\nconn.commit()\nprint(conn.execute('SELECT text FROM notes').fetchone())  # ('temporary',)\nconn.close()\n```\n\nThe database is not a permanent file. Also, two separate calls create two separate in-memory databases unless a shared-memory URI is deliberately used.\n\nWhy the other options fail:\n\n| Option | Expression | Result |\n|--------|------------|--------|\n| C | `':memory:'` | Correct: the exact special name selects a private in-memory database. |\n| A | `':memory'` | Not the special name because the final colon is missing. |\n| B | `'hello.db'` | Selects the disk-backed database file used in the previous parts. |\n| D | `'memory'` | Is an ordinary database name, not SQLite's special in-memory name. |"
+  },
+  {
+    "type": "single",
+    "question": "Which statement best describes SQLite's support for the SQL-92 standard?",
+    "options": [
+      "SQLite fully implements every SQL-92 feature without any omissions or extensions.",
+      "SQLite generally implements the common SQL-92 features, but some standard features are omitted.",
+      "SQLite does not implement SQL; it accepts only commands unique to SQLite.",
+      "SQLite implements only SQL-92 transaction statements and does not support queries or table definitions."
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: SQLite generally implements the common SQL-92 features, but some standard features are omitted.\n\nExplanation\n\nSQLite's official documentation says that it understands most of the standard SQL language, while also noting that it omits some features and adds a few of its own. For example, SQLite does not provide complete `ALTER TABLE` support, `GRANT` and `REVOKE`, or direct writes to views. Therefore, saying that SQLite generally implements SQL-92 is reasonable as a broad description, but it does not mean complete, strict conformance to every SQL-92 feature.\n\nWhy the other options are wrong:\n\n| Option | Why it is right or wrong |\n|--------|--------------------------|\n| B | Correct: SQLite supports most common standard SQL features, but it has documented omissions and SQLite-specific extensions. |\n| A | Wrong because \"every\" and \"without any omissions or extensions\" contradict SQLite's documentation. |\n| C | Wrong because SQLite is an SQL database engine and supports standard statements such as `SELECT`, `CREATE TABLE`, `INSERT`, `UPDATE`, and `DELETE`. |\n| D | Wrong because SQLite supports both queries and table-definition statements in addition to transaction statements. |\n\nSource: [SQLite Query Language](https://sqlite.org/lang.html) and [SQL Features That SQLite Does Not Implement](https://sqlite.org/omitted.html)."
+  },
+  {
+    "type": "single",
+    "question": "Part 1 of 4: Which line starts a `CREATE TABLE` statement for a table named `tasks`?\n\nThis is a progressive question set: each part adds to the same SQL statement, and later parts reveal the answers to earlier parts. Answer the parts in order.\n\n```sql\n-- Write the first line of the statement:\n```",
+    "options": [
+      "`CREATE tasks TABLE (`",
+      "`TABLE CREATE tasks (`",
+      "`CREATE TABLE (tasks`",
+      "`CREATE TABLE tasks (`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Incorrect - the correct answer is D: `CREATE TABLE tasks (`.\n\nExplanation\n\nSQLite uses the form `CREATE TABLE table_name (` to begin a table definition. `CREATE TABLE` is the command, `tasks` is the table name, and the opening parenthesis begins the list of column definitions. The completed program so far is:\n\n```sql\nCREATE TABLE tasks (\n```\n\nWhy the other options fail:\n\n| Option | Statement | Result |\n|--------|-----------|--------|\n| D | `CREATE TABLE tasks (` | Correct: it uses the required command, table name, and opening parenthesis in the correct order. |\n| A | `CREATE tasks TABLE (` | Wrong keyword order: `TABLE` must immediately follow `CREATE`. |\n| B | `TABLE CREATE tasks (` | Wrong keyword order: a `CREATE TABLE` statement starts with `CREATE`, not `TABLE`. |\n| C | `CREATE TABLE (tasks` | Wrong placement: the table name must come before the opening parenthesis. |\n\nThe next parts add column definitions inside the parentheses. SQLite's official `CREATE TABLE` syntax requires a table name and then one or more column definitions."
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 4: Which line defines `id` as an integer primary key?\n\n```sql\nCREATE TABLE tasks (\n-- Write the first column definition:\n```",
+    "options": [
+      "`id INTEGER PRIMARY KEY,`",
+      "`id PRIMARY KEY INTEGER,`",
+      "`INTEGER id PRIMARY KEY,`",
+      "`id INTEGER UNIQUE,`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `id INTEGER PRIMARY KEY,`.\n\nExplanation\n\nA column definition starts with the column name, followed by its declared type and then its constraints. `id INTEGER PRIMARY KEY` therefore declares an integer primary-key column. The comma is required here because more column definitions follow. The completed program so far is:\n\n```sql\nCREATE TABLE tasks (\nid INTEGER PRIMARY KEY,\n```\n\nIn SQLite, a single-column primary key whose declared type is exactly `INTEGER` has the special integer-primary-key behavior and acts as an alias for the rowid in an ordinary rowid table. If an insert omits this value or supplies `NULL`, SQLite can generate an integer key automatically.\n\nWhy the other options fail:\n\n| Option | Statement | Result |\n|--------|-----------|--------|\n| A | `id INTEGER PRIMARY KEY,` | Correct: it uses the order column name, type, constraint, then comma. |\n| B | `id PRIMARY KEY INTEGER,` | Wrong order: the declared type comes before the column constraint. |\n| C | `INTEGER id PRIMARY KEY,` | Wrong order: the column name must come first. |\n| D | `id INTEGER UNIQUE,` | Wrong constraint: `UNIQUE` prevents duplicate values but does not declare the column as the table's primary key. |\n\nThe comma after the definition separates `id` from the next column."
+  },
+  {
+    "type": "single",
+    "question": "Part 3 of 4: Which line defines `name` as text and disallows `NULL` values?\n\n```sql\nCREATE TABLE tasks (\nid INTEGER PRIMARY KEY,\n\n-- Write the next column definition:\n```",
+    "options": [
+      "`name NOT NULL TEXT,`",
+      "`TEXT name NOT NULL,`",
+      "`name TEXT NOT NULL,`",
+      "`name TEXT REQUIRED,`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `name TEXT NOT NULL,`.\n\nExplanation\n\nThe column definition places the name first, the declared type second, and the constraint after the type. `TEXT` gives the column text affinity, while `NOT NULL` rejects an insert or update that tries to store `NULL` in `name`. The comma separates this definition from the final column. The completed program so far is:\n\n```sql\nCREATE TABLE tasks (\nid INTEGER PRIMARY KEY,\nname TEXT NOT NULL,\n```\n\nWhy the other options fail:\n\n| Option | Statement | Result |\n|--------|-----------|--------|\n| C | `name TEXT NOT NULL,` | Correct: it declares `name` with type `TEXT` and attaches the `NOT NULL` constraint. |\n| A | `name NOT NULL TEXT,` | Wrong order: the declared type must appear before the column constraint. |\n| B | `TEXT name NOT NULL,` | Wrong order: the column name must be the first item in the definition. |\n| D | `name TEXT REQUIRED,` | Wrong constraint keyword: SQLite uses `NOT NULL`, not `REQUIRED`, for this rule. |\n\n`NOT NULL` is a column constraint. It is checked when rows are inserted or updated, not merely when the table is queried."
+  },
+  {
+    "type": "single",
+    "question": "Part 4 of 4: Which option adds the final `priority` column and closes the `CREATE TABLE` statement?\n\n```sql\nCREATE TABLE tasks (\nid INTEGER PRIMARY KEY,\nname TEXT NOT NULL,\n\n-- Write the last column definition and close the statement:\n```",
+    "options": [
+      "`priority INTEGER NULL\n);`",
+      "`priority INTEGER NOT NULL\n);`",
+      "`priority INTEGER NOT NULL,\n);`",
+      "`priority TEXT NOT NULL\n);`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `priority INTEGER NOT NULL` followed by `);`.\n\nExplanation\n\nThe final column must be declared as `priority INTEGER NOT NULL`. Because it is the last column, it is not followed by a comma. The closing parenthesis ends the column-definition list, and the semicolon ends the SQL statement. The complete program is:\n\n```sql\nCREATE TABLE tasks (\nid INTEGER PRIMARY KEY,\nname TEXT NOT NULL,\npriority INTEGER NOT NULL\n);\n```\n\nWhy the other options fail:\n\n| Option | Statement | Result |\n|--------|-----------|--------|\n| B | `priority INTEGER NOT NULL` followed by `);` | Correct: it uses the requested type and constraint, then closes the table definition without a trailing comma. |\n| A | `priority INTEGER NULL` followed by `);` | Wrong because it explicitly permits `NULL`, contrary to the requested `NOT NULL` constraint. |\n| C | `priority INTEGER NOT NULL,` followed by `);` | Wrong because a trailing comma leaves the column list with a missing definition before the closing parenthesis. |\n| D | `priority TEXT NOT NULL` followed by `);` | Wrong because the requested declared type is `INTEGER`, not `TEXT`. |\n\nThe final table has three columns: `id` is an integer primary key, `name` is required text, and `priority` is required integer. SQLite documents `PRIMARY KEY` and `NOT NULL` as column constraints supported by `CREATE TABLE`."
+  },
+  {
+    "type": "single",
+    "question": "Which line should replace the blank so that `c.execute(...)` can run the `CREATE TABLE` statement?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\n____\nc.execute('''CREATE TABLE tasks (\nid INTEGER PRIMARY KEY,\nname TEXT NOT NULL,\npriority INTEGER NOT NULL\n);''')\n```",
+    "options": [
+      "`c = sqlite3.cursor(conn)`",
+      "`c = conn.connect()`",
+      "`c = conn.cursor()`",
+      "`c = cursor.conn()`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `c = conn.cursor()`.\n\nExplanation\n\n`sqlite3.connect('todo.db')` returns a `sqlite3.Connection` object. The connection's `cursor()` method creates and returns a `sqlite3.Cursor` object, which is then stored in `c`. The later call `c.execute(...)` uses that cursor to send the SQL statement to SQLite. The completed program is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('''CREATE TABLE tasks (\nid INTEGER PRIMARY KEY,\nname TEXT NOT NULL,\npriority INTEGER NOT NULL\n);''')\n```\n\nStep by step:\n\n1. `import sqlite3` loads Python's standard-library SQLite interface.\n2. `sqlite3.connect('todo.db')` opens the database file or creates it if it does not exist, returning a `Connection`.\n3. `conn.cursor()` creates a `Cursor` associated with that connection.\n4. `c.execute(...)` uses the cursor to execute the `CREATE TABLE` statement.\n\nWhy the other options fail:\n\n| Option | Statement | Result |\n|--------|-----------|--------|\n| C | `c = conn.cursor()` | Correct: calls the `Connection` method that creates a cursor. |\n| A | `c = sqlite3.cursor(conn)` | Wrong: `cursor()` is a method of the connection object, not a module-level `sqlite3` function. |\n| B | `c = conn.connect()` | Wrong: the connection has no `connect()` method; `sqlite3.connect()` created the connection. |\n| D | `c = cursor.conn()` | Wrong: `cursor` has not been defined, and the object relationship is reversed. |\n\nThe Python documentation describes `Connection.cursor()` as creating and returning a `Cursor` object. Source: [Python sqlite3 documentation](https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.cursor)."
+  },
+  {
+    "type": "single",
+    "question": "Part 1 of 4: Which line starts an `INSERT` statement that targets the existing `tasks` table?\n\nThis is a progressive question set: each part adds to the same SQL statement, and later parts reveal the answers to earlier parts. Answer the parts in order.\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\nc.execute('''\n-- Write the first line of the SQL statement:\n''')\n```",
+    "options": [
+      "`INSERT tasks INTO (`",
+      "`INSERT INTO tasks (`",
+      "`INSERT TABLE tasks (`",
+      "`INTO INSERT tasks (`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `INSERT INTO tasks (`.\n\nExplanation\n\nThe ordinary `INSERT` form begins with `INSERT INTO`, followed by the name of the existing table. The opening parenthesis starts the optional list of columns that will receive the values. The program so far is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\nc.execute('''\nINSERT INTO tasks (\n''')\n```\n\nWhy the other options fail:\n\n| Option | Statement | Result |\n|--------|-----------|--------|\n| B | `INSERT INTO tasks (` | Correct: it uses the `INSERT INTO table` syntax and begins the column list. |\n| A | `INSERT tasks INTO (` | Wrong keyword order: `INTO` must follow `INSERT`, and the table name follows `INTO`. |\n| C | `INSERT TABLE tasks (` | Wrong syntax: `TABLE` is not used between `INSERT` and the table name. |\n| D | `INTO INSERT tasks (` | Wrong keyword order: the statement must start with `INSERT`. |\n\nThis statement inserts rows into an existing table; it does not create the table. SQLite's `INSERT INTO table VALUES(...)` form is the standard form used by the remaining parts."
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 4: Which fragment supplies the requested `id, name, priority` column list in that order?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\nc.execute('''\nINSERT INTO tasks (\n-- Write the column list and close the parenthesis:\n''')\n```",
+    "options": [
+      "`id, priority, name)`",
+      "`id name priority)`",
+      "`id, name, priority)`",
+      "`id, name, priority`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `id, name, priority)`.\n\nExplanation\n\nThe column list names the target columns in the order that the later `VALUES` expressions will supply their data. The list must include the three columns from the requested statement and must close with `)`. The program so far is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\nc.execute('''\nINSERT INTO tasks (id, name, priority)\n''')\n```\n\nWhy the other options fail:\n\n| Option | Fragment | Result |\n|--------|----------|--------|\n| C | `id, name, priority)` | Correct: it names all three target columns and closes the column list. |\n| A | `id, priority, name)` | Syntactically possible, but it changes the required column order; it does not build the requested statement. |\n| B | `id name priority)` | Wrong: column names in the list must be separated by commas. |\n| D | `id, name, priority` | Incomplete: the opening parenthesis from Part 1 has not been closed. |\n\nWhen a column list is specified, SQLite matches each value with the corresponding named column by position."
+  },
+  {
+    "type": "single",
+    "question": "Part 3 of 4: Which keyword and punctuation introduce the row values?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\nc.execute('''\nINSERT INTO tasks (id, name, priority)\n-- Write the next SQL fragment:\n''')\n```",
+    "options": [
+      "`VALUES (`",
+      "`VALUE [`",
+      "`SET (`",
+      "`VALUES [`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `VALUES (`.\n\nExplanation\n\nThe `VALUES` keyword introduces one or more rows of literal or parameterized expressions, and the opening parenthesis begins the first row. The program so far is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\nc.execute('''\nINSERT INTO tasks (id, name, priority)\nVALUES (\n''')\n```\n\nWhy the other options fail:\n\n| Option | Fragment | Result |\n|--------|----------|--------|\n| A | `VALUES (` | Correct: it starts the row-value list for the `INSERT INTO ... VALUES` form. |\n| B | `VALUE [` | Wrong keyword and delimiters: SQLite uses `VALUES` and parentheses. |\n| C | `SET (` | Wrong form: `SET` belongs to `UPDATE`, not this `INSERT ... VALUES` statement. |\n| D | `VALUES [` | Wrong delimiter: row values are enclosed in parentheses, not square brackets. |\n\nThe number and order of values in the row must match the three columns listed in Part 2."
+  },
+  {
+    "type": "single",
+    "question": "Part 4 of 4: Which option supplies one valid row and completes the `INSERT` statement?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\nc.execute('''\nINSERT INTO tasks (id, name, priority)\nVALUES (\n-- Write the values and finish the SQL statement:\n''')\n```",
+    "options": [
+      "`1, 'My first task');`",
+      "`1, 'My first task', NULL);`",
+      "`1, 'My first task', 1, 0);`",
+      "`1, 'My first task', 1);`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Incorrect - the correct answer is D: `1, 'My first task', 1);`.\n\nExplanation\n\nThe column list contains three columns, so the row must provide three values in the same order: `id`, `name`, and `priority`. The first value is the integer `1`, the second is the text literal `'My first task'`, and the third is the integer `1`. The closing parenthesis ends the row, and the semicolon terminates the SQL statement. The complete program is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('''INSERT INTO tasks (id, name, priority)\nVALUES (1, 'My first task', 1);''')\nconn.commit()\n```\n\nStep by step:\n\n1. `INSERT INTO tasks` selects the existing `tasks` table.\n2. The column list maps the first, second, and third values to `id`, `name`, and `priority`.\n3. `VALUES (1, 'My first task', 1)` supplies one complete row.\n4. `c.execute(...)` sends the statement to SQLite.\n5. `conn.commit()` commits the data change so it is retained when the connection is later closed.\n\nWhy the other options fail:\n\n| Option | Values | Result |\n|--------|--------|--------|\n| D | `1, 'My first task', 1);` | Correct: three non-NULL values match the three listed columns and their declared types. |\n| A | `1, 'My first task');` | Wrong: only two values are supplied for three listed columns. |\n| B | `1, 'My first task', NULL);` | Wrong: `priority` is declared `NOT NULL`, so this row violates the table constraint. |\n| C | `1, 'My first task', 1, 0);` | Wrong: four values are supplied for three listed columns. |\n\nSource: [SQLite INSERT documentation](https://sqlite.org/lang_insert.html)."
+  },
+  {
+    "type": "single",
+    "question": "Which expression should replace `____` so that the two `?` placeholders receive the intended values safely?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('''CREATE TABLE IF NOT EXISTS tasks (\nid INTEGER PRIMARY KEY,\nname TEXT NOT NULL,\npriority INTEGER NOT NULL\n);''')\nc.execute('INSERT INTO tasks (name, priority) VALUES (?,?)', ____)\n```",
+    "options": [
+      "`('My first task')`",
+      "`('My first task', 1)`",
+      "`['My first task', 1, 0]`",
+      "`['My first task']`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `('My first task', 1)`.\n\nExplanation\n\nThe SQL statement contains two qmark placeholders: the first `?` corresponds to `name`, and the second `?` corresponds to `priority`. The parameters argument must therefore contain exactly two values in that order. The completed insertion is:\n\n```python\nc.execute(\n    'INSERT INTO tasks (name, priority) VALUES (?,?)',\n    ('My first task', 1)\n)\n```\n\nThe values are bound separately from the SQL text. They are not assembled into the query by string concatenation, which avoids treating data as executable SQL and helps protect against SQL injection. `name` receives the string `My first task`, while `priority` receives the integer `1`.\n\nWhy the other options fail:\n\n| Option | Expression | Result |\n|--------|------------|--------|\n| B | `('My first task', 1)` | Correct: it is a two-item tuple whose values match the two placeholders from left to right. |\n| A | `('My first task')` | Wrong: parentheses alone do not create a tuple; this is a string, so its characters are treated as a sequence with the wrong number of bindings. |\n| C | `['My first task', 1, 0]` | Wrong: a list is an acceptable parameter sequence, but it contains three values for two placeholders. |\n| D | `['My first task']` | Wrong: a list is an acceptable parameter sequence, but it contains only one value for two placeholders. |\n\nAfter a successful `INSERT`, call `conn.commit()` when the change should be persisted to the database file:\n\n```python\nconn.commit()\n```\n\nSource: [Python sqlite3 documentation - How to use placeholders to bind values in SQL queries](https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries)."
+  },
+  {
+    "type": "single",
+    "question": "Part 1 of 2: Which line should be added after the `INSERT` so the new task is saved?\n\nThis is a progressive question set: each part adds to the same program, and the later part reveals the answer to this part. Answer the parts in order.\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('''CREATE TABLE IF NOT EXISTS tasks (\nid INTEGER PRIMARY KEY,\nname TEXT NOT NULL,\npriority INTEGER NOT NULL\n);''')\nc.execute('INSERT INTO tasks (name, priority) VALUES (?,?)', ('My first task', 1))\n\n# Write the next line:\n```",
+    "options": [
+      "`conn.commit()`",
+      "`conn.close()`",
+      "`c.commit()`",
+      "`conn.save()`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `conn.commit()`.\n\nExplanation\n\nThe `INSERT` changes the database, so the pending transaction must be committed through the `Connection` object. The program so far is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('''CREATE TABLE IF NOT EXISTS tasks (\nid INTEGER PRIMARY KEY,\nname TEXT NOT NULL,\npriority INTEGER NOT NULL\n);''')\nc.execute('INSERT INTO tasks (name, priority) VALUES (?,?)', ('My first task', 1))\nconn.commit()\n```\n\n`conn.commit()` makes the successful `INSERT` durable in the database file. It is called on the connection, not on the cursor. The next part closes this same connection after the commit.\n\nWhy the other options fail:\n\n| Option | Statement | Result |\n|--------|-----------|--------|\n| A | `conn.commit()` | Correct: commits pending changes on the database connection. |\n| B | `conn.close()` | Wrong at this point: closing is cleanup, not the explicit commit needed to save the pending `INSERT`. |\n| C | `c.commit()` | Wrong: the cursor executes statements, but transaction control belongs to the connection. |\n| D | `conn.save()` | Wrong: `sqlite3.Connection` has no `save()` method for committing a transaction. |\n\nThe Python `sqlite3` documentation recommends calling `Connection.commit()` after data-changing statements when the changes should be persisted."
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 2: After committing the `INSERT`, which final line closes the database connection?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('''CREATE TABLE IF NOT EXISTS tasks (\nid INTEGER PRIMARY KEY,\nname TEXT NOT NULL,\npriority INTEGER NOT NULL\n);''')\nc.execute('INSERT INTO tasks (name, priority) VALUES (?,?)', ('My first task', 1))\nconn.commit()\n\n# Write the final line:\n```",
+    "options": [
+      "`c.close_connection()`",
+      "`sqlite3.close(conn)`",
+      "`conn.close()`",
+      "`conn.disconnect()`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `conn.close()`.\n\nExplanation\n\n`conn` refers to the `sqlite3.Connection` object returned by `sqlite3.connect()`. Calling its `close()` method releases the database connection. The complete program is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('''CREATE TABLE IF NOT EXISTS tasks (\nid INTEGER PRIMARY KEY,\nname TEXT NOT NULL,\npriority INTEGER NOT NULL\n);''')\nc.execute('INSERT INTO tasks (name, priority) VALUES (?,?)', ('My first task', 1))\nconn.commit()\nconn.close()\n```\n\nStep by step:\n\n1. `sqlite3.connect('todo.db')` creates the `Connection` object stored in `conn`.\n2. The cursor executes the table creation and parameterized `INSERT`.\n3. `conn.commit()` saves the pending data change.\n4. `conn.close()` releases the connection after the database work is complete.\n\nWhy the other options fail:\n\n| Option | Statement | Result |\n|--------|-----------|--------|\n| C | `conn.close()` | Correct: `close()` is a method of the `Connection` object. |\n| A | `c.close_connection()` | Wrong: the cursor does not expose a method with this name; it also does not close the connection. |\n| B | `sqlite3.close(conn)` | Wrong: the module has no module-level `close()` function for an existing connection. |\n| D | `conn.disconnect()` | Wrong: `Connection` uses `close()`, not `disconnect()`. |\n\nClosing the connection after committing is good resource-management practice. The explicit commit must happen first so that the `INSERT` is not left pending when the connection is closed. Source: [Python sqlite3 documentation](https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.close)."
+  },
+  {
+    "type": "single",
+    "question": "Which block should replace the blank to insert both task rows with `c.executemany()` and a list of parameter tuples?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('''CREATE TABLE IF NOT EXISTS tasks (\nid INTEGER PRIMARY KEY,\nname TEXT NOT NULL,\npriority INTEGER NOT NULL\n);''')\n\n# Insert both rows here:\n____\n\nconn.commit()\nconn.close()\n```",
+    "options": [
+      "`task_rows = ('My first task', 1)\nc.execute('INSERT INTO tasks (name, priority) VALUES (?, ?)', task_rows)`",
+      "`task_rows = [\n    ('My first task', 1),\n    ('Second task', 2),\n]\nc.execute('INSERT INTO tasks (name, priority) VALUES (?, ?)', task_rows)`",
+      "`task_rows = [\n    ('My first task', 1),\n    ('Second task', 2),\n]\nc.executemany('INSERT INTO tasks (name, priority) VALUES (?, ?)', ('My first task', 1))`",
+      "`task_rows = [\n    ('My first task', 1),\n    ('Second task', 2),\n]\nc.executemany(\n    'INSERT INTO tasks (name, priority) VALUES (?, ?)',\n    task_rows\n)`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Incorrect - the correct answer is D: a list of row tuples passed to `c.executemany(...)`.\n\nExplanation\n\n`Cursor.executemany(operation, seq_of_parameters)` runs the same parameterized SQL operation once for every item in the supplied sequence. The correct block uses an outer list containing one tuple per row:\n\n```python\ntask_rows = [\n    ('My first task', 1),\n    ('Second task', 2),\n]\nc.executemany(\n    'INSERT INTO tasks (name, priority) VALUES (?, ?)',\n    task_rows\n)\n```\n\nStep by step:\n\n1. `task_rows` is a list with two elements.\n2. Each element is a two-item tuple matching `name` and `priority`.\n3. `executemany()` binds the first tuple to the first execution and the second tuple to the second execution.\n4. The two rows are inserted using the same SQL statement and its two `?` placeholders.\n5. `conn.commit()` after the block saves both inserted rows.\n\nWhy the other options fail:\n\n| Option | Result |\n|--------|--------|\n| D | Correct: it passes a list of parameter tuples to `executemany()`, so one row is inserted for each tuple. |\n| A | Wrong: it uses `execute()` for one tuple, so it inserts only one row and does not use the requested `executemany()` pattern. |\n| B | Wrong: `execute()` expects parameters for one execution; passing the outer list does not execute the statement once per row. |\n| C | Wrong: `executemany()` receives one row tuple instead of the outer sequence of row tuples, so it does not receive two complete parameter sets. |\n\nUsing `?` placeholders keeps the data separate from the SQL text and avoids constructing SQL with string concatenation. Source: [Python sqlite3 documentation - Cursor.executemany](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.executemany)."
+  }
+]

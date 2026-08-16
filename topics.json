@@ -43,5 +43,10 @@
     "id": "GUI-Programming",
     "name": "GUI Programming",
     "description": "Graphical user interface programming in Python: Tkinter, event-driven programming, widgets, geometry managers and event handling."
+  },
+  {
+    "id": "FileProcessing",
+    "name": "File Processing",
+    "description": "Reading, writing and managing text, binary and structured data files in Python."
   }
 ]
