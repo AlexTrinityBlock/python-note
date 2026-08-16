@@ -50,6 +50,12 @@ description: Use this Skill when adding or modifying questions.
 - Short concept and code questions
 - Must be discriminating: those who do not understand the concept should be confused and fail
 
+## Answer position rules
+- Scatter the correct answers: never place the correct option in the same position for every question (e.g., always A).
+- The correct answer of the next question must not be at the same position (same option letter) as the correct answer of the previous question. For multiple-choice questions, the set of correct positions must also not overlap the correct positions of the adjacent questions.
+- Try hard to avoid detectable patterns in the correct-answer positions: no A-B-C-D cycling, no A-B-A-B alternation, no repeated adjacent pairs, no evenly spaced progressions (e.g., A, C, E), and no long monotonic trends (a short 3-step run such as C, B, A is acceptable). Keep the distribution of positions roughly balanced, so each letter is used a similar number of times.
+- Whenever you reorder options, update the `answer` index array AND every option-letter reference in the `explanation` — e.g., "the correct answer is A", "| B | ... |" table rows, "option C", "(D)", "Correct: B." — so the explanation matches the new positions. Rewrite only real option references; never touch letters inside code samples (e.g., button text "A").
+
 ## Explanations
 - Must be complete, with code examples
 - Must ensure the user fully understands the whole knowledge module; for example, Typing questions should include a complete Typing code example
