@@ -7,3 +7,6 @@ PEP20/*.html
 
 # Saved peps.python.org pages anywhere in the repo
 **/*peps.python.org*.html
+
+# Local agent skill for committing/pushing this repo (contains private remote URL / SSH setup)
+.dsh/skills/git-commit-and-push-this-repository/
