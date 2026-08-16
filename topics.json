@@ -38,5 +38,10 @@
     "id": "Generators",
     "name": "Generators & Iterators",
     "description": "Iterator protocol, generator functions, yield expressions, generator expressions and async generators (PEP 234, PEP 255, language reference)."
+  },
+  {
+    "id": "GUI-Programming",
+    "name": "GUI Programming",
+    "description": "Graphical user interface programming in Python: Tkinter, event-driven programming, widgets, geometry managers and event handling."
   }
 ]

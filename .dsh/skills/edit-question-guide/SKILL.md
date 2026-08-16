@@ -44,7 +44,7 @@ description: Use this Skill when adding or modifying questions.
 - Reference material must come from authoritative sources, such as the official Python documentation
 
 ## Hard requirement
-- Every question must include a code example, wrapped in Markdown
+- Every question must include a code example, wrapped in Markdown — except for knowledge multiple-choice questions
 
 ## Question style
 - Short concept and code questions
@@ -164,4 +164,60 @@ Step-by-step derivation:
 4. list() collects the yielded values: [1, 2]
 
 Correct output: [1, 2]
+```
+
+## Knowledge multiple-choice questions
+
+The structure of a knowledge multiple-choice question is:
+
+[] A
+[] B
+[] C
+...
+
+The options include both correct and incorrect ones, and must also include confusing items that are conceptually similar but wrong.
+
+Since this question type covers the latest knowledge, you need to search the web when creating such questions.
+
+Although this question type does not require code examples, every option must have a complete explanation.
+
+## Progressive code single-choice questions
+
+This question type is single-choice, and the related questions in a set must appear in a **strict sequential (progressive) order**: each question builds on the code of the previous one, and the code shown in a later question reveals the answers to the earlier ones. If a reader sees the later questions in advance, the earlier questions lose their validity — the set must never be shuffled or presented out of sequence.
+
+### Question 1
+
+How do you import tkinter?
+
+```python
+
+```
+
+A ...
+B ...
+C ...
+
+### Question 2
+
+How do you create the object?
+
+```python
+import tkinter
+```
+
+A ...
+B ...
+C ...
+
+
+### Question 3
+
+How do you create the main loop?
+
+```python
+import tkinter
+
+skylight = tkinter.Tk()
+```
+
 ```
