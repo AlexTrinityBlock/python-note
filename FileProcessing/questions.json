@@ -250,5 +250,201 @@
       3
     ],
     "explanation": "Incorrect - the correct answer is D: a list of row tuples passed to `c.executemany(...)`.\n\nExplanation\n\n`Cursor.executemany(operation, seq_of_parameters)` runs the same parameterized SQL operation once for every item in the supplied sequence. The correct block uses an outer list containing one tuple per row:\n\n```python\ntask_rows = [\n    ('My first task', 1),\n    ('Second task', 2),\n]\nc.executemany(\n    'INSERT INTO tasks (name, priority) VALUES (?, ?)',\n    task_rows\n)\n```\n\nStep by step:\n\n1. `task_rows` is a list with two elements.\n2. Each element is a two-item tuple matching `name` and `priority`.\n3. `executemany()` binds the first tuple to the first execution and the second tuple to the second execution.\n4. The two rows are inserted using the same SQL statement and its two `?` placeholders.\n5. `conn.commit()` after the block saves both inserted rows.\n\nWhy the other options fail:\n\n| Option | Result |\n|--------|--------|\n| D | Correct: it passes a list of parameter tuples to `executemany()`, so one row is inserted for each tuple. |\n| A | Wrong: it uses `execute()` for one tuple, so it inserts only one row and does not use the requested `executemany()` pattern. |\n| B | Wrong: `execute()` expects parameters for one execution; passing the outer list does not execute the statement once per row. |\n| C | Wrong: `executemany()` receives one row tuple instead of the outer sequence of row tuples, so it does not receive two complete parameter sets. |\n\nUsing `?` placeholders keeps the data separate from the SQL text and avoids constructing SQL with string concatenation. Source: [Python sqlite3 documentation - Cursor.executemany](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.executemany)."
+  },
+  {
+    "type": "single",
+    "question": "Part 1 of 10: Which declaration begins the refactoring by grouping the TODO application's database behavior in a class named `Todo`?\n\nThis is a progressive code set: every part builds on the same program, and later parts reveal the completed answers to earlier parts. Answer the parts in order.\n\n```python\nimport sqlite3\n\n# Write the class declaration:\n```",
+    "options": [
+      "`class Todo:`",
+      "`def Todo:`",
+      "`Todo = class:`",
+      "`class todo():`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `class Todo:`.\n\nA class groups related state and behavior behind one object. The class name uses the `Todo` spelling from the target program, and calling `Todo()` later will create an application object. The completed program at this first step is:\n\n```python\nimport sqlite3\n\nclass Todo:\n    pass\n```\n\nConstruction trace:\n\n| Step | Operation | Result |\n|------|-----------|--------|\n| 1 | Execute `import sqlite3` | The SQLite module is bound to `sqlite3`. |\n| 2 | Execute `class Todo:` | Python creates a class object and binds it to `Todo`. |\n| 3 | Execute `pass` in the class body | The class is currently empty; no database connection is opened yet. |\n\nOption B starts a function definition and is also missing a parameter list and body. Option C is not Python class-definition syntax. Option D uses a lowercase name and does not match the requested `Todo` class; `class todo():` would be syntactically valid, but it would define a different class name and would not match the later `Todo()` call. Python's class tutorial describes a class definition as the construct used to bundle data and functionality together. Source: [Python Classes](https://docs.python.org/3/tutorial/classes.html)."
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 10: Which method should be added so that each `Todo()` object can initialize its own database state automatically?\n\n```python\nimport sqlite3\n\nclass Todo:\n    # Add the initialization method:\n```",
+    "options": [
+      "`def initialize(self):`",
+      "`def __new__(self):`",
+      "`def __init__(self):`",
+      "`def init(self):`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `def __init__(self):`.\n\n`__init__()` is called automatically for the new instance when `Todo()` is instantiated. The completed program at this step is:\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        pass\n```\n\nExecution trace:\n\n| Step | Code or event | Result |\n|------|---------------|--------|\n| 1 | Define `Todo` | Python stores the class and its `__init__` method. |\n| 2 | Evaluate `Todo()` later | Python creates an instance and invokes `Todo.__init__(instance)`. |\n| 3 | Run `pass` | The instance exists but has no database attributes yet. |\n\nOption A is an ordinary method; Python will not call it automatically. Option B is the object-creation hook `__new__()`, not the initialization method requested here, and its usual first parameter is the class (`cls`). Option D is just an ordinary method because the special double-underscore spelling is missing. The Python documentation states that defining `__init__()` lets a class customize a newly created instance. Source: [Python Classes](https://docs.python.org/3/tutorial/classes.html#class-objects)."
+  },
+  {
+    "type": "single",
+    "question": "Part 3 of 10: Which line opens `todo.db` and stores the connection on the current `Todo` instance?\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        # Open todo.db and save the connection:\n```",
+    "options": [
+      "`self.conn = sqlite3.open('todo.db')`",
+      "`self.conn = sqlite3.connect('todo.db')`",
+      "`conn = sqlite3.connect('todo.db')`",
+      "`self.conn = sqlite3.open_connection('todo.db')`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `self.conn = sqlite3.connect('todo.db')`.\n\nThe completed program is:\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n```\n\nExecution trace when `app = Todo()` runs:\n\n| Step | Operation | State or result |\n|------|-----------|-----------------|\n| 1 | Create the `Todo` instance | The instance becomes the `self` argument. |\n| 2 | Evaluate `'todo.db'` | A relative database filename is prepared. |\n| 3 | Call `sqlite3.connect(...)` | SQLite opens the existing file or creates it if it does not exist, returning a `Connection`. |\n| 4 | Assign through `self.conn` | The connection remains available to the instance's later methods. |\n\nOption A uses `open()`, which is not the SQLite module's connection function. Option C creates only a local name `conn`; later methods cannot use it through `self`. Option D calls nonexistent `open_connection()`, so it cannot open the database. The `sqlite3` documentation defines `sqlite3.connect()` as the function that opens a connection to a SQLite database. Source: [Python `sqlite3` documentation](https://docs.python.org/3/library/sqlite3.html)."
+  },
+  {
+    "type": "single",
+    "question": "Part 4 of 10: Which line creates a cursor from the saved connection and stores it as `self.c`?\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        # Create and store the cursor:\n```",
+    "options": [
+      "`self.c = sqlite3.cursor(self.conn)`",
+      "`self.c = self.conn.execute()`",
+      "`c = self.conn.cursor()`",
+      "`self.c = self.conn.cursor()`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Incorrect - the correct answer is D: `self.c = self.conn.cursor()`.\n\nThe completed program is:\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        self.c = self.conn.cursor()\n```\n\nExecution trace:\n\n| Step | Operation | Result |\n|------|-----------|--------|\n| 1 | `sqlite3.connect('todo.db')` | `self.conn` refers to a `sqlite3.Connection`. |\n| 2 | `self.conn.cursor()` | The connection creates a `sqlite3.Cursor`. |\n| 3 | Assign to `self.c` | Both the connection and cursor can be reused by other instance methods. |\n\nOption A is wrong because `cursor()` is a method of the connection object, not a module-level `sqlite3` function. Option B calls `execute()` without the required SQL statement. Option C does create a cursor, but assigns it to a local `c`, so the `Todo` object would not retain it as `self.c`. The documented relationship is `Connection.cursor()` creates and returns a cursor. Source: [Python `sqlite3.Connection.cursor`](https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.cursor)."
+  },
+  {
+    "type": "single",
+    "question": "Part 5 of 10: Which call makes table creation part of every `Todo` object's initialization?\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        self.c = self.conn.cursor()\n        # Call the table-creation method:\n```",
+    "options": [
+      "`self.create_tasks_table()`",
+      "`self.create_task_table()`",
+      "`create_tasks_table(self)`",
+      "`self.create_tasks_table`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `self.create_tasks_table()`.\n\nThe completed initialization sequence is:\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        self.c = self.conn.cursor()\n        self.create_tasks_table()\n```\n\nExecution trace for `app = Todo()`:\n\n| Step | State change |\n|------|--------------|\n| 1 | A `Todo` instance is created and passed as `self`. |\n| 2 | `self.conn` stores the database connection. |\n| 3 | `self.c` stores a cursor belonging to that connection. |\n| 4 | The parentheses call `create_tasks_table` immediately. |\n\nOption B has the singular name `create_task_table`, which does not match the requested plural method name and will fail once the method is defined with the plural spelling. Option C calls an unqualified name and manually supplies `self`; method calls on an instance should use `self.method()`. Option D only retrieves a bound method object and does not call it because the parentheses are missing. The exact method name must agree at both the definition and call sites."
+  },
+  {
+    "type": "single",
+    "question": "Part 6 of 10: Which definition matches the method called in `__init__` and allows it to use the instance cursor?\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        self.c = self.conn.cursor()\n        self.create_tasks_table()\n\n    # Define the method called above:\n```",
+    "options": [
+      "`def create_tasks_table():`",
+      "`def create_task_table(self):`",
+      "`def create_tasks_table(self):`",
+      "`def create_tasks_table(self, table_name):`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `def create_tasks_table(self):`.\n\nThe class now has a matching method definition and call:\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        self.c = self.conn.cursor()\n        self.create_tasks_table()\n\n    def create_tasks_table(self):\n        pass\n```\n\nExecution trace:\n\n| Step | Operation | Result |\n|------|-----------|--------|\n| 1 | Define `create_tasks_table(self)` | The function is stored as a method on `Todo`. |\n| 2 | Call `self.create_tasks_table()` | Python supplies the current instance as `self`. |\n| 3 | Enter the method | The method can access `self.c` and execute SQL through that cursor. |\n\nOption A omits the instance parameter, so a normal instance call would raise a missing-argument `TypeError`. Option B uses a different singular name, so it does not satisfy the call in `__init__`. Option D requires an extra `table_name` argument that the call does not provide. The requested method name is plural, `create_tasks_table`, even though the original sample used the inconsistent singular spelling in one place; the definition and call must use one identical name."
+  },
+  {
+    "type": "single",
+    "question": "Part 7 of 10: Which statement executes a repeat-safe definition of the `tasks` table?\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        self.c = self.conn.cursor()\n        self.create_tasks_table()\n\n    def create_tasks_table(self):\n        # Execute a repeat-safe table definition:\n```",
+    "options": [
+      "`self.c.execute('CREATE TABLE tasks (id INTEGER PRIMARY KEY, name TEXT NOT NULL, priority INTEGER NOT NULL)')`",
+      "`self.c.execute('CREATE TABLE IF EXISTS tasks (id INTEGER PRIMARY KEY, name TEXT NOT NULL, priority INTEGER NOT NULL)')`",
+      "`self.c.execute('CREATE IF NOT EXISTS TABLE tasks (id INTEGER PRIMARY KEY, name TEXT NOT NULL, priority INTEGER NOT NULL)')`",
+      "`self.c.execute('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, name TEXT NOT NULL, priority INTEGER NOT NULL)')`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Incorrect - the correct answer is D: `self.c.execute('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, name TEXT NOT NULL, priority INTEGER NOT NULL)')`.\n\nThe completed class so far is:\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        self.c = self.conn.cursor()\n        self.create_tasks_table()\n\n    def create_tasks_table(self):\n        self.c.execute('''CREATE TABLE IF NOT EXISTS tasks (\n            id INTEGER PRIMARY KEY,\n            name TEXT NOT NULL,\n            priority INTEGER NOT NULL\n        );''')\n```\n\nExecution trace when the method is called:\n\n| Step | SQL component | Effect |\n|------|---------------|--------|\n| 1 | `CREATE TABLE` | Requests a new table definition. |\n| 2 | `IF NOT EXISTS` | Makes the command do nothing instead of raising a table-exists error when `tasks` is already present. |\n| 3 | `id INTEGER PRIMARY KEY` | Defines the identifier column. |\n| 4 | `name TEXT NOT NULL` | Defines required text task names. |\n| 5 | `priority INTEGER NOT NULL` | Defines required integer priorities. |\n\nOption A can fail on a second initialization because it omits `IF NOT EXISTS`. Option B puts `IF EXISTS` after `TABLE`; that is not the `CREATE TABLE IF NOT EXISTS` syntax. Option C puts the keywords in the wrong order. SQLite documents that `CREATE TABLE IF NOT EXISTS` has no effect when a table or view of the same name already exists. Source: [SQLite `CREATE TABLE`](https://www.sqlite.org/lang_createtable.html)."
+  },
+  {
+    "type": "single",
+    "question": "Part 8 of 10: Which method reads both task values from the user instead of relying on hardcoded values?\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        self.c = self.conn.cursor()\n        self.create_tasks_table()\n\n    def create_tasks_table(self):\n        self.c.execute('''CREATE TABLE IF NOT EXISTS tasks (\n            id INTEGER PRIMARY KEY,\n            name TEXT NOT NULL,\n            priority INTEGER NOT NULL\n        );''')\n\n    # Add the task-entry method:\n```",
+    "options": [
+      "`def add_task():\n    name = input('Enter task name: ')\n    priority = int(input('Enter priority: '))`",
+      "`def add_task(self):\n    name = input('Enter task name: ')\n    priority = int(input('Enter priority: '))`",
+      "`def add_task(self, name, priority):\n    pass`",
+      "`def add_tasks(self):\n    name = input('Enter task name: ')\n    priority = int(input('Enter priority: '))`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `def add_task(self)` followed by the two `input()` calls.\n\nThe class now accepts values interactively:\n\n```python\nclass Todo:\n    # Earlier methods are unchanged.\n\n    def add_task(self):\n        name = input('Enter task name: ')\n        priority = int(input('Enter priority: '))\n```\n\nInput trace for the example responses `Review notes` and `3`:\n\n| Step | User response | Variable state |\n|------|---------------|----------------|\n| 1 | `Review notes` to the first prompt | `name == 'Review notes'` |\n| 2 | `3` to the second prompt | `input()` returns `'3'`, then `int()` converts it to `priority == 3` |\n\nOption A omits `self`, so calling it as `app.add_task()` would pass an unexpected instance argument. Option C expects the caller to supply values and therefore does not get them from the user as requested. Option D has the wrong method name and would not match the planned `app.add_task()` call. `input()` always returns text, so `int()` is needed when the database column should receive an integer priority. The SQL insertion is added in the next part."
+  },
+  {
+    "type": "single",
+    "question": "Part 9 of 10: Which block inserts the values collected by `add_task()` using SQLite placeholders?\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        self.c = self.conn.cursor()\n        self.create_tasks_table()\n\n    def create_tasks_table(self):\n        self.c.execute('''CREATE TABLE IF NOT EXISTS tasks (\n            id INTEGER PRIMARY KEY,\n            name TEXT NOT NULL,\n            priority INTEGER NOT NULL\n        );''')\n\n    def add_task(self):\n        name = input('Enter task name: ')\n        priority = int(input('Enter priority: '))\n        # Insert name and priority safely:\n```",
+    "options": [
+      "`self.c.execute(\n    'INSERT INTO tasks (name, priority) VALUES (?, ?)',\n    (name, priority)\n)`",
+      "`self.c.execute(\n    f'INSERT INTO tasks (name, priority) VALUES ({name}, {priority})'\n)`",
+      "`self.c.execute(\n    'INSERT INTO tasks (name, priority) VALUES (?, ?)',\n    name, priority\n)`",
+      "`self.c.execute(\n    'INSERT INTO tasks (name, priority) VALUES (?, ?)',\n    ('My first task', 1)\n)`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: execute the SQL with two `?` placeholders and the parameter tuple `(name, priority)`.\n\nThe completed `add_task()` method is:\n\n```python\ndef add_task(self):\n    name = input('Enter task name: ')\n    priority = int(input('Enter priority: '))\n    self.c.execute(\n        'INSERT INTO tasks (name, priority) VALUES (?, ?)',\n        (name, priority)\n    )\n```\n\nBinding trace for `name == 'Review notes'` and `priority == 3`:\n\n| Step | SQL or value | Result |\n|------|--------------|--------|\n| 1 | SQL text contains `?, ?` | SQLite expects two values. |\n| 2 | Parameter tuple is `('Review notes', 3)` | The first value binds to `name`; the second binds to `priority`. |\n| 3 | `execute()` runs the `INSERT` | One row is added to the current transaction. |\n| 4 | No commit yet | The change is still pending and must be committed in the next part. |\n\nOption B constructs SQL with an f-string, mixing data into SQL text and failing to quote arbitrary task names safely. Option C passes two separate positional arguments after the parameter sequence; `execute()` expects one parameters argument. Option D has the correct shape but inserts hardcoded values rather than the values read from the user. The Python `sqlite3` documentation recommends placeholders and a separate sequence of values for parameter binding. Source: [SQLite parameter substitution in Python](https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries)."
+  },
+  {
+    "type": "single",
+    "question": "Part 10 of 10: Which final block commits the new row, creates a `Todo` object, and starts the interactive task entry?\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        self.c = self.conn.cursor()\n        self.create_tasks_table()\n\n    def create_tasks_table(self):\n        self.c.execute('''CREATE TABLE IF NOT EXISTS tasks (\n            id INTEGER PRIMARY KEY,\n            name TEXT NOT NULL,\n            priority INTEGER NOT NULL\n        );''')\n\n    def add_task(self):\n        name = input('Enter task name: ')\n        priority = int(input('Enter priority: '))\n        self.c.execute(\n            'INSERT INTO tasks (name, priority) VALUES (?, ?)',\n            (name, priority)\n        )\n        # Save the insert and run the application:\n```",
+    "options": [
+      "`self.c.close()\n\napp = Todo()\napp.add_task()`",
+      "`self.c.commit()\n\napp = Todo()\napp.add_task()`",
+      "`self.conn.commit()\n\napp = Todo()\napp.add_task()`",
+      "`self.conn.save()\n\napp = Todo.add_task()`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: commit through the connection, then instantiate `Todo` and call `add_task()`.\n\nThe complete refactored program is:\n\n```python\nimport sqlite3\n\nclass Todo:\n    def __init__(self):\n        self.conn = sqlite3.connect('todo.db')\n        self.c = self.conn.cursor()\n        self.create_tasks_table()\n\n    def create_tasks_table(self):\n        self.c.execute('''CREATE TABLE IF NOT EXISTS tasks (\n            id INTEGER PRIMARY KEY,\n            name TEXT NOT NULL,\n            priority INTEGER NOT NULL\n        );''')\n\n    def add_task(self):\n        name = input('Enter task name: ')\n        priority = int(input('Enter priority: '))\n        self.c.execute(\n            'INSERT INTO tasks (name, priority) VALUES (?, ?)',\n            (name, priority)\n        )\n        self.conn.commit()\n\napp = Todo()\napp.add_task()\n```\n\nEnd-to-end execution trace:\n\n| Step | Code | State or effect |\n|------|------|-----------------|\n| 1 | `app = Todo()` | `__init__()` opens `todo.db`, creates a cursor, and calls `create_tasks_table()`. |\n| 2 | `CREATE TABLE IF NOT EXISTS` | The `tasks` table is created if absent; an existing table is left in place. |\n| 3 | `app.add_task()` | The program asks for a task name and priority. |\n| 4 | `int(input(...))` | The priority text is converted to an integer. |\n| 5 | Parameterized `INSERT` | The two current variables are bound to `name` and `priority`, and one row is staged. |\n| 6 | `self.conn.commit()` | The staged row is committed to `todo.db`. |\n\nOption A closes the cursor without committing the pending insertion. Option B calls `commit()` on a cursor; transaction control belongs to the connection, not the cursor. Option D uses nonexistent or incorrectly called APIs: `Connection` has `commit()`, not `save()`, and `Todo.add_task` is an unbound method that is not the intended application call. The `sqlite3` documentation recommends committing before closing when pending changes must be retained. Source: [Python `sqlite3` documentation](https://docs.python.org/3/library/sqlite3.html)."
+  },
+  {
+    "type": "single",
+    "question": "Part 1 of 2: Which expression should replace `____` so the `for` loop iterates directly over the rows returned by SQLite?\n\nThis is a progressive code set: the next part builds on this completed program and reveals this answer. Answer the parts in order.\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\nfor row in ____:\n    print(row)\n\nconn.close()\n```",
+    "options": [
+      "`c.execute('SELECT * FROM tasks')`",
+      "`c.execute('SELECT * FROM tasks').fetchone()`",
+      "`c.execute('SELECT * FROM tasks').fetchall()[0]`",
+      "`'SELECT * FROM tasks'`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `c.execute('SELECT * FROM tasks')`.\n\nThe completed program is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\nfor row in c.execute('SELECT * FROM tasks'):\n    print(row)\n\nconn.close()\n```\n\nA cursor is iterable. When the `for` statement asks it for the next item, the cursor executes the `SELECT` result iteration and yields one row tuple at a time. For example, if the table contains `(1, 'Read', 1)` and `(2, 'Test', 2)`, the execution trace is:\n\n| Round | Value assigned to `row` | Printed value |\n|-------|--------------------------|---------------|\n| 1 | `(1, 'Read', 1)` | `(1, 'Read', 1)` |\n| 2 | `(2, 'Test', 2)` | `(2, 'Test', 2)` |\n| 3 | No more rows | The cursor is exhausted and the loop ends normally. |\n\nOption B calls `fetchone()`, which returns one row tuple; a `for` loop would then iterate over that tuple's fields rather than over all rows. Option C takes the first row from `fetchall()`, with the same one-row problem and an additional failure when the query returns no rows. Option D is only a string, so the loop would iterate over its characters, not database rows. Python's `for` statement obtains successive items from an iterable, and the `sqlite3` documentation specifically describes cursors as iterable for `SELECT` results. Sources: [Python `for` statements](https://docs.python.org/3/tutorial/controlflow.html#for-statements) and [Python `sqlite3` documentation](https://docs.python.org/3/library/sqlite3.html#cursor-objects)."
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 2: Which expression should replace `____` so `result` is the cursor returned by `c.execute(...)`?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\nfor row in c.execute('SELECT * FROM tasks'):\n    print(row)\n\nresult = ____\nfor row in result:\n    print(row)\n\nprint(type(result))\nprint(result is c)\nconn.close()\n```",
+    "options": [
+      "`c.fetchall('SELECT * FROM tasks')`",
+      "`c.execute('SELECT * FROM tasks').fetchall()`",
+      "`'SELECT * FROM tasks'`",
+      "`c.execute('SELECT * FROM tasks')`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Incorrect - the correct answer is D: `c.execute('SELECT * FROM tasks')`.\n\nThe completed program is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\nresult = c.execute('SELECT * FROM tasks')\nfor row in result:\n    print(row)\n\nprint(type(result))\nprint(result is c)\nconn.close()\n```\n\n`Cursor.execute()` executes one SQL statement and returns the cursor itself. Therefore `result` has type `sqlite3.Cursor`, and `result is c` is `True`; the assignment creates a second name for the same cursor object, not a new list or a separate result object. The last two lines print:\n\n```text\n<class 'sqlite3.Cursor'>\nTrue\n```\n\nExecution trace:\n\n| Step | Operation | Result |\n|------|-----------|--------|\n| 1 | Create `c` with `conn.cursor()` | `c` is a `sqlite3.Cursor`. |\n| 2 | Call `c.execute('SELECT * FROM tasks')` | The cursor runs the query and returns itself. |\n| 3 | Assign the return value to `result` | `result` and `c` refer to the same cursor. |\n| 4 | Iterate over `result` | Each available database row is yielded as a tuple. |\n| 5 | Evaluate `type(result)` and `result is c` | The output is `sqlite3.Cursor` and `True`. |\n\nOption A is invalid because `fetchall()` is a cursor method for retrieving rows, not a method that accepts the SQL statement. Option B returns a list of all rows, so its type is `list` and it is not `c`. Option C only assigns a string and never executes SQL. The official `sqlite3` documentation states that `Cursor.execute()` returns the cursor itself. Source: [Python `sqlite3.Cursor.execute`](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.execute)."
+  },
+  {
+    "type": "single",
+    "question": "Part 1 of 2: Which expression should replace `____` so `rows` stores all rows remaining from the preceding `SELECT` query?\n\nThis is a progressive code set: the next part shows this completed code and asks about its memory behavior. Answer the parts in order.\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('SELECT * FROM tasks')\nrows = ____\nfor row in rows:\n    print(row)\nconn.close()\n```",
+    "options": [
+      "`c.fetchall()`",
+      "`c.fetchone()`",
+      "`c.execute('SELECT * FROM tasks')`",
+      "`c.fetchone('SELECT * FROM tasks')`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `c.fetchall()`.\n\n`fetchall()` retrieves all remaining rows from the query result and returns them as a list. The completed program is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('SELECT * FROM tasks')\nrows = c.fetchall()\nfor row in rows:\n    print(row)\nconn.close()\n```\n\nExecution trace:\n\n| Step | Operation | Result |\n|------|-----------|--------|\n| 1 | `c.execute('SELECT * FROM tasks')` | The cursor executes the query and holds its result set. |\n| 2 | `c.fetchall()` | All remaining rows are consumed and returned in a new `list`, assigned to `rows`. |\n| 3 | `for row in rows` | The loop visits each row tuple in that list and prints it. |\n| 4 | `conn.close()` | The database connection is released after the rows have been processed. |\n\nOption B returns only the next single row tuple, or `None` when no row remains; it does not collect all rows. Option C returns the `sqlite3.Cursor`, not a list of fetched rows. Option D passes an argument to `fetchone()`, whose method does not accept the SQL statement; the query was already executed by the preceding `execute()` call. The official documentation defines `fetchall()` as returning all remaining rows as a list. Source: [Python `sqlite3.Cursor.fetchall`](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.fetchall)."
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 2: Which statement best explains the memory risk in this completed program and gives a safer approach for a very large `tasks` table?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('SELECT * FROM tasks')\nrows = c.fetchall()\nfor row in rows:\n    print(row)\nconn.close()\n```",
+    "options": [
+      "`fetchall()` returns only the next row, so this program cannot run out of memory because of the query result.",
+      "`fetchall()` returns all remaining rows in a list; a very large result can consume excessive memory or cause an out-of-memory failure, so iterate over the cursor directly or process bounded batches with `fetchmany()`.",
+      "`fetchall()` returns the cursor itself, so `rows` is already a streaming iterator and the `for` loop cannot increase memory usage.",
+      "The `for` statement copies `rows` once per iteration; replacing it with a `while` loop always prevents out-of-memory failures."
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `fetchall()` materializes all remaining rows as one list, which can exhaust memory for a very large result.\n\nThe code is functionally correct for a small or moderate result set, but its memory behavior is important:\n\n```python\nc.execute('SELECT * FROM tasks')\nrows = c.fetchall()  # Every remaining row is stored in this list at once.\nfor row in rows:\n    print(row)\n```\n\nMemory trace:\n\n| Step | Object or operation | Memory consequence |\n|------|---------------------|--------------------|\n| 1 | Execute the `SELECT` | The cursor has a result set ready to be read. |\n| 2 | Call `fetchall()` | Python creates a list containing every remaining row and its Python objects. |\n| 3 | Start the `for` loop | The list remains alive while the loop processes it; iteration does not release the whole list row by row. |\n| 4 | Result set is extremely large | The list may consume available memory and the process may raise `MemoryError` or be terminated by the operating system. |\n\nFor streaming-style processing, iterate over the cursor directly so the program does not first materialize a list of every row:\n\n```python\nc.execute('SELECT * FROM tasks')\nfor row in c:\n    print(row)\n```\n\nWhen bounded batches are needed, use `fetchmany()` instead:\n\n```python\nc.execute('SELECT * FROM tasks')\nwhile True:\n    batch = c.fetchmany(1000)\n    if not batch:\n        break\n    for row in batch:\n        print(row)\n```\n\nOption A is wrong because `fetchall()` returns all remaining rows, not one row. Option C is wrong because `fetchall()` returns a `list`, not a cursor. Option D is wrong because a normal `for` loop does not copy the entire list on every iteration, and changing loop syntax cannot undo the list already created by `fetchall()`. The official documentation states that `fetchall()` returns all remaining rows as a list and that cursors can be iterated for `SELECT` results. Source: [Python `sqlite3` documentation](https://docs.python.org/3/library/sqlite3.html#cursor-objects)."
   }
 ]

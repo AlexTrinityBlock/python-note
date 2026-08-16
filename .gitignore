@@ -10,3 +10,7 @@ PEP20/*.html
 
 # Local agent skill for committing/pushing this repo (contains private remote URL / SSH setup)
 .dsh/skills/git-commit-and-push-this-repository/
+
+# Local OpenCode configuration and skills
+opencode.json
+.opencode/

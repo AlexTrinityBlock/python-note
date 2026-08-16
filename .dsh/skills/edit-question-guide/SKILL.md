@@ -44,7 +44,7 @@ description: Use this Skill when adding or modifying questions.
 - Reference material must come from authoritative sources, such as the official Python documentation
 
 ## Hard requirement
-- Every question must include a code example, wrapped in Markdown — except for knowledge multiple-choice questions
+- Every question must include a code example, wrapped in Markdown — except for knowledge single-choice and multiple-choice questions
 
 ## Question style
 - Short concept and code questions
@@ -172,7 +172,25 @@ Step-by-step derivation:
 Correct output: [1, 2]
 ```
 
+## Knowledge single-choice questions
+
+Knowledge single-choice questions are pure knowledge questions and do not require a code example. They must have exactly one correct option:
+
+- Set `type` to `"single"`.
+- Store exactly one 0-based option index in `answer`, for example `"answer": [2]`.
+- Include both the correct answer and conceptually similar but incorrect distractors.
+- Explain every option completely, including why each incorrect option is wrong.
+- Search the web when creating the question and use authoritative, current sources.
+
 ## Knowledge multiple-choice questions
+
+Knowledge multiple-choice questions are pure knowledge questions and do not require a code example. They must have two or more correct options:
+
+- Set `type` to `"multiple"`.
+- Store all correct 0-based option indices in `answer`.
+- Include both correct and incorrect options, including confusing items that are conceptually similar but wrong.
+- Explain every option completely, including why each incorrect option is wrong.
+- Search the web when creating the question and use authoritative, current sources.
 
 The structure of a knowledge multiple-choice question is:
 
@@ -181,11 +199,7 @@ The structure of a knowledge multiple-choice question is:
 [] C
 ...
 
-The options include both correct and incorrect ones, and must also include confusing items that are conceptually similar but wrong.
-
-Since this question type covers the latest knowledge, you need to search the web when creating such questions.
-
-Although this question type does not require code examples, every option must have a complete explanation.
+The `answer` array must contain the indices of all correct options and must contain at least two indices.
 
 ## Progressive code single-choice questions
 
