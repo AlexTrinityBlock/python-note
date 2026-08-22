@@ -1,0 +1,86 @@
+[
+  {
+    "type": "single",
+    "question": "Part 1 of 6: Which line correctly parses the XML file before the program retrieves its root element?\n\nThis is a progressive question set: every part extends the same program and must be answered in order.\n\nAssume `books.xml` contains:\n\n```xml\n<books>\n  <book title=\"Python Basics\">\n    <author>Ada Lovelace</author>\n    <year>1843</year>\n  </book>\n  <book title=\"XML Recipes\">\n    <author>Guido van Rossum</author>\n    <year>2001</year>\n  </book>\n</books>\n```\n\n```python\nimport xml.etree.ElementTree as ET\n\n# Write the next line:\n```",
+    "options": [
+      "`tree = ET.read('books.xml')`",
+      "`tree = ET.parse('books.xml')`",
+      "`tree = ET.load('books.xml')`",
+      "`tree = ET.open('books.xml')`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The correct answer is B: `tree = ET.parse('books.xml')`.\n\n`xml.etree.ElementTree.parse()` reads an XML file and returns an `ElementTree` object. The next line can call `tree.getroot()` to obtain the document's root element. The complete program at this point is:\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\n```\n\nStep by step:\n\n1. The import binds the ElementTree module to the short name `ET`.\n2. `ET.parse('books.xml')` opens and parses the XML document.\n3. The returned `ElementTree` object represents the parsed document and is stored in `tree`.\n4. Parsing does not yet print any book data.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: ElementTree has no `read()` function for parsing an XML file. |\n| B | Correct: `parse()` returns an `ElementTree`. |\n| C | Wrong: ElementTree has no `load()` function for this operation. |\n| D | Wrong: ElementTree has no `open()` function; the parser opens the file internally. |\n\nThe official API also provides `ET.fromstring()` for parsing XML text already held in a string, but this question uses a filename, so `parse()` is the appropriate function."
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 6: After parsing the file, which line obtains the root element of the XML document?\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\n# Write the next line:\n```",
+    "options": [
+      "`root = ET.root(tree)`",
+      "`root = tree.root()`",
+      "`root = ET.getroot(tree)`",
+      "`root = tree.getroot()`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "The correct answer is D: `root = tree.getroot()`.\n\n`ET.parse()` returns an `ElementTree`, and `ElementTree.getroot()` returns its root `Element`. For the sample XML, the root element is `<books>`. The program now is:\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\n```\n\nStep by step:\n\n1. `tree` refers to the `ElementTree` returned by `ET.parse()`.\n2. `tree.getroot()` retrieves the single top-level element.\n3. In the sample document, that element has the tag `books`.\n4. `root` is an `Element`, so it can be iterated over to visit the two child `<book>` elements.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: `root` is not a module-level function in `ET` with this calling convention. |\n| B | Wrong: `ElementTree` exposes `getroot()`, not `root()`. |\n| C | Wrong: the method belongs to the parsed `tree` object, not the `ET` module. |\n| D | Correct: calls `getroot()` on the `ElementTree`. |\n\nThis call does not return the first book. It returns the document element `<books>`, whose children are the individual books."
+  },
+  {
+    "type": "single",
+    "question": "Part 3 of 6: Inside the loop, which expression retrieves the `title` attribute of the current `book` element?\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\nfor book in root:\n    # Choose the expression for the title value:\n    print(________________)\n```",
+    "options": [
+      "`book.attrib['title']`",
+      "`book.text['title']`",
+      "`book['title'].text`",
+      "`book.getroot()['title']`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The correct answer is A: `book.attrib['title']`.\n\nAn `Element` stores XML attributes in its dictionary-like `attrib` mapping. The `title` attribute belongs directly to each `<book>` start tag:\n\n```xml\n<book title=\"Python Basics\">\n```\n\nThe complete relevant program is:\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\nfor book in root:\n    print(book.attrib['title'])\n```\n\nStep-by-step trace:\n\n| Loop round | Current element | `book.attrib` | Expression value |\n|------------|-----------------|---------------|------------------|\n| 1 | first `<book>` | `{'title': 'Python Basics'}` | `'Python Basics'` |\n| 2 | second `<book>` | `{'title': 'XML Recipes'}` | `'XML Recipes'` |\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Correct: `attrib` maps attribute names to attribute values. |\n| B | Wrong: `text` contains an element's text content, not its attributes, and is not a mapping here. |\n| C | Wrong: `book['title']` is not the ElementTree attribute-access form, and the title is not an element with `.text`. |\n| D | Wrong: `book` is already a child element; it has no `getroot()` method. |\n\nThe alternative `book.get('title')` can also read the attribute and returns `None` instead of raising `KeyError` when the attribute is absent. The original code uses the explicit `attrib['title']` form."
+  },
+  {
+    "type": "single",
+    "question": "Part 4 of 6: Which expression retrieves the author text from the current `book` element?\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\nfor book in root:\n    print('Title:', book.attrib['title'])\n    # Choose the expression for the author value:\n    print('Author:', ________________)\n```",
+    "options": [
+      "`book.attrib['author']`",
+      "`book[1].text`",
+      "`book[0].text`",
+      "`book.text[0]`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "The correct answer is C: `book[0].text`.\n\nEach `<book>` has two child elements in order: child index 0 is `<author>`, and child index 1 is `<year>`. The text content is available through the child element's `.text` attribute. The relevant code is:\n\n```python\nfor book in root:\n    print('Title:', book.attrib['title'])\n    print('Author:', book[0].text)\n```\n\nStep-by-step trace:\n\n| Loop round | `book[0]` tag | `book[0].text` |\n|------------|---------------|----------------|\n| 1 | `author` | `Ada Lovelace` |\n| 2 | `author` | `Guido van Rossum` |\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: `author` is a child element, not an attribute on `<book>`. |\n| B | Wrong: index 1 selects `<year>`, so it would return the year text. |\n| C | Correct: index 0 selects `<author>`, whose `.text` is the author name. |\n| D | Wrong: `book.text` is only whitespace before the first child in this indented XML; it is not a list of children. |\n\nThe numeric indexing depends on the XML child order. It is not selecting an attribute named `author`."
+  },
+  {
+    "type": "single",
+    "question": "Part 5 of 6: Which expression retrieves the year text from the current `book` element?\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\nfor book in root:\n    print('Title:', book.attrib['title'])\n    print('Author:', book[0].text)\n    # Choose the expression for the year value:\n    print('Year:', ________________)\n```",
+    "options": [
+      "`book.attrib['year']`",
+      "`book[1].text`",
+      "`book[0].text`",
+      "`book.text[1]`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The correct answer is B: `book[1].text`.\n\nThe second child of every `<book>` is `<year>`, so its zero-based index is 1. The child element's `.text` contains the characters between `<year>` and `</year>`. The completed loop is:\n\n```python\nfor book in root:\n    print('Title:', book.attrib['title'])\n    print('Author:', book[0].text)\n    print('Year:', book[1].text)\n```\n\nStep-by-step trace:\n\n| Loop round | `book[1]` tag | `book[1].text` |\n|------------|---------------|----------------|\n| 1 | `year` | `1843` |\n| 2 | `year` | `2001` |\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: `year` is an element, not an attribute on `<book>`. |\n| B | Correct: index 1 selects the second child, `<year>`. |\n| C | Wrong: index 0 selects `<author>`, not `<year>`. |\n| D | Wrong: `book.text` is the whitespace directly inside `<book>` before its first child; it is not child-element indexing. |\n\nThe returned value is text, so `book[1].text` is a string such as `'1843'`, not the integer `1843`. Converting it to an integer would require `int(book[1].text)`."
+  },
+  {
+    "type": "single",
+    "question": "Part 6 of 6: What does the complete program print?\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\nprint('My books:\\n')\nfor book in root:\n    print('Title: ', book.attrib['title'])\n    print('Author:', book[0].text)\n    print('Year: ', book[1].text, '\\n')\n```\n\nUse the `books.xml` document from the previous parts.",
+    "options": [
+      "It raises `KeyError` because `title` is an XML child element, not an attribute.",
+      "`My books:` followed by only the two book titles.",
+      "`My books:` followed by the author and year for the first book only.",
+      "`My books:` followed by each book's title, author, and year, with a blank line after each book."
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "The correct answer is D. The program prints the heading and then processes both child `<book>` elements.\n\nThe complete output is:\n\n```text\nMy books:\n\nTitle:  Python Basics\nAuthor: Ada Lovelace\nYear:  1843 \n\nTitle:  XML Recipes\nAuthor: Guido van Rossum\nYear:  2001 \n\n```\n\nStep-by-step execution:\n\n1. `ET.parse('books.xml')` creates an `ElementTree` for the file.\n2. `tree.getroot()` returns the `<books>` element.\n3. `print('My books:\\n')` prints the heading. The string contains one newline, and `print()` adds its own ending newline, so a blank line follows the heading.\n4. The loop visits the first `<book>`. Its `title` attribute is `Python Basics`, child 0 has text `Ada Lovelace`, and child 1 has text `1843`.\n5. The loop visits the second `<book>`. Its corresponding values are `XML Recipes`, `Guido van Rossum`, and `2001`.\n6. The final argument `'\\n'` in each year call adds an extra newline in addition to `print()`'s normal newline, producing a blank line after each book.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: `title` is a valid attribute accessed through `book.attrib['title']`. |\n| B | Wrong: the loop prints title, author, and year, not titles alone. |\n| C | Wrong: `for book in root` visits both books, not only the first one. |\n| D | Correct: both books are visited and all three values are printed. |\n\nThe spaces after `Title:` and `Year:` come from the spaces inside those string literals; the XML parser returns the element text values without changing their meaning."
+  }
+]
