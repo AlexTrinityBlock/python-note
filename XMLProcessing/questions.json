@@ -1,6 +1,34 @@
 [
   {
     "type": "single",
+    "question": "Preparation A: After obtaining `root`, which `for` statement visits each direct child element in document order?\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\n# Write the next line:\n```",
+    "options": [
+      "`for book in root.children:`",
+      "`for book in root:`",
+      "`for book of root:`",
+      "`foreach book in root:`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The correct answer is B: `for book in root:`. An `Element` can be iterated directly, and the loop visits its direct child elements in document order. For the sample document, the loop visits the two `<book>` children. Option A uses a nonexistent `children` attribute, option C is not Python `for` syntax, and option D is not valid Python syntax."
+  },
+  {
+    "type": "single",
+    "question": "Preparation B: Inside the loop, which expression accesses the current element's tag name?\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\nfor book in root:\n    print(________________)\n```",
+    "options": [
+      "`book.name`",
+      "`book.attrib['tag']`",
+      "`book.tag`",
+      "`root.tag(book)`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "The correct answer is C: `book.tag`. The `tag` property stores an element's name, so both loop rounds print `book`. Option A uses the wrong property name, option B looks for an XML attribute named `tag` instead of the element property, and option D incorrectly calls `tag` as a method. The loop is now ready for the original title-attribute question."
+  },
+  {
+    "type": "single",
     "question": "Part 1 of 6: Which line correctly parses the XML file before the program retrieves its root element?\n\nThis is a progressive question set: every part extends the same program and must be answered in order.\n\nAssume `books.xml` contains:\n\n```xml\n<books>\n  <book title=\"Python Basics\">\n    <author>Ada Lovelace</author>\n    <year>1843</year>\n  </book>\n  <book title=\"XML Recipes\">\n    <author>Guido van Rossum</author>\n    <year>2001</year>\n  </book>\n</books>\n```\n\n```python\nimport xml.etree.ElementTree as ET\n\n# Write the next line:\n```",
     "options": [
       "`tree = ET.read('books.xml')`",
