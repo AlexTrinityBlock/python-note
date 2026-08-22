@@ -46,7 +46,17 @@
   },
   {
     "id": "FileProcessing",
-    "name": "File Processing",
-    "description": "Reading, writing and managing text, binary and structured data files in Python."
+    "name": "Python SQLite",
+    "description": "Using Python's sqlite3 module to create databases, execute SQL, manage transactions and retrieve rows."
+  },
+  {
+    "id": "XMLProcessing",
+    "name": "XML Processing",
+    "description": "Parsing, querying, modifying and serializing XML with Python's xml.etree.ElementTree module."
+  },
+  {
+    "id": "CSVProcessing",
+    "name": "CSV Processing",
+    "description": "Reading, writing and processing comma-separated values with Python's csv module."
   }
 ]
