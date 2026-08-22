@@ -110,5 +110,75 @@
       1
     ],
     "explanation": "The correct answer is B.\n\n`Element.findall()` searches for matching elements among the direct children of the element on which it is called and returns a list. It can also use a limited XPath expression, such as `.//author`, when descendants must be searched.\n\n`Element.iter()` recursively walks the element and its entire subtree, including children, grandchildren, and deeper descendants. It returns an iterator, so it is suitable for streaming through matches with a `for` loop.\n\nFor example, if `<author>` is nested inside `<book>`:\n\n- `root.findall('author')` finds nothing when `author` is not a direct child of `root`.\n- `root.iter('author')` finds the nested author elements.\n- `root.findall('book')` finds the direct `book` children and returns them in a list.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: it reverses both methods' search behavior and result types. `findall()` does not recursively search by default, and `iter()` returns an iterator rather than a list. |\n| B | Correct: `findall()` returns matching direct children as a list, while `iter()` recursively traverses the subtree as an iterator. |\n| C | Wrong: the methods differ in both traversal behavior and return type; `iter()` is not an alias for `findall()`. |\n| D | Wrong: both methods find elements. Attribute access uses methods such as `get()` or the `attrib` mapping, while text is accessed through an element's `text` property. |\n\nThe official ElementTree documentation describes `findall()` as finding matching direct children and `iter()` as recursively iterating over the complete subtree."
+  },
+  {
+    "type": "single",
+    "question": "Given the same `books.xml` document, what does this chained query print?\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\nprint(root.find('book').get('title'))\n```",
+    "options": [
+      "`Hamlet`",
+      "Nothing, because `find()` cannot be followed by `get()`",
+      "It raises `AttributeError` because `find()` returns a list",
+      "`The Little Prince`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "The correct answer is D: `The Little Prince`.\n\nThe expression is evaluated from left to right:\n\n1. `root.find('book')` searches the direct children of `root` and returns the first matching `<book>` element. It does not return all matching books.\n2. `.get('title')` is then called on that `<book>` element, retrieving its `title` attribute.\n3. The first book in document order has the title `The Little Prince`.\n4. `print()` displays:\n\n```text\nThe Little Prince\n```\n\nThis is called a chained query because the result of `find()` is immediately used as the object for the `get()` method. Unlike `findall()`, `find()` returns one matching element, or `None` if no match is found. If `find()` returned `None`, calling `.get('title')` would raise `AttributeError`, so chaining is appropriate only when the element is known to exist or the result has been checked.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: `Hamlet` is the title of the second book; `find('book')` returns the first matching book. |\n| B | Wrong: an `Element` returned by `find()` has a `get()` method for reading attributes. |\n| C | Wrong: `find()` returns one `Element` or `None`, not a list. `findall()` is the method that returns a list. |\n| D | Correct: the first `<book>` has `title=\"The Little Prince\"`, and `get('title')` returns that value. |"
+  },
+  {
+    "type": "single",
+    "question": "Using the same `books.xml` document, what does this code print?\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\nfor child in root:\n    child.tag = 'movie'\n    child.remove(child.find('author'))\n    child.remove(child.find('year'))\n    print(child.tag, child.attrib)\n    for sub_child in child:\n        print(sub_child.tag, ':', sub_child.text)\n```",
+    "options": [
+      "It raises `AttributeError` because an element's tag cannot be changed.",
+      "It prints each original `book` tag and then the author and year elements.",
+      "It prints only the changed tag and the remaining `title` attribute for each element:\n\n```text\nmovie {'title': 'The Little Prince'}\nmovie {'title': 'Hamlet'}\n```",
+      "It prints `movie` for each book, followed by the original author and year text."
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "The correct answer is C.\n\nThe loop processes the two direct `<book>` children of `<books>` one at a time. For each child:\n\n1. `child.tag = 'movie'` changes the element's tag from `book` to `movie`.\n2. `child.find('author')` returns the nested `<author>` element, and `child.remove(...)` removes that element from the current book.\n3. `child.find('year')` returns the nested `<year>` element, and the second `remove(...)` removes it as well.\n4. The `title` attribute is not removed, so `child.attrib` still contains it.\n5. The inner loop has no elements left to visit, so it prints nothing.\n\nThe output is:\n\n```text\nmovie {'title': 'The Little Prince'}\nmovie {'title': 'Hamlet'}\n```\n\n`Element.remove()` removes the specific child element returned by `find()`. It compares elements by object identity, not merely by tag name. The code changes the in-memory tree; it would need `tree.write(...)` to save the modified XML to a file.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: an element's `tag` can be changed by assigning a new tag name. |\n| B | Wrong: the tag is changed before printing, and both `author` and `year` children are removed. |\n| C | Correct: only the new tag and the unchanged `title` attribute remain, and the inner loop is empty. |\n| D | Wrong: the author and year elements are removed before the inner loop runs, so their text is not printed. |"
+  },
+  {
+    "type": "single",
+    "question": "Using the same `books.xml` document, what does this code print?\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\nfor child in root:\n    child.tag = 'movie'\n    child.remove(child.find('author'))\n    child.remove(child.find('year'))\n    child.set('rate', '5')\n    print(child.tag, child.attrib)\n    for sub_child in child:\n        print(sub_child.tag, ':', sub_child.text)\n```",
+    "options": [
+      "It prints `movie {'title': 'The Little Prince'}` and `movie {'title': 'Hamlet'}` without the `rate` attribute.",
+      "It prints the changed tag with both the existing `title` and new `rate` attributes:\n\n```text\nmovie {'title': 'The Little Prince', 'rate': '5'}\nmovie {'title': 'Hamlet', 'rate': '5'}\n```",
+      "It raises `KeyError` because `rate` does not already exist in the XML.",
+      "It prints the `author` and `year` child values after adding `rate`."
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The correct answer is B.\n\n`child.set('rate', '5')` sets the attribute named `rate` to the string value `'5'`. Because `rate` does not yet exist, it is added to each `<book>` element. The existing `title` attribute remains unchanged.\n\nEach loop round proceeds as follows:\n\n1. The current element's tag changes from `book` to `movie`.\n2. Its `author` and `year` children are removed.\n3. The `rate` attribute is added with the value `'5'`. XML attribute values are strings here, not integers.\n4. `print(child.tag, child.attrib)` prints the new tag and both attributes.\n5. No subelements remain, so the inner loop prints nothing.\n\nThe output is:\n\n```text\nmovie {'title': 'The Little Prince', 'rate': '5'}\nmovie {'title': 'Hamlet', 'rate': '5'}\n```\n\n`Element.set(key, value)` also replaces the value if an attribute with that key already exists; it does not create a duplicate attribute. This change affects the in-memory tree. To write it to a file, call `tree.write(...)`.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: `set()` adds `rate`, so it appears alongside the existing `title` attribute. |\n| B | Correct: both elements are renamed, their nested children are removed, and `rate='5'` is added. |\n| C | Wrong: `set()` can add an attribute that is not already present; it does not require the key to exist. |\n| D | Wrong: `author` and `year` are removed before the inner loop runs, so no child values are printed. |"
+  },
+  {
+    "type": "single",
+    "question": "What is the purpose of the final line in this program?\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\nfor child in root:\n    child.tag = 'movie'\n    child.remove(child.find('author'))\n    child.remove(child.find('year'))\n    child.set('rate', '5')\n    print(child.tag, child.attrib)\n    for sub_child in child:\n        print(sub_child.tag, ':', sub_child.text)\n\ntree.write('movies.xml', 'UTF-8', True)\n```",
+    "options": [
+      "It prints the modified XML tree to the console using UTF-8 encoding.",
+      "It deletes `books.xml` and creates an empty `movies.xml` file.",
+      "It writes the modified tree to `movies.xml` using UTF-8 encoding and includes an XML declaration.",
+      "It converts the tree to a Unicode string but does not create a file."
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "The correct answer is C.\n\nThe final line calls `ElementTree.write()` with three positional arguments:\n\n```python\ntree.write('movies.xml', 'UTF-8', True)\n```\n\nThe arguments mean:\n\n1. `'movies.xml'` is the destination file.\n2. `'UTF-8'` is the output encoding.\n3. `True` sets `xml_declaration=True`, so an XML declaration is included in the output.\n\nBefore `write()` runs, the in-memory tree has already been modified: every `book` is renamed to `movie`, the `author` and `year` children are removed, and a `rate=\"5\"` attribute is added. `write()` serializes that modified tree to `movies.xml`; it does not write the original unchanged document.\n\nThe printed console output happens earlier, when the `print()` calls execute. The `write()` call saves the tree to the file and does not itself print the XML.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: `print()` displays the tag and attributes, while `write()` saves the tree to a file. |\n| B | Wrong: `write()` serializes the current modified tree and does not delete `books.xml`. |\n| C | Correct: the modified tree is written to `movies.xml` with UTF-8 encoding and an XML declaration. |\n| D | Wrong: `write()` writes the serialized tree to the specified file; `ET.tostring(..., encoding='unicode')` would be used to create a Unicode string. |\n\nThe call changes the filesystem only after the tree has been serialized. If the destination file already exists, it is overwritten."
+  },
+  {
+    "type": "single",
+    "question": "What does this program do?\n\n```python\nimport xml.etree.ElementTree as ET\n\nroot = ET.Element('data')\nmovie_1 = ET.SubElement(root, 'movie', {'title': 'The Little Prince', 'rate': '5'})\nmovie_2 = ET.SubElement(root, 'movie', {'title': 'Hamlet', 'rate': '5'})\nET.dump(root)\n```",
+    "options": [
+      "It builds a `data` root with two `movie` children and prints the resulting XML structure to standard output.",
+      "It parses an existing `data.xml` file and prints only the first movie.",
+      "It creates a file named `movies.xml` containing the two movie elements.",
+      "It creates two independent root elements because each call to `SubElement()` starts a new tree."
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The correct answer is A.\n\nThe program constructs an XML tree in memory:\n\n1. `ET.Element('data')` creates the root element `<data>`.\n2. `ET.SubElement(root, 'movie', {...})` creates a `<movie>` element, assigns its attributes, and appends it to `root`. The function returns the newly created child, which is stored in `movie_1`.\n3. The second `SubElement()` call appends another `<movie>` child to the same `root`, stored in `movie_2`.\n4. `ET.dump(root)` writes the complete element structure rooted at `<data>` to `sys.stdout`.\n\nThe resulting XML structure is equivalent to:\n\n```xml\n<data>\n  <movie title=\"The Little Prince\" rate=\"5\" />\n  <movie title=\"Hamlet\" rate=\"5\" />\n</data>\n```\n\nThe exact whitespace and empty-element formatting can vary by Python implementation, but the tree contains one `data` root and two `movie` children. `ET.dump()` displays the structure for debugging; it does not create an XML file. Use `ElementTree.write()` when the tree must be saved to disk.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Correct: both `SubElement()` calls append children to `root`, and `dump(root)` prints the complete tree. |\n| B | Wrong: no file is parsed; the tree is created from scratch with `Element()` and `SubElement()`. |\n| C | Wrong: `ET.dump()` writes to standard output, not to `movies.xml`. `tree.write(...)` is used for file output. |\n| D | Wrong: both calls use the same `root` as their parent, so they become sibling children in one tree. |"
   }
 ]
