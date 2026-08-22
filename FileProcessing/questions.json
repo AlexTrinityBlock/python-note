@@ -446,5 +446,103 @@
       1
     ],
     "explanation": "Incorrect - the correct answer is B: `fetchall()` materializes all remaining rows as one list, which can exhaust memory for a very large result.\n\nThe code is functionally correct for a small or moderate result set, but its memory behavior is important:\n\n```python\nc.execute('SELECT * FROM tasks')\nrows = c.fetchall()  # Every remaining row is stored in this list at once.\nfor row in rows:\n    print(row)\n```\n\nMemory trace:\n\n| Step | Object or operation | Memory consequence |\n|------|---------------------|--------------------|\n| 1 | Execute the `SELECT` | The cursor has a result set ready to be read. |\n| 2 | Call `fetchall()` | Python creates a list containing every remaining row and its Python objects. |\n| 3 | Start the `for` loop | The list remains alive while the loop processes it; iteration does not release the whole list row by row. |\n| 4 | Result set is extremely large | The list may consume available memory and the process may raise `MemoryError` or be terminated by the operating system. |\n\nFor streaming-style processing, iterate over the cursor directly so the program does not first materialize a list of every row:\n\n```python\nc.execute('SELECT * FROM tasks')\nfor row in c:\n    print(row)\n```\n\nWhen bounded batches are needed, use `fetchmany()` instead:\n\n```python\nc.execute('SELECT * FROM tasks')\nwhile True:\n    batch = c.fetchmany(1000)\n    if not batch:\n        break\n    for row in batch:\n        print(row)\n```\n\nOption A is wrong because `fetchall()` returns all remaining rows, not one row. Option C is wrong because `fetchall()` returns a `list`, not a cursor. Option D is wrong because a normal `for` loop does not copy the entire list on every iteration, and changing loop syntax cannot undo the list already created by `fetchall()`. The official documentation states that `fetchall()` returns all remaining rows as a list and that cursors can be iterated for `SELECT` results. Source: [Python `sqlite3` documentation](https://docs.python.org/3/library/sqlite3.html#cursor-objects)."
+  },
+  {
+    "type": "single",
+    "question": "Which statement correctly identifies the type returned by `fetchall()` in this program?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('SELECT * FROM tasks')\nrows = c.fetchall()\nprint(type(rows).__name__)\nprint(type(rows[0]).__name__)\nconn.close()\n```",
+    "options": [
+      "`rows` is a tuple and `rows[0]` is a list.",
+      "`rows` is a cursor and `rows[0]` is a tuple.",
+      "`rows` is a list and, with the default row factory, `rows[0]` is a tuple.",
+      "`rows` is a dictionary and `rows[0]` is a string."
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `rows` is a `list`, and each row is a `tuple` by default.\n\n`c.fetchall()` retrieves all remaining rows and returns one list containing them. SQLite's default row factory represents each row as a tuple. For example, with the rows from the prompt, the value has this shape:\n\n```python\nrows = [\n    (1, 'My first task', 1),\n    (2, 'My second task', 5),\n    (3, 'My third task', 10),\n]\n```\n\nThe output is:\n\n```text\nlist\ntuple\n```\n\nStep by step:\n\n1. `c.execute(...)` returns the cursor and prepares the query result.\n2. `c.fetchall()` consumes all remaining rows and creates the outer `list`.\n3. `rows[0]` selects the first element of that list, which is the first row `tuple`.\n4. `rows[0][1]` would then select the task-name string from that tuple.\n\nOption A reverses the container and row types. Option B confuses the cursor with the value returned by `fetchall()`. Option D is not the default behavior; a dictionary-like result would require explicitly configuring a custom `row_factory`. Source: [Python `sqlite3` documentation](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.fetchall)."
+  },
+  {
+    "type": "single",
+    "question": "Which line correctly fetches all remaining rows after the `SELECT` statement?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('SELECT * FROM tasks')\n# Write the next line:\n____\nconn.close()\n```",
+    "options": [
+      "`rows = c.fetchall()`",
+      "`rows = c.fetchall('SELECT * FROM tasks')`",
+      "`rows = c.execute.fetchall()`",
+      "`rows = sqlite3.fetchall(c)`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `rows = c.fetchall()`.\n\nThe SQL has already been executed by `c.execute('SELECT * FROM tasks')`, so `fetchall()` is called on the cursor without the SQL string. The completed code is:\n\n```python\nc.execute('SELECT * FROM tasks')\nrows = c.fetchall()\nfor row in rows:\n    print(row)\n```\n\nExecution trace:\n\n| Step | Operation | Result |\n|------|-----------|--------|\n| 1 | `c.execute(...)` | The cursor prepares the query result. |\n| 2 | `c.fetchall()` | All remaining rows are returned as a list. |\n| 3 | `for row in rows` | Each row tuple can be processed. |\n\nOption B is invalid because `fetchall()` does not receive a SQL statement; it fetches the result of the query already executed on that cursor. Option C treats `execute` as though it were an object with a `fetchall` attribute instead of calling it through `c`. Option D is invalid because `fetchall()` is a cursor method, not a module-level `sqlite3` function. If no rows remain, the correct line still returns an empty list, `[]`. Source: [Python `sqlite3.Cursor.fetchall`](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.fetchall)."
+  },
+  {
+    "type": "single",
+    "question": "Part 1 of 5: Which line should replace `____` to create the cursor used by the following `execute()` call?\n\nThis is a progressive code set: each part builds on the same program and later parts reveal the completed code. Answer the parts in order.\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\n____\nc.execute('SELECT * FROM tasks')\nrow = c.fetchone()\nprint(row)\n```",
+    "options": [
+      "`c = sqlite3.cursor(conn)`",
+      "`c = conn.cursor()`",
+      "`c = conn.execute()`",
+      "`c = cursor(conn)`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `c = conn.cursor()`.\n\n`sqlite3.connect()` returns a `Connection` object. Its `cursor()` method creates a `Cursor`, and the cursor is the object that executes the `SELECT` statement and retrieves its rows.\n\nThe completed code is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('SELECT * FROM tasks')\nrow = c.fetchone()\nprint(row)\n```\n\nExecution trace:\n\n| Step | Operation | Result |\n|------|-----------|--------|\n| 1 | `sqlite3.connect('todo.db')` | `conn` refers to a `sqlite3.Connection`. |\n| 2 | `conn.cursor()` | A `sqlite3.Cursor` is created. |\n| 3 | Assignment to `c` | `c` refers to that cursor. |\n| 4 | `c.execute(...)` | The cursor executes the query and holds its result set. |\n\nOption A is wrong because `cursor()` is not a module-level `sqlite3` function. Option C calls `execute()` without the required SQL statement and does not create a cursor. Option D refers to an undefined name. The official API documents `Connection.cursor()` as the method that creates and returns a `Cursor`. Source: [Python sqlite3 documentation](https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.cursor)."
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 5: What is the type of `c` immediately after the `execute()` call?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nresult = c.execute('SELECT * FROM tasks')\n\nprint(type(c).__name__)\nprint(result is c)\n```",
+    "options": [
+      "`list`, and `False`",
+      "`tuple`, and `False`",
+      "`sqlite3.Cursor`, and `True`",
+      "`sqlite3.Connection`, and `True`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `c` is a `sqlite3.Cursor`, and `result is c` is `True`.\n\n`conn.cursor()` creates the cursor. Calling `Cursor.execute()` executes the SQL and returns the same cursor object, so assigning the call to `result` creates another name for that object. It does not fetch rows and does not create a list.\n\nThe output is:\n\n```text\nsqlite3.Cursor\nTrue\n```\n\nStep by step:\n\n1. `conn.cursor()` creates a `sqlite3.Cursor`, so `c` has that type.\n2. `c.execute('SELECT * FROM tasks')` runs the query.\n3. `execute()` returns `c` itself.\n4. `result is c` therefore evaluates to `True`.\n\nOption A is wrong because no fetch method has been called, and a cursor is not a list. Option B confuses one fetched row with the cursor. Option D confuses the connection that owns the cursor with the cursor itself. Source: [Python sqlite3 Cursor.execute](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.execute)."
+  },
+  {
+    "type": "single",
+    "question": "Part 3 of 5: Assume `tasks` contains these rows in query order. What are the type and value of `row` after the first `fetchone()`?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('SELECT * FROM tasks')\nrow = c.fetchone()\nprint(type(row).__name__)\nprint(row)\n```\n\nQuery result:\n\n```text\n(1, 'Write notes', 2)\n(2, 'Review code', 1)\n```",
+    "options": [
+      "`tuple`, with value `(1, 'Write notes', 2)`",
+      "`list`, with value `[(1, 'Write notes', 2), (2, 'Review code', 1)]`",
+      "`sqlite3.Cursor`, with value `<sqlite3.Cursor>`",
+      "`str`, with value `'Write notes'`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `row` is the tuple `(1, 'Write notes', 2)`.\n\nWith the default `row_factory`, `Cursor.fetchone()` retrieves exactly one next row and returns it as a tuple. It does not return the whole result set and it does not select only one column.\n\nThe first call proceeds as follows:\n\n| Step | Cursor state or operation | Result |\n|------|---------------------------|--------|\n| 1 | `execute('SELECT * FROM tasks')` | Two rows are available in query order. |\n| 2 | First `fetchone()` | Consumes the first row. |\n| 3 | Assignment to `row` | `row == (1, 'Write notes', 2)`. |\n| 4 | `type(row).__name__` | Prints `tuple`. |\n\nThe output is:\n\n```text\ntuple\n(1, 'Write notes', 2)\n```\n\nOption B describes the list returned by `fetchall()`, not one row from `fetchone()`. Option C is the cursor before fetching. Option D would be only the second field, but `fetchone()` returns the complete row tuple. Source: [Python sqlite3 Cursor.fetchone](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.fetchone)."
+  },
+  {
+    "type": "single",
+    "question": "Part 4 of 5: What does the second call to `fetchone()` assign to `row`?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('SELECT * FROM tasks')\nrow = c.fetchone()\nprint(row)\nrow = c.fetchone()\nprint(row)\nconn.close()\n```\n\nAssume the query returns:\n\n```text\n(1, 'Write notes', 2)\n(2, 'Review code', 1)\n```",
+    "options": [
+      "The first row again: `(1, 'Write notes', 2)`",
+      "All rows as a list: `[(1, 'Write notes', 2), (2, 'Review code', 1)]`",
+      "Only the second column: `'Review code'`",
+      "The next row as a tuple: `(2, 'Review code', 1)`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Incorrect - the correct answer is D: the second call returns `(2, 'Review code', 1)`.\n\n`fetchone()` maintains the cursor's position in the result set. Each successful call consumes and returns the next available row.\n\nStep-by-step trace:\n\n| Call | Row available before the call | Value returned |\n|------|-------------------------------|----------------|\n| First `c.fetchone()` | `(1, 'Write notes', 2)` | `(1, 'Write notes', 2)`; the cursor advances. |\n| Second `c.fetchone()` | `(2, 'Review code', 1)` | `(2, 'Review code', 1)`; the cursor advances again. |\n\nTherefore the two `print(row)` calls produce:\n\n```text\n(1, 'Write notes', 2)\n(2, 'Review code', 1)\n```\n\nOption A would be true only if the query were executed again or the cursor were repositioned. Option B describes `fetchall()`. Option C incorrectly treats a row fetch as a column fetch; each result is the complete row tuple. Source: [Python sqlite3 Cursor.fetchone](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.fetchone)."
+  },
+  {
+    "type": "single",
+    "question": "Part 5 of 5: If the query has only the two rows shown below, what is the type and value of `row` after the third `fetchone()`?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('SELECT * FROM tasks')\nfirst = c.fetchone()\nsecond = c.fetchone()\nrow = c.fetchone()\nprint(type(row).__name__)\nprint(row)\nconn.close()\n```\n\nQuery result:\n\n```text\n(1, 'Write notes', 2)\n(2, 'Review code', 1)\n```",
+    "options": [
+      "`tuple`, with value `()`",
+      "`NoneType`, with value `None`",
+      "`list`, with value `[]`",
+      "`StopIteration` is raised before `print()` runs"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `row` is `None`, so its type name is `NoneType`.\n\n`fetchone()` returns the next row as a tuple while a row remains. Once all rows have been consumed, it returns `None` instead of raising `StopIteration`. This means code can test for the end with `if row is None:`.\n\nExecution trace:\n\n| Call | Return value | Type |\n|------|--------------|------|\n| First `fetchone()` | `(1, 'Write notes', 2)` | `tuple` |\n| Second `fetchone()` | `(2, 'Review code', 1)` | `tuple` |\n| Third `fetchone()` | `None` | `NoneType` |\n\nThe final output is:\n\n```text\nNoneType\nNone\n```\n\nOption A is wrong because an empty tuple is a real tuple value, not the documented end-of-results marker. Option C describes an empty result from `fetchall()`, not `fetchone()`. Option D confuses cursor fetching with direct iterator calls; `fetchone()` signals no remaining row by returning `None`. Source: [Python sqlite3 Cursor.fetchone](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.fetchone)."
   }
 ]
