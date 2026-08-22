@@ -1,0 +1,51 @@
+[
+  {
+    "type": "single",
+    "question": "Part 1 of 7: Which line imports the module needed to write CSV data?\n\nThis is a progressive question set. Answer the parts in order; each code part extends the same program.\n\n```python\n# Write the next line:\n```",
+    "options": ["`import csvfile`", "`import csv`", "`from csv import file`", "`include csv`"],
+    "answer": [1],
+    "explanation": "The correct answer is B: `import csv`. This imports Python's standard `csv` module, which provides `csv.writer` and constants such as `csv.QUOTE_MINIMAL`. Option A confuses the module with the file variable, option C names an object that is not provided by the module, and option D is not Python import syntax. No file is opened and no output is produced yet."
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 7: Which line opens `exported_contacts.csv` for CSV writing?\n\n```python\nimport csv\n\n# Write the next line:\n```",
+    "options": ["`csvfile = csv.open('exported_contacts.csv', 'w')`", "`with open('exported_contacts.csv') as csvfile:`", "`with csv.open('exported_contacts.csv', 'w', newline='') as csvfile:`", "`with open('exported_contacts.csv', 'w', newline='') as csvfile:`"],
+    "answer": [3],
+    "explanation": "The correct answer is D: `with open('exported_contacts.csv', 'w', newline='') as csvfile:`. Mode `'w'` creates or truncates the output file, `newline=''` lets the CSV module handle line endings, and `with` closes the file automatically. Options A and C wrongly call `open()` on the `csv` module. Option B omits write mode and the recommended newline setting. At this stage, the file is still empty because no row has been written."
+  },
+  {
+    "type": "single",
+    "question": "Part 3 of 7: Which statement creates the requested CSV writer?\n\n```python\nimport csv\n\nwith open('exported_contacts.csv', 'w', newline='') as csvfile:\n    # Write the next line:\n```",
+    "options": ["`writer = csv.writer(csvfile, delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)`", "`writer = csv.DictReader(csvfile, delimiter=',')`", "`writer = csv.writer('exported_contacts.csv', quotechar='\"')`", "`writer = csv.write(csvfile, quoting='QUOTE_MINIMAL')`"],
+    "answer": [0],
+    "explanation": "The correct answer is A. `csv.writer()` receives the writable file object `csvfile`; `delimiter=','` separates fields, `quotechar='\"'` selects double quotes, and `quoting=csv.QUOTE_MINIMAL` quotes only fields that need protection. Option B is a reader, option C passes a filename instead of the open file object, and option D names a nonexistent factory and passes a string instead of the constant. Creating the writer alone writes no data."
+  },
+  {
+    "type": "single",
+    "question": "Part 4 of 7: What do `quotechar='\"'` and `quoting=csv.QUOTE_MINIMAL` mean together?",
+    "options": ["They quote every field with single quotes.", "They disable quoting, so commas inside fields become separators.", "They use double quotes and add them only when a field contains characters requiring quoting, such as the delimiter.", "They convert every non-numeric field to a float."],
+    "answer": [2],
+    "explanation": "The correct answer is C. `quotechar='\"'` chooses the double quote as the quoting character. `csv.QUOTE_MINIMAL` tells the writer to quote only fields containing a delimiter, quote character, or newline. Thus `mother-in-law` can be written plainly, while `grandmother, grandfather` must become `\"grandmother, grandfather\"` so its comma remains part of one field. Option A uses the wrong quote character and quotes too much, option B describes `QUOTE_NONE`, and option D describes reader conversion associated with `QUOTE_NONNUMERIC`, not this writer setting. This is the interspersed knowledge question; the progressive code resumes in Part 5."
+  },
+  {
+    "type": "single",
+    "question": "Part 5 of 7: Which statement writes the header row?\n\n```python\nimport csv\n\nwith open('exported_contacts.csv', 'w', newline='') as csvfile:\n    writer = csv.writer(csvfile, delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)\n    # Write the next line:\n```",
+    "options": ["`writer.write(['Name', 'Phone'])`", "`writer.writerow(['Name', 'Phone'])`", "`csvfile.writerow(['Name', 'Phone'])`", "`writer.header(['Name', 'Phone'])`"],
+    "answer": [1],
+    "explanation": "The correct answer is B: `writer.writerow(['Name', 'Phone'])`. `writerow()` serializes one iterable as one CSV record, producing `Name,Phone` because neither field needs quoting. Option A uses a nonexistent writer method, option C calls the method on the file object instead of the CSV writer, and option D names a nonexistent header method. The writer adds the line ending after the record."
+  },
+  {
+    "type": "single",
+    "question": "Part 6 of 7: Which block writes all five contact records after the header?\n\n```python\nimport csv\n\nwith open('exported_contacts.csv', 'w', newline='') as csvfile:\n    writer = csv.writer(csvfile, delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)\n    writer.writerow(['Name', 'Phone'])\n    # Write the next block:\n```",
+    "options": ["`writer.writerow('mother', '222-555-101', 'father', '222-555-102')`", "`writer.write([['mother', '222-555-101'], ['father', '222-555-102']])`", "`for contact in contacts: csvfile.write(contact)`", "`writer.writerows([['mother', '222-555-101'], ['father', '222-555-102'], ['wife', '222-555-103'], ['mother-in-law', '222-555-104'], ['grandmother, grandfather', '222-555-105']])`"],
+    "answer": [3],
+    "explanation": "The correct answer is D: `writer.writerows(...)`. `writerows()` receives an iterable of row iterables and writes one record for each nested list. The first four names contain no delimiter; the final name contains a comma and is therefore quoted. Option A passes separate arguments to `writerow()` instead of one row, option B uses a nonexistent `write()` method, and option C uses an undefined variable and bypasses CSV formatting. The file now contains six records including the header."
+  },
+  {
+    "type": "single",
+    "question": "Part 7 of 7: What content does the complete program write to `exported_contacts.csv`?\n\n```python\nimport csv\n\nwith open('exported_contacts.csv', 'w', newline='') as csvfile:\n    writer = csv.writer(csvfile, delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)\n    writer.writerow(['Name', 'Phone'])\n    writer.writerow(['mother', '222-555-101'])\n    writer.writerow(['father', '222-555-102'])\n    writer.writerow(['wife', '222-555-103'])\n    writer.writerow(['mother-in-law', '222-555-104'])\n    writer.writerow(['grandmother, grandfather', '222-555-105'])\n```",
+    "options": ["`Name,Phone\nmother,222-555-101\nfather,222-555-102\nwife,222-555-103\nmother-in-law,222-555-104\n\"grandmother, grandfather\",222-555-105`", "`Name,Phone\nmother,222-555-101\nfather,222-555-102\nwife,222-555-103\nmother-in-law,222-555-104\ngrandmother, grandfather,222-555-105`", "`\"Name\",\"Phone\"\n\"mother\",\"222-555-101\"\n\"father\",\"222-555-102\"\n\"wife\",\"222-555-103\"\n\"mother-in-law\",\"222-555-104\"\n\"grandmother, grandfather\",\"222-555-105\"`", "The program raises `csv.Error` because every field must be quoted."],
+    "answer": [0],
+    "explanation": "The correct answer is A. The writer emits six rows. The header and the first four contact rows contain no special character, so `QUOTE_MINIMAL` leaves them unquoted. The last name contains the delimiter comma, so only that field becomes `\"grandmother, grandfather\"`. Without those quotes, the last record would incorrectly contain three fields. Option B loses the field boundary, option C incorrectly quotes every field as `QUOTE_ALL` would, and option D is false because specifying a quote character does not require every field to be quoted."
+  }
+]
