@@ -82,5 +82,33 @@
       3
     ],
     "explanation": "The correct answer is D. The program prints the heading and then processes both child `<book>` elements.\n\nThe complete output is:\n\n```text\nMy books:\n\nTitle:  Python Basics\nAuthor: Ada Lovelace\nYear:  1843 \n\nTitle:  XML Recipes\nAuthor: Guido van Rossum\nYear:  2001 \n\n```\n\nStep-by-step execution:\n\n1. `ET.parse('books.xml')` creates an `ElementTree` for the file.\n2. `tree.getroot()` returns the `<books>` element.\n3. `print('My books:\\n')` prints the heading. The string contains one newline, and `print()` adds its own ending newline, so a blank line follows the heading.\n4. The loop visits the first `<book>`. Its `title` attribute is `Python Basics`, child 0 has text `Ada Lovelace`, and child 1 has text `1843`.\n5. The loop visits the second `<book>`. Its corresponding values are `XML Recipes`, `Guido van Rossum`, and `2001`.\n6. The final argument `'\\n'` in each year call adds an extra newline in addition to `print()`'s normal newline, producing a blank line after each book.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: `title` is a valid attribute accessed through `book.attrib['title']`. |\n| B | Wrong: the loop prints title, author, and year, not titles alone. |\n| C | Wrong: `for book in root` visits both books, not only the first one. |\n| D | Correct: both books are visited and all three values are printed. |\n\nThe spaces after `Title:` and `Year:` come from the spaces inside those string literals; the XML parser returns the element text values without changing their meaning."
+  },
+  {
+    "type": "single",
+    "question": "Which code correctly prints the titles of the books in the XML document?\n\n`findall()` searches only the direct children of the element on which it is called.\n\n```xml\n<books>\n  <book title=\"The Little Prince\">\n    <author>Antoine de Saint-Exupery</author>\n  </book>\n  <book title=\"Hamlet\">\n    <author>William Shakespeare</author>\n  </book>\n</books>\n```",
+    "options": [
+      "`for author in root.findall('author'):\n    print(author.text)`",
+      "`for book in root.findall('book'):\n    print(book.text)`",
+      "`for book in root.findall('book'):\n    print(book.get('title'))`",
+      "`for book in root.findall('.//author'):\n    print(book.get('title'))`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "The correct answer is C.\n\n```python\nimport xml.etree.ElementTree as ET\n\ntree = ET.parse('books.xml')\nroot = tree.getroot()\nfor book in root.findall('book'):\n    print(book.get('title'))\n```\n\nStep-by-step execution:\n\n1. `root` is the `<books>` element. Its direct children are the two `<book>` elements.\n2. `root.findall('book')` returns those two direct children in document order.\n3. During the first loop round, `book.get('title')` reads the `title` attribute and returns `The Little Prince`.\n4. During the second loop round, it returns `Hamlet`.\n5. The output is:\n\n```text\nThe Little Prince\nHamlet\n```\n\n`get()` reads an attribute by name. If the attribute is missing, `book.get('title')` returns `None` by default; an optional second argument can provide a different default.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: `author` elements are nested inside `book`, not direct children of `books`, so `root.findall('author')` returns an empty list. |\n| B | Wrong: `book.text` is the text directly inside `<book>`; in this indented XML it is whitespace, not the `title` attribute. |\n| C | Correct: it finds direct `<book>` children and reads each `title` attribute with `get()`. |\n| D | Wrong: `.//author` searches nested author elements, but those elements have no `title` attribute; it would print `None` for each author. |\n\nTo search for authors at any descendant depth, `.//author` is an XPath expression. That is different from `findall('author')`, which checks only direct children."
+  },
+  {
+    "type": "single",
+    "question": "What is the main difference between `Element.findall()` and `Element.iter()` in `xml.etree.ElementTree`?",
+    "options": [
+      "`findall()` searches the entire XML subtree and returns an iterator, while `iter()` searches only direct children and returns a list.",
+      "`findall()` returns matching direct children as a list, while `iter()` recursively visits matching elements throughout the subtree as an iterator.",
+      "Both methods search only direct children and return the same type of result; `iter()` is simply an alias for `findall()`.",
+      "`findall()` is used only for attributes, while `iter()` is used only for element text."
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The correct answer is B.\n\n`Element.findall()` searches for matching elements among the direct children of the element on which it is called and returns a list. It can also use a limited XPath expression, such as `.//author`, when descendants must be searched.\n\n`Element.iter()` recursively walks the element and its entire subtree, including children, grandchildren, and deeper descendants. It returns an iterator, so it is suitable for streaming through matches with a `for` loop.\n\nFor example, if `<author>` is nested inside `<book>`:\n\n- `root.findall('author')` finds nothing when `author` is not a direct child of `root`.\n- `root.iter('author')` finds the nested author elements.\n- `root.findall('book')` finds the direct `book` children and returns them in a list.\n\nWhy the other options are wrong:\n\n| Option | Result |\n|--------|--------|\n| A | Wrong: it reverses both methods' search behavior and result types. `findall()` does not recursively search by default, and `iter()` returns an iterator rather than a list. |\n| B | Correct: `findall()` returns matching direct children as a list, while `iter()` recursively traverses the subtree as an iterator. |\n| C | Wrong: the methods differ in both traversal behavior and return type; `iter()` is not an alias for `findall()`. |\n| D | Wrong: both methods find elements. Attribute access uses methods such as `get()` or the `attrib` mapping, while text is accessed through an element's `text` property. |\n\nThe official ElementTree documentation describes `findall()` as finding matching direct children and `iter()` as recursively iterating over the complete subtree."
   }
 ]
