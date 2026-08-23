@@ -822,5 +822,103 @@
       2
     ],
     "explanation": "The correct answer is C. An object's type is its class, and the built-in `type(obj)` returns that class object. Option A describes a value, which is separate from identity and type. Option B has no relationship to the definition of type. Option D confuses type with identity: `id(obj)` identifies an object, but its exact representation is implementation-dependent and is not the object's type."
+  },
+  {
+    "type": "single",
+    "question": "Which statement correctly describes the difference between `hasattr()` and `getattr()`?",
+    "options": [
+      "`hasattr(obj, name)` returns a Boolean, while `getattr(obj, name)` returns the named attribute value or method reference",
+      "Both functions always return the attribute value, but `hasattr()` converts it to a string",
+      "`getattr()` can only read instance variables, while `hasattr()` can only inspect methods",
+      "`hasattr()` creates a missing attribute, while `getattr()` deletes it"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The correct answer is A. `hasattr(obj, name)` answers whether attribute lookup succeeds by returning `True` or `False`. `getattr(obj, name)` performs the lookup and returns the resulting value, which may be data or a callable method reference. Option B is wrong because `hasattr()` does not return the value or convert it to a string. Option C is wrong because both functions can inspect either data attributes or methods. Option D describes neither function: neither one creates or deletes an attribute. In both calls, `name` must be a string."
+  },
+  {
+    "type": "single",
+    "question": "What happens when `getattr(config, 'missing')` is called and `config` has no such attribute?",
+    "options": [
+      "It returns `None` automatically",
+      "It returns `False`, just like `hasattr()`",
+      "It raises `AttributeError`; a third argument is needed to supply a fallback value",
+      "It creates `config.missing` with an empty value"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "The correct answer is C. Without a default argument, `getattr(object, name)` raises `AttributeError` when the named attribute does not exist. For example, `getattr(config, 'missing', None)` returns `None` instead. Option A is wrong because `None` is not an implicit default. Option B describes the Boolean result of `hasattr()`, not `getattr()`. Option D is wrong because `getattr()` only reads an attribute; it never creates one. A supplied default is used only when lookup fails, not when an existing attribute happens to contain a falsy value such as `0` or `None`."
+  },
+  {
+    "type": "single",
+    "question": "Which magic-method behavior explains why `hasattr(obj, 'x')` returns `False` when `obj.x` cannot be found?",
+    "options": [
+      "`hasattr()` calls `obj.__setattr__('x', None)` and checks whether assignment succeeds",
+      "`hasattr()` calls attribute lookup, equivalent to `getattr(obj, 'x')`, and returns `False` only when that lookup raises `AttributeError`",
+      "`hasattr()` calls `obj.__dir__()` and returns `False` whenever `x` is absent from the resulting list",
+      "`hasattr()` calls `obj.__delattr__('x')` and checks whether deletion succeeds"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The correct answer is B. The documented implementation idea for `hasattr()` is to call `getattr(obj, name)` and return `False` if the lookup raises `AttributeError`; otherwise it returns `True`. This means a custom `__getattribute__()` or `__getattr__()` can affect the result. Option A incorrectly describes assignment and `__setattr__()`. Option C confuses `hasattr()` with `dir()`; `dir()` is not a complete guarantee of successful lookup. Option D incorrectly describes deletion. Importantly, `hasattr()` suppresses only `AttributeError`; another exception raised during lookup propagates."
+  },
+  {
+    "type": "single",
+    "question": "Which statement correctly describes the magic-method path used by `getattr(obj, 'x')`?",
+    "options": [
+      "It always calls `obj.__getattr__('x')`, even when `x` already exists",
+      "It calls `obj.__dir__('x')` and then returns the first name in the result",
+      "It calls `obj.__setattr__('x', value)` with a temporary value before reading it",
+      "It calls `obj.__getattribute__('x')`; `__getattr__('x')` is a fallback used only if normal lookup raises `AttributeError`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "The correct answer is D. Ordinary attribute access, including `getattr(obj, 'x')`, goes through `__getattribute__()`. If normal lookup fails with `AttributeError`, Python may call `__getattr__()` as a fallback. Option A is wrong because `__getattr__()` is not called when normal lookup succeeds. Option B confuses lookup with the name-reporting helper `__dir__()`. Option C describes assignment rather than reading. A custom `__getattr__()` may return a computed fallback or raise another exception; `getattr()` does not automatically swallow unrelated exceptions."
+  },
+  {
+    "type": "single",
+    "question": "Which statement about `setattr(obj, name, value)` is correct?",
+    "options": [
+      "It is equivalent to assigning the attribute whose name is held in `name`; for example, `setattr(obj, 'x', 5)` corresponds to `obj.x = 5`",
+      "It can only update an attribute that already exists on `obj`",
+      "It is equivalent to calling `obj.setattr(name, value)` as an ordinary user-defined method",
+      "It always stores the value directly in `obj.__dict__`, bypassing descriptors and custom `__setattr__()`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The correct answer is A, with an important dynamic-name detail: `setattr(obj, name, value)` is the programmatic equivalent of assigning the attribute whose name is held in the string `name`, such as `setattr(obj, 'x', 5)` corresponding to `obj.x = 5`. It can create a new attribute when the object allows it, so option B is wrong. Option C is wrong because `setattr` is a built-in, not an automatically required method named `setattr` on the object. Option D is wrong because the operation follows the object's attribute-setting machinery, including `__setattr__()` and descriptors; it does not necessarily write directly to `__dict__`."
+  },
+  {
+    "type": "single",
+    "question": "Which statement about `delattr(obj, name)` is correct?",
+    "options": [
+      "It reads the attribute and returns its value before deleting it",
+      "It deletes the attribute named by the string `name`, equivalent to `del obj.<name>` when written with a literal name",
+      "It deletes the entire class that supplied the attribute",
+      "It always succeeds even when the named attribute does not exist"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The correct answer is B. `delattr(obj, name)` removes the attribute whose name is supplied as a string, and is the dynamic-name equivalent of a statement such as `del obj.x`. Option A is wrong because deletion does not return the old value. Option C is wrong because only the selected attribute is targeted, not its class. Option D is wrong because deleting a missing attribute normally raises `AttributeError`. As with ordinary deletion, custom `__delattr__()` methods and descriptors can control or reject the operation."
+  },
+  {
+    "type": "single",
+    "question": "Which statement about `dir(obj)` is correct?",
+    "options": [
+      "It guarantees a complete list of every attribute that can ever be returned by `getattr(obj, name)`",
+      "It returns only names stored directly in `obj.__dict__`",
+      "It attempts to return a useful list of attribute names and may use `obj.__dir__()`, but the result is not necessarily complete",
+      "It invokes `obj.__delattr__()` for every name before producing the list"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "The correct answer is C. `dir(obj)` attempts to produce a useful list of names, collecting information from the object and its type when no custom `__dir__()` is provided. A class can define `__dir__()` to customize that list, and the result is not guaranteed to be complete or accurate for dynamic attributes supplied by `__getattr__()`. Option A is too strong for this reason. Option B is wrong because inherited and class attributes are also considered. Option D confuses listing names with deleting attributes; `dir()` does not mutate the object."
   }
 ]
