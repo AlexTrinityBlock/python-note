@@ -738,5 +738,89 @@
       2
     ],
     "explanation": "With slots=True, dataclasses generates a `__slots__` attribute and, unlike the default behavior, returns a new class instead of the original one. Instances then have no `__dict__` (unless a base class provides one), so attributes live in slots. If the class already defines `__slots__`, TypeError is raised. Weak references are not automatic: weakref_slot=True (default False) adds a slot named `__weakref__` so instances can be weakly referenced, and it is an error to specify weakref_slot=True without slots=True. Since Python 3.11, a field name already present in a base class `__slots__` is not duplicated in the generated `__slots__`, so use fields() rather than `__slots__` to retrieve field names. Also, passing parameters to a base class `__init_subclass__`() with slots=True results in a TypeError."
+  },
+  {
+    "type": "single",
+    "question": "Which description best matches the term **class** in Python?",
+    "options": [
+      "A concrete value created by calling a class",
+      "A blueprint that defines a type of object and can be used to create instances",
+      "A function that is automatically bound to an instance",
+      "The runtime value returned by `type(obj)`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The correct answer is B. A class is an idea, blueprint, or recipe for creating objects of a particular type. Option A describes an instance, which is created from a class. Option C describes a method, although not every method is automatically bound in every access context. Option D is the class object returned by `type(obj)` for a particular object; it is not the definition of a class itself. Python's class documentation describes creating a class as creating a new type of object and enabling new instances of that type to be made."
+  },
+  {
+    "type": "single",
+    "question": "Which description best matches the term **instance**?",
+    "options": [
+      "A class's namespace containing its method definitions",
+      "A synonym for a module-level variable",
+      "A concrete object created from a class; in ordinary usage, it is often called an object",
+      "The parent class selected by the method resolution order"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "The correct answer is C. An instance is an instantiation of a class, so it is a concrete object created from that class. In Python discussions, instance and object are often used interchangeably when referring to such a value. Option A is a class namespace, option B is unrelated to object instantiation, and option D describes an inheritance relationship rather than an instance."
+  },
+  {
+    "type": "single",
+    "question": "Which statement best describes a Python **object**?",
+    "options": [
+      "A Python representation of data and behavior; an object may also aggregate or contain other objects",
+      "Only an instance created from a user-defined class, never a built-in value",
+      "Only the source-code text inside a class statement",
+      "A special name reserved for the root base class `object`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "The correct answer is A. Python's data model treats objects as the abstraction used to represent data, and objects can provide behavior through methods. Objects can also contain or refer to other objects, so they may be aggregates. Option B is too narrow because integers, strings, functions, classes, and many other values are objects. Option C confuses source code with the runtime values it creates. Option D confuses the general concept of an object with the built-in root class named `object`."
+  },
+  {
+    "type": "single",
+    "question": "Which statement correctly defines an **attribute**?",
+    "options": [
+      "Only a variable stored in an instance dictionary",
+      "Only a function declared inside a class",
+      "A class's parent in an inheritance hierarchy",
+      "Any trait accessible through an object or class, including data or a callable such as a method"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "The correct answer is D. An attribute is a trait associated with an object or class and accessed by name, such as `obj.value` or `Class.method`. It may be data, a descriptor, or a callable attribute such as a method. Option A is too narrow because attributes can be inherited, supplied by a class, or computed by descriptors. Option B is too narrow because methods are only one kind of attribute. Option C describes a base class, not an attribute."
+  },
+  {
+    "type": "single",
+    "question": "Which statement best describes a **method**?",
+    "options": [
+      "A class object returned by `type()`",
+      "A function built into a class that is callable through the class or its objects, often with the object bound as the first argument",
+      "A value that can never be changed after an instance is created",
+      "A separate module imported by the class"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "The correct answer is B. A method is a function associated with a class and is commonly called through an object, for example `obj.run()`. For an instance method, attribute access binds the instance so that `obj.run(x)` is equivalent to calling the underlying class function with the object as its first argument. Option A describes a type or class object, option C describes neither methods nor all instance state, and option D is a module rather than a callable class attribute."
+  },
+  {
+    "type": "single",
+    "question": "What does the term **type** refer to when describing a Python object?",
+    "options": [
+      "The object's current value only",
+      "The first method listed in the object's class",
+      "The class that was used to instantiate the object, or equivalently the result of `type(obj)`",
+      "The object's memory address in every Python implementation"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "The correct answer is C. An object's type is its class, and the built-in `type(obj)` returns that class object. Option A describes a value, which is separate from identity and type. Option B has no relationship to the definition of type. Option D confuses type with identity: `id(obj)` identifies an object, but its exact representation is implementation-dependent and is not the object's type."
   }
 ]
