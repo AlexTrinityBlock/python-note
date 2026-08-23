@@ -30,6 +30,11 @@
     "description": "Making types look more like classes: introspection APIs and attribute descriptors — plus the class-creation machinery that followed (PEP 3115 metaclasses, PEP 487 `__init_subclass__` / `__set_name__`)."
   },
   {
+    "id": "Descriptor",
+    "name": "Descriptor",
+    "description": "Python attribute descriptors: custom attribute access, data and non-data descriptors, and the descriptor protocol."
+  },
+  {
     "id": "PEP253",
     "name": "Subtyping Built-in Types — PEP 253",
     "description": "Metatypes, subtyping built-in types, multiple inheritance and MRO."

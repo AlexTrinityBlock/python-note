@@ -1,0 +1,149 @@
+[
+  {
+    "type": "single",
+    "question": "Which object is a descriptor?\n\n```python\nclass GetOnly:\n    def __get__(self, obj, objtype=None):\n        return 1\n\nclass SetOnly:\n    def __set__(self, obj, value):\n        pass\n\nclass Plain:\n    pass\n```",
+    "options": ["Only an object defining all of `__get__`, `__set__`, and `__delete__`", "Any object defining at least one of `__get__`, `__set__`, or `__delete__`", "Only an object stored in an instance dictionary", "Only an object inheriting from `property`"],
+    "answer": [1],
+    "explanation": "A descriptor is any object defining at least one descriptor-protocol method: `__get__`, `__set__`, or `__delete__`. Both `GetOnly()` and `SetOnly()` qualify; `Plain()` does not. There is no special base class or requirement to define every method.\n\n```python\nprint(hasattr(GetOnly, '__get__'))  # True\nprint(hasattr(SetOnly, '__set__'))  # True\n```"
+  },
+  {
+    "type": "single",
+    "question": "What does this code print?\n\n```python\nclass Ten:\n    def __get__(self, obj, objtype=None):\n        return 10\n\nclass A:\n    x = 5\n    y = Ten()\n\na = A()\nprint(a.x, a.y, 'y' in a.__dict__)\n```",
+    "options": ["`5 Ten() True`", "`5 10 True`", "`10 10 False`", "`5 10 False`"],
+    "answer": [3],
+    "explanation": "The output is `5 10 False`. `a.x` returns the regular class value. `a.y` finds `Ten()` in `A` and invokes `Ten.__get__(A.y, a, A)`, which computes `10`; no value is stored in the instance dictionary.\n\n| Lookup | Source | Result |\n| --- | --- | --- |\n| `a.x` | plain class attribute | `5` |\n| `a.y` | descriptor `__get__` | `10` |"
+  },
+  {
+    "type": "single",
+    "question": "What is printed when descriptors and instance entries share a name?\n\n```python\nclass Data:\n    def __get__(self, obj, objtype=None): return 'data'\n    def __set__(self, obj, value): pass\n\nclass NonData:\n    def __get__(self, obj, objtype=None): return 'non-data'\n\nclass C:\n    a = Data()\n    b = NonData()\n\nc = C()\nc.__dict__.update(a='instance a', b='instance b')\nprint(c.a, c.b)\n```",
+    "options": ["`data instance b`", "`instance a non-data`", "`data non-data`", "`instance a instance b`"],
+    "answer": [0],
+    "explanation": "The output is `data instance b`. A descriptor with `__set__` or `__delete__` is a data descriptor and wins before the instance dictionary. A descriptor with only `__get__` is non-data, so an instance value wins.\n\n| Name | Descriptor kind | Result |\n| --- | --- | --- |\n| `a` | data | `'data'` |\n| `b` | non-data | `'instance b'` |\n\nA read-only data descriptor may define `__set__` only to raise `AttributeError`; it still has data-descriptor precedence."
+  },
+  {
+    "type": "single",
+    "question": "Which `__get__` arguments are used for an instance and a class lookup?\n\n```python\nclass D:\n    def __get__(self, obj, objtype=None):\n        return obj, objtype\n\nclass C:\n    value = D()\n\nc = C()\nprint(c.value)\nprint(C.value)\n```",
+    "options": ["Both receive `(c, C)`", "Both receive `(None, C)`", "`c.value` receives `(c, C)`; `C.value` receives `(None, C)`", "`c.value` receives `(C, c)`; `C.value` receives `(C, None)`"],
+    "answer": [2],
+    "explanation": "`c.value` invokes `D.__get__(descriptor, c, C)`, while `C.value` invokes `D.__get__(descriptor, None, C)`. Descriptors commonly return themselves when `obj is None` so that class-level access supports introspection.\n\n```python\ndef __get__(self, obj, objtype=None):\n    if obj is None:\n        return self\n    return 'value for an instance'\n```"
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about `__set_name__` are true?\n\n```python\nclass Field:\n    def __set_name__(self, owner, name):\n        self.owner = owner\n        self.name = name\n\nclass Record:\n    title = Field()\n```",
+    "options": ["It runs whenever `record.title` is read.", "It is called automatically while `Record` is created for `title`.", "Every descriptor must define it.", "A descriptor assigned after class creation must be notified manually if it needs this setup."],
+    "answer": [1, 3],
+    "explanation": "B and D are correct. `type.__new__` calls `__set_name__(Record, 'title')` while creating the class. It is optional and is not an access hook. Descriptors added later are not automatically notified.\n\n```python\nextra = Field()\nRecord.extra = extra\nextra.__set_name__(Record, 'extra')  # call explicitly when needed\n```"
+  },
+  {
+    "type": "single",
+    "question": "What does the managed attribute example print?\n\n```python\nclass Field:\n    def __set_name__(self, owner, name):\n        self.private_name = '_' + name\n    def __get__(self, obj, objtype=None):\n        return getattr(obj, self.private_name)\n    def __set__(self, obj, value):\n        setattr(obj, self.private_name, value)\n\nclass Person:\n    name = Field()\n    age = Field()\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\nprint(vars(Person('Ada', 36)))\n```",
+    "options": ["`{'_name': 'Ada', '_age': 36}`", "`{'name': 'Ada', 'age': 36}`", "`{'private_name': '_age', 'name': 'Ada', 'age': 36}`", "It raises `AttributeError` because descriptors cannot have separate names."],
+    "answer": [0],
+    "explanation": "The output is `{'_name': 'Ada', '_age': 36}`. Each distinct `Field` receives its assigned public name during class creation. The two `__set__` calls store actual values in the instance under private keys.\n\n| Assignment | Storage key |\n| --- | --- |\n| `self.name = name` | `_name` |\n| `self.age = age` | `_age` |"
+  },
+  {
+    "type": "single",
+    "question": "How can code inspect a class descriptor without invoking its `__get__` method?\n\n```python\nclass D:\n    def __get__(self, obj, objtype=None):\n        raise RuntimeError('lookup invoked')\n\nclass C:\n    x = D()\n```",
+    "options": ["Use `C.x`.", "Use `getattr(C, 'x')`.", "Use `vars(C)['x']`.", "Use `C().__dict__['x']`."],
+    "answer": [2],
+    "explanation": "`vars(C)['x']` retrieves the object directly from the class namespace. `C.x` and `getattr(C, 'x')` perform dotted lookup and call `__get__(None, C)`, so they raise here. A fresh instance has no `'x'` dictionary entry.\n\n```python\ndescriptor = vars(C)['x']\nprint(isinstance(descriptor, D))  # True\n```"
+  },
+  {
+    "type": "single",
+    "question": "What happens when a descriptor-looking object is stored directly in an instance dictionary?\n\n```python\nclass D:\n    def __get__(self, obj, objtype=None):\n        return 'descriptor result'\n\nclass C:\n    pass\n\nc = C()\nc.x = D()\nprint(type(c.x).__name__)\n```",
+    "options": ["It prints `str` because `__get__` is invoked.", "It prints `NoneType` because `objtype` is missing.", "It raises `TypeError` because descriptors must be class attributes.", "It prints `D`; the stored object's `__get__` is not invoked."],
+    "answer": [3],
+    "explanation": "It prints `D`. Automatic descriptor invocation applies to values found in a class namespace or its MRO, not arbitrary values in an instance dictionary.\n\n1. `c.x` finds the `D` object in `c.__dict__`.\n2. Python returns that object normally.\n3. `D.__get__` is never called."
+  },
+  {
+    "type": "single",
+    "question": "Why does overriding `__getattribute__` require particular care with descriptors?\n\n```python\nclass C:\n    @property\n    def x(self):\n        return 10\n\n    def __getattribute__(self, name):\n        return object.__getattribute__(self, name)\n```",
+    "options": ["It makes every descriptor a data descriptor.", "A replacement that does not delegate or reimplement normal lookup can bypass automatic descriptor calls.", "It calls `__getattr__` before every lookup.", "It prevents `__set_name__` from being called."],
+    "answer": [1],
+    "explanation": "B is correct. Descriptor invocation is implemented inside `object.__getattribute__` and `type.__getattribute__`. This example delegates to the normal method, so the property works. A replacement that only uses `vars(self)[name]` skips normal class and descriptor lookup.\n\n`__getattr__` is different: the dot operator and `getattr()` call it only after `__getattribute__` raises `AttributeError`."
+  },
+  {
+    "type": "multiple",
+    "question": "Which descriptor operations are exercised here?\n\n```python\nclass C:\n    def __init__(self): self._x = 1\n    @property\n    def x(self): return self._x\n    @x.setter\n    def x(self, value): self._x = value\n    @x.deleter\n    def x(self): del self._x\n\nc = C()\nvalue = c.x\nc.x = 2\ndel c.x\n```",
+    "options": ["`value = c.x` uses `property.__get__`.", "`c.x = 2` writes directly to `c.__dict__['x']`.", "`c.x = 2` uses `property.__set__`.", "`del c.x` uses `property.__delete__`."],
+    "answer": [0, 2, 3],
+    "explanation": "A, C, and D are correct. A `property` is a data descriptor containing getter, setter, and deleter functions. The assignment invokes the setter and changes `_x`; it does not create an instance key named `x`.\n\n| Operation | Descriptor method |\n| --- | --- |\n| `c.x` | `__get__` |\n| `c.x = 2` | `__set__` |\n| `del c.x` | `__delete__` |\n\nIf the property lacks one corresponding function, that operation raises `AttributeError`."
+  },
+  {
+    "type": "single",
+    "question": "What makes a regular function in a class become a bound method on an instance?\n\n```python\nclass C:\n    def f(self, x):\n        return self, x\n\nc = C()\nprint(c.f.__self__ is c)\nprint(c.f.__func__ is C.f)\n```",
+    "options": ["A function is a data descriptor whose `__set__` stores `self`.", "Functions are non-data descriptors; their `__get__` returns a bound method for instance access.", "`C.__init__` rewrites `f` into a closure for each instance.", "The dot operator inserts `self` before attribute lookup."],
+    "answer": [1],
+    "explanation": "B is correct. A function object in a class dictionary implements `__get__`. `c.f` produces a bound method with `__func__` pointing to `C.f` and `__self__` pointing to `c`; calling `c.f(3)` is effectively `C.f(c, 3)`.\n\n```python\nprint(C.f)  # underlying function\nprint(c.f)  # bound method\n```\n\nFunctions are non-data descriptors, so an instance can intentionally shadow one with an instance attribute."
+  },
+  {
+    "type": "single",
+    "question": "What is printed?\n\n```python\nclass C:\n    @staticmethod\n    def f(x):\n        return x * 2\n\nprint(C.f(3), C().f(3))\n```",
+    "options": ["`6 6`", "`TypeError` for both calls because `self` is missing", "`6 TypeError`", "`TypeError 6`"],
+    "answer": [0],
+    "explanation": "The output is `6 6`. A `staticmethod` descriptor returns the underlying function unchanged, whether accessed through the class or an instance. No implicit `self` or `cls` is supplied.\n\n| Expression | Effective call |\n| --- | --- |\n| `C.f(3)` | `f(3)` |\n| `C().f(3)` | `f(3)` |"
+  },
+  {
+    "type": "single",
+    "question": "What is printed?\n\n```python\nclass C:\n    @classmethod\n    def f(cls, x):\n        return cls.__name__, x\n\nprint(C.f(3), C().f(3))\n```",
+    "options": ["`('C', 3) TypeError`", "`TypeError ('C', 3)`", "`(None, 3) (None, 3)`", "`('C', 3) ('C', 3)`"],
+    "answer": [3],
+    "explanation": "The output is `('C', 3) ('C', 3)`. `classmethod.__get__` binds the owner class, not an instance. Both access forms therefore call the function as `f(C, 3)`.\n\n```python\nclass Child(C):\n    pass\nprint(Child.f(3))  # ('Child', 3)\n```\n\nThis makes class methods suitable for alternate constructors and class-level polymorphism."
+  },
+  {
+    "type": "single",
+    "question": "How does `cached_property` differ from a regular read-only `property`?\n\n```python\nfrom functools import cached_property\n\nclass C:\n    @cached_property\n    def value(self):\n        return 10\n\nc = C()\nfirst = c.value\nc.value = 99\nprint(first, c.value)\n```",
+    "options": ["It caches by writing an instance attribute, so the output is `10 99`.", "It raises `AttributeError` on `c.value = 99` just like a read-only property.", "It recomputes `value` on every access and ignores the assignment.", "It is only valid on classes defining `__slots__` without `__dict__`."],
+    "answer": [0],
+    "explanation": "The output is `10 99`. On its first lookup, `cached_property` computes the value and writes it under the same name in `c.__dict__`. Later reads and writes use that normal instance attribute, which can override the descriptor. A regular read-only `property` is a data descriptor and blocks such assignment.\n\n```python\nprint(c.__dict__)  # {'value': 99}\ndel c.value        # clears the cache; next access computes again\n```"
+  },
+  {
+    "type": "single",
+    "question": "Why does this fail?\n\n```python\nfrom functools import cached_property\n\nclass C:\n    __slots__ = ()\n\n    @cached_property\n    def value(self):\n        return 10\n\nprint(C().value)\n```",
+    "options": ["`cached_property` requires `__get__` to be a static method.", "It raises `TypeError` because this instance has no `__dict__` in which to cache the value.", "It raises `AttributeError` because `__slots__` disables all descriptors.", "It prints `10` but cannot cache it."],
+    "answer": [1],
+    "explanation": "It raises `TypeError`: `cached_property` needs a mutable instance dictionary to store the cached value under its public name. `__slots__ = ()` removes the automatic instance `__dict__`.\n\n```python\nclass Usable:\n    __slots__ = ('__dict__',)\n    @cached_property\n    def value(self):\n        return 10\n```\n\nIncluding `'__dict__'` in slots restores storage for the cache, though it changes the memory trade-off."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about `__slots__` are true?\n\n```python\nclass Vehicle:\n    __slots__ = ('id_number',)\n\nv = Vehicle()\nv.id_number = 'VYE483814LQEX'\n```",
+    "options": ["The slot member is represented by a class-level descriptor.", "`v.typo = 1` creates a normal dynamic attribute by default.", "Adding `'__dict__'` to `__slots__` permits dynamic instance attributes.", "Adding `'__weakref__'` to `__slots__` permits weak references when no parent already provides it."],
+    "answer": [0, 2, 3],
+    "explanation": "A, C, and D are correct. Slots create member descriptors in the class and ordinarily prevent automatic creation of both an instance dictionary and weak-reference support. Therefore an unlisted assignment such as `v.typo = 1` raises `AttributeError`.\n\n```python\nclass FlexibleVehicle:\n    __slots__ = ('id_number', '__dict__', '__weakref__')\n\nf = FlexibleVehicle()\nf.typo = 1  # allowed because __dict__ is present\n```\n\nSlots can save memory and detect misspelled assignments, but subclasses or base classes can affect whether an instance has a dictionary."
+  },
+  {
+    "type": "single",
+    "question": "What happens when this validator rejects a value?\n\n```python\nclass Number:\n    def __set_name__(self, owner, name):\n        self.private_name = '_' + name\n    def __get__(self, obj, objtype=None):\n        return getattr(obj, self.private_name)\n    def __set__(self, obj, value):\n        if not isinstance(value, (int, float)):\n            raise TypeError('number required')\n        if value < 0:\n            raise ValueError('must be non-negative')\n        setattr(obj, self.private_name, value)\n\nclass Component:\n    quantity = Number()\n\nc = Component()\nc.quantity = -1\n```",
+    "options": ["It stores `-1` and emits a warning.", "It raises `ValueError` before storing an invalid value.", "It raises `AttributeError` because `quantity` has no getter.", "It stores `-1` in `c.__dict__['quantity']`."],
+    "answer": [1],
+    "explanation": "It raises `ValueError('must be non-negative')` before storage. A validation descriptor centralizes the invariant at every assignment point, preventing corrupt state at its source.\n\n| Assignment | `__set__` result | Instance state |\n| --- | --- | --- |\n| `c.quantity = -1` | raises `ValueError` | no `_quantity` stored |\n| `c.quantity = 5` | passes validation | `_quantity` becomes `5` |\n\nA `Validator` abstract base class can make `validate(value)` an abstract method while retaining the shared `__get__`, `__set__`, and `__set_name__` behavior."
+  },
+  {
+    "type": "single",
+    "question": "Which operation is performed by this ORM-style data descriptor?\n\n```python\nclass Field:\n    def __set_name__(self, owner, name):\n        self.fetch = f'SELECT {name} FROM {owner.table} WHERE {owner.key}=?'\n\n    def __get__(self, obj, objtype=None):\n        if obj is None:\n            return self\n        return conn.execute(self.fetch, [obj.key]).fetchone()[0]\n\nclass Movie:\n    table = 'Movies'\n    key = 'title'\n    director = Field()\n\nmovie = Movie()\nmovie.key = 'Jaws'\nmovie.director\n```",
+    "options": ["It reads `movie.__dict__['director']` directly.", "It returns the SQL query string without executing it.", "It writes a new database row before returning a value.", "It executes a query using `movie.key` and returns the selected field value."],
+    "answer": [3],
+    "explanation": "The correct answer is D. At class creation, `__set_name__` builds a query specific to `Movie.director`. On `movie.director`, `__get__` runs the query with `movie.key` and returns the database field.\n\n1. Creating `Movie` configures `Field.fetch` for the `director` column.\n2. The instance's `key` identifies the row.\n3. Reading `movie.director` delegates the lookup to the descriptor instead of storing the field on the Python instance.\n\nA matching `__set__` can execute an `UPDATE` statement and commit the change."
+  },
+  {
+    "type": "single",
+    "question": "How is a descriptor invoked through `super()`?\n\n```python\nclass D:\n    def __get__(self, obj, objtype=None):\n        return obj, objtype\n\nclass Base:\n    value = D()\n\nclass Child(Base):\n    def read(self):\n        return super().value\n\nc = Child()\nprint(c.read() == (c, Child))\n```",
+    "options": ["It returns `True`; `super()` finds `Base.value` and invokes `__get__(c, Child)`.", "It returns `False`; `super()` always invokes `__get__(None, Base)`.", "It raises `AttributeError`; `super()` does not support descriptors.", "It returns `False`; `super()` returns the raw `D` instance."],
+    "answer": [0],
+    "explanation": "It prints `True`. `super()` searches the MRO after the named class, finds the descriptor in `Base.__dict__`, and invokes it with the original instance and the class used to create `super()`: `D.__get__(c, Child)`.\n\n```python\n# In Child.read(), this is the effective descriptor call:\nBase.__dict__['value'].__get__(c, Child)\n```\n\n`super()` has its own attribute-lookup implementation, but it still honors the descriptor protocol."
+  },
+  {
+    "type": "single",
+    "question": "What does this code print?\n\n```python\nclass C:\n    def __getattr__(self, name):\n        return f'fallback:{name}'\n\nc = C()\nprint(c.missing)\ntry:\n    print(c.__getattribute__('missing'))\nexcept AttributeError:\n    print('attribute error')\n```",
+    "options": ["`fallback:missing` twice", "`attribute error` twice", "`fallback:missing` followed by `attribute error`", "`attribute error` followed by `fallback:missing`"],
+    "answer": [2],
+    "explanation": "The output is `fallback:missing` followed by `attribute error`. The dot operator calls `__getattr__` only after normal `__getattribute__` lookup raises `AttributeError`. Calling `c.__getattribute__('missing')` directly bypasses that fallback.\n\n| Expression | Result |\n| --- | --- |\n| `c.missing` | normal lookup fails, then `__getattr__` returns a fallback |\n| `c.__getattribute__('missing')` | normal lookup fails and propagates `AttributeError` |\n\nThis distinction matters when reproducing attribute lookup logic in a custom `__getattribute__` implementation."
+  },
+  {
+    "type": "single",
+    "question": "What does `instance.__dict__` contain in this example?\n\n```python\nclass D:\n    def __get__(self, obj, objtype=None):\n        return 'from descriptor'\n\nclass C:\n    class_value = 1\n    managed = D()\n\nc = C()\nc.instance_value = 2\nc.__dict__['managed'] = 'instance entry'\nprint(c.__dict__)\nprint(c.managed)\n```",
+    "options": ["`c.__dict__` contains `{'instance_value': 2, 'managed': 'instance entry'}`, and `c.managed` is `'instance entry'`.", "`c.__dict__` contains every attribute inherited from `C`, and `c.managed` is `'from descriptor'`.", "`c.__dict__` cannot be accessed because `C` has a descriptor.", "`c.__dict__` contains only `{'instance_value': 2}`, and `c.managed` is `'from descriptor'`."],
+    "answer": [0],
+    "explanation": "The instance dictionary contains only attributes stored on that individual instance: `{'instance_value': 2, 'managed': 'instance entry'}`. It does not contain `class_value` or the `D` descriptor, because both live in `C.__dict__`. Since `D` has only `__get__`, it is a non-data descriptor, so the same-named instance entry wins and `c.managed` is `'instance entry'`.\n\n| Location | Relevant keys |\n| --- | --- |\n| `c.__dict__` | `instance_value`, `managed` |\n| `C.__dict__` | `class_value`, `managed` descriptor |\n\nIf `D` also defined `__set__` or `__delete__`, it would be a data descriptor and `c.managed` would instead be `'from descriptor'`."
+  }
+]
