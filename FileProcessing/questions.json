@@ -544,5 +544,145 @@
       1
     ],
     "explanation": "Incorrect - the correct answer is B: `row` is `None`, so its type name is `NoneType`.\n\n`fetchone()` returns the next row as a tuple while a row remains. Once all rows have been consumed, it returns `None` instead of raising `StopIteration`. This means code can test for the end with `if row is None:`.\n\nExecution trace:\n\n| Call | Return value | Type |\n|------|--------------|------|\n| First `fetchone()` | `(1, 'Write notes', 2)` | `tuple` |\n| Second `fetchone()` | `(2, 'Review code', 1)` | `tuple` |\n| Third `fetchone()` | `None` | `NoneType` |\n\nThe final output is:\n\n```text\nNoneType\nNone\n```\n\nOption A is wrong because an empty tuple is a real tuple value, not the documented end-of-results marker. Option C describes an empty result from `fetchall()`, not `fetchone()`. Option D confuses cursor fetching with direct iterator calls; `fetchone()` signals no remaining row by returning `None`. Source: [Python sqlite3 Cursor.fetchone](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.fetchone)."
+  },
+  {
+    "type": "single",
+    "question": "Part 1 of 5: Which line correctly executes the parameterized `UPDATE` statement?\n\nThis is a progressive code set: each part builds on the same program and later parts reveal the completed code. Answer the parts in order.\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\n# Update the priority of task 1:\n```",
+    "options": [
+      "`c.execute('UPDATE tasks SET priority = (?) WHERE id = (?)', 20, 1)`",
+      "`c.update('UPDATE tasks SET priority = ? WHERE id = ?', (20, 1))`",
+      "`c.execute('UPDATE tasks SET priority = ? WHERE id = ?', (20, 1))`",
+      "`conn.execute('UPDATE tasks SET priority = ? WHERE id = ?', 20, 1)`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `c.execute('UPDATE tasks SET priority = ? WHERE id = ?', (20, 1))`.\n\nThe cursor's `execute()` method receives the SQL string as its first argument and one parameters object as its second argument. The two qmark placeholders are bound from left to right: `20` is assigned to `priority`, and `1` is assigned to `id`.\n\nThe completed code is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('UPDATE tasks SET priority = ? WHERE id = ?', (20, 1))\n```\n\nExecution trace:\n\n| Step | Operation | Result |\n|------|-----------|--------|\n| 1 | `conn.cursor()` | Creates a `sqlite3.Cursor` stored in `c`. |\n| 2 | Read the SQL string | SQLite sees two qmark placeholders. |\n| 3 | Read `(20, 1)` | The first value binds to `priority`; the second binds to `id`. |\n| 4 | Call `c.execute(...)` | SQLite stages the matching row update in the current transaction. |\n\nWhy the other options fail:\n\n| Option | Result |\n|--------|--------|\n| C | Correct: `execute()` receives one SQL string and one two-item parameter tuple. |\n| A | Wrong: `execute()` does not take two separate parameter arguments after the SQL string. |\n| B | Wrong: a cursor has `execute()`, not an `update()` method. |\n| D | Wrong: although a connection has a shortcut `execute()` method, its parameters must still be supplied as one sequence, not as two separate arguments. |\n\nThe placeholders keep data separate from SQL text and are safer than formatting values into the SQL string. Source: [Python `sqlite3` documentation](https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries)."
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 5: What is the type of the second argument passed to `execute()` in the completed update?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('UPDATE tasks SET priority = ? WHERE id = ?', (20, 1))\n\nparameters = (20, 1)\nprint(type(parameters).__name__)\n```",
+    "options": [
+      "`tuple`",
+      "`list`",
+      "`int`",
+      "`dict`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `tuple`.\n\nThe expression `(20, 1)` is a two-item tuple. The comma is what makes a tuple; parentheses alone are not enough. This tuple is passed as the parameters sequence for the two `?` placeholders.\n\nThe relevant code is:\n\n```python\nparameters = (20, 1)\nc.execute('UPDATE tasks SET priority = ? WHERE id = ?', parameters)\n```\n\nType and binding trace:\n\n| Expression | Type | Meaning |\n|------------|------|---------|\n| `20` | `int` | New value for `priority`. |\n| `1` | `int` | Value used by `id` in the `WHERE` clause. |\n| `(20, 1)` | `tuple` | One parameter sequence containing both values. |\n\nTherefore `type(parameters).__name__` prints:\n\n```text\ntuple\n```\n\nOption B would also be a possible parameter sequence in many `sqlite3` calls, but it is not the type of `(20, 1)`. Option C describes each individual numeric value, not the whole argument. Option D is used for named placeholders such as `:priority` and `:id`, not for this qmark form. The tuple must contain exactly two values because the SQL contains exactly two placeholders. Source: [Python `sqlite3` documentation](https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries)."
+  },
+  {
+    "type": "single",
+    "question": "Part 3 of 5: Which option correctly identifies the types of `conn` and `c`?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('UPDATE tasks SET priority = ? WHERE id = ?', (20, 1))\n\nprint(type(conn).__name__)\nprint(type(c).__name__)\n```",
+    "options": [
+      "`conn` is `sqlite3.Cursor`; `c` is `sqlite3.Connection`",
+      "Both `conn` and `c` are `sqlite3.Connection`",
+      "`conn` is `str`; `c` is `sqlite3.Cursor`",
+      "`conn` is `sqlite3.Connection`; `c` is `sqlite3.Cursor`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Incorrect - the correct answer is D: `conn` is a `sqlite3.Connection`, and `c` is a `sqlite3.Cursor`.\n\n`sqlite3.connect('todo.db')` returns the connection object. Calling `conn.cursor()` creates a cursor associated with that connection.\n\nThe output is:\n\n```text\nConnection\nCursor\n```\n\nObject-creation trace:\n\n| Expression | Object type | Role |\n|------------|-------------|------|\n| `sqlite3.connect('todo.db')` | `sqlite3.Connection` | Owns the database connection and transaction. |\n| `conn.cursor()` | `sqlite3.Cursor` | Executes SQL and fetches query results. |\n| `c.execute(...)` | `sqlite3.Cursor` | Uses the cursor to run the update. |\n\nOption A reverses the connection and cursor types. Option B ignores that `cursor()` creates a distinct cursor object. Option C mistakes the input filename for the returned connection object. The variable name `c` does not determine the type; the expression assigned to it does. Source: [Python `sqlite3` documentation](https://docs.python.org/3/library/sqlite3.html#sqlite3-connection-objects)."
+  },
+  {
+    "type": "single",
+    "question": "Part 4 of 5: What type does `c.execute(...)` return in this update?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nresult = c.execute('UPDATE tasks SET priority = ? WHERE id = ?', (20, 1))\n\nprint(type(result).__name__)\nprint(result is c)\n```",
+    "options": [
+      "`NoneType`, and `False`",
+      "`sqlite3.Cursor`, and `True`",
+      "`sqlite3.Connection`, and `False`",
+      "`int`, and `True`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `c.execute(...)` returns the same `sqlite3.Cursor`, so `result is c` is `True`.\n\n`Cursor.execute()` executes the SQL statement and returns the cursor itself. It does not return the number of affected rows, a new connection, or `None`.\n\nThe output is:\n\n```text\nCursor\nTrue\n```\n\nStep by step:\n\n1. `c = conn.cursor()` creates one `sqlite3.Cursor` object.\n2. `c.execute(...)` runs the `UPDATE` on that cursor.\n3. The method returns the same cursor object.\n4. Assigning it to `result` creates a second name for the same object.\n5. `type(result).__name__` is `Cursor`, and `result is c` is `True`.\n\nOption A incorrectly treats `execute()` like a procedure that returns nothing. Option C confuses the cursor with the connection that owns it. Option D incorrectly treats the return value as an affected-row count; use `c.rowcount` when that information is needed. Source: [Python `sqlite3.Cursor.execute`](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.execute)."
+  },
+  {
+    "type": "single",
+    "question": "Part 5 of 5: Which line should replace the incorrect `c.commit()` so the update is committed?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('UPDATE tasks SET priority = ? WHERE id = ?', (20, 1))\n\n# Commit the transaction:\n____\n\nc.close()\nconn.close()\n```",
+    "options": [
+      "`sqlite3.commit(conn)`",
+      "`c.commit()`",
+      "`conn.commit()`",
+      "`conn.save()`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `conn.commit()`.\n\nTransaction control belongs to the `sqlite3.Connection`, not to the cursor. After the update, call `commit()` on `conn` before closing it:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('UPDATE tasks SET priority = ? WHERE id = ?', (20, 1))\nconn.commit()\nc.close()\nconn.close()\n```\n\nExecution trace:\n\n| Step | Operation | Effect |\n|------|-----------|--------|\n| 1 | `c.execute(...)` | Stages the matching update in the current transaction. |\n| 2 | `conn.commit()` | Commits the transaction and persists the update. |\n| 3 | `c.close()` | Closes the cursor. |\n| 4 | `conn.close()` | Closes the database connection after the commit. |\n\nOption A is wrong because `commit()` is not a module-level function. Option B is wrong because the cursor executes SQL but does not control the connection transaction. Option D is wrong because `Connection` provides `commit()`, not `save()`. Closing without first committing can roll back pending changes under the default transaction behavior. Source: [Python `sqlite3.Connection.commit`](https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.commit)."
+  },
+  {
+    "type": "single",
+    "question": "Part 1 of 5: Which line correctly deletes the task whose `id` is 1?\n\nThis is a progressive code set: each part builds on the same program and later parts reveal the completed code. Answer the parts in order.\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\n\n# Delete task 1 safely:\n```",
+    "options": [
+      "`c.delete('DELETE FROM tasks WHERE id = ?', (1,))`",
+      "`c.execute('DELETE FROM tasks WHERE id = ?', (1,))`",
+      "`c.execute('DELETE tasks WHERE id = ?', 1)`",
+      "`conn.execute('DELETE FROM tasks WHERE id = ?', 1)`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `c.execute('DELETE FROM tasks WHERE id = ?', (1,))`.\n\nThe cursor's `execute()` method receives the SQL statement first and one parameters object second. The `DELETE FROM tasks` statement targets the `tasks` table, and `WHERE id = ?` limits the operation to the row whose `id` equals the bound value.\n\nThe completed program is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('DELETE FROM tasks WHERE id = ?', (1,))\n```\n\nExecution trace:\n\n| Step | Operation | Result |\n|------|-----------|--------|\n| 1 | `sqlite3.connect('todo.db')` | `conn` refers to a database `Connection`. |\n| 2 | `conn.cursor()` | `c` refers to a `Cursor` associated with `conn`. |\n| 3 | Read the SQL | SQLite sees one `?` placeholder and a `WHERE` condition on `id`. |\n| 4 | Bind `(1,)` | The value `1` is bound to the placeholder. |\n| 5 | Execute `DELETE` | The matching row is staged for deletion in the current transaction. |\n\nOption A is wrong because a cursor has `execute()`, not `delete()`. Option C omits `FROM` and passes the parameter as a separate argument instead of one parameter sequence. Option D uses the connection shortcut but passes `1` directly; the parameter value must still be supplied as a sequence containing one item. Parameter binding keeps the data separate from the SQL text. Source: [Python sqlite3 documentation](https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries) and [SQLite DELETE](https://sqlite.org/lang_delete.html)."
+  },
+  {
+    "type": "single",
+    "question": "Part 2 of 5: What is the type of the parameter object `(1,)` in the completed `DELETE` call?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('DELETE FROM tasks WHERE id = ?', (1,))\n\nparameters = (1,)\nprint(type(parameters).__name__)\n```",
+    "options": [
+      "`int`",
+      "`list`",
+      "`dict`",
+      "`tuple`"
+    ],
+    "answer": [
+      3
+    ],
+    "explanation": "Incorrect - the correct answer is D: `tuple`.\n\nThe comma in `(1,)` makes it a one-item tuple. Parentheses alone do not create a tuple: `(1)` is just the integer `1`. The tuple is the parameter sequence for the single `?` placeholder.\n\nType trace:\n\n| Expression | Type | Role |\n|------------|------|------|\n| `1` | `int` | The value used to compare with `id`. |\n| `(1,)` | `tuple` | A one-item parameter sequence. |\n| `parameters` | `tuple` | The object passed to `execute()`. |\n\nThe output is:\n\n```text\ntuple\n```\n\nOption A describes the element inside the parameter sequence, not the sequence itself. Option B could be used as a parameter sequence in suitable code, but `(1,)` is not a list. Option C is used for named placeholders such as `:id`; this SQL uses a qmark placeholder. The completed call remains:\n\n```python\nc.execute('DELETE FROM tasks WHERE id = ?', (1,))\n```\n\nExactly one value is supplied because the SQL contains exactly one placeholder. Source: [Python sqlite3 parameter substitution](https://docs.python.org/3/library/sqlite3.html#how-to-use-placeholders-to-bind-values-in-sql-queries)."
+  },
+  {
+    "type": "single",
+    "question": "Part 3 of 5: Which option correctly identifies the types of `conn` and `c` after the `DELETE` call?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('DELETE FROM tasks WHERE id = ?', (1,))\n\nprint(type(conn).__name__)\nprint(type(c).__name__)\n```",
+    "options": [
+      "`conn` is `sqlite3.Connection`; `c` is `sqlite3.Cursor`",
+      "`conn` is `sqlite3.Cursor`; `c` is `sqlite3.Connection`",
+      "Both `conn` and `c` are `sqlite3.Cursor`",
+      "`conn` is `str`; `c` is `sqlite3.Cursor`"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "Incorrect - the correct answer is A: `conn` is a `sqlite3.Connection`, and `c` is a `sqlite3.Cursor`.\n\nObject-creation trace:\n\n| Expression | Resulting type | Purpose |\n|------------|----------------|---------|\n| `sqlite3.connect('todo.db')` | `sqlite3.Connection` | Owns the database connection and transaction. |\n| `conn.cursor()` | `sqlite3.Cursor` | Executes SQL statements and retrieves query results. |\n| `c.execute(...)` | The same `sqlite3.Cursor` | Executes the `DELETE` using `c`. |\n\nTherefore the output is:\n\n```text\nConnection\nCursor\n```\n\nOption B reverses the two objects. Option C incorrectly treats the cursor creation as another connection creation. Option D mistakes the filename argument for the object returned by `connect()`. Variable names do not determine types; the expressions assigned to them do. The `sqlite3` documentation defines `Connection.cursor()` as creating and returning a cursor. Source: [Python sqlite3 connection and cursor objects](https://docs.python.org/3/library/sqlite3.html#sqlite3-connection-objects)."
+  },
+  {
+    "type": "single",
+    "question": "Part 4 of 5: What does the `DELETE` call return?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nresult = c.execute('DELETE FROM tasks WHERE id = ?', (1,))\n\nprint(type(result).__name__)\nprint(result is c)\n```",
+    "options": [
+      "`NoneType`, and `False`",
+      "`int`, and `False`",
+      "`sqlite3.Cursor`, and `True`",
+      "`sqlite3.Connection`, and `False`"
+    ],
+    "answer": [
+      2
+    ],
+    "explanation": "Incorrect - the correct answer is C: `c.execute(...)` returns the same `sqlite3.Cursor`, so `result is c` is `True`.\n\nExecution trace:\n\n| Step | Operation | Result |\n|------|-----------|--------|\n| 1 | `c = conn.cursor()` | One cursor object is stored in `c`. |\n| 2 | Call `c.execute(...)` | The `DELETE` is executed on that cursor. |\n| 3 | Receive the return value | `execute()` returns the cursor itself. |\n| 4 | Assign to `result` | `result` and `c` refer to the same object. |\n| 5 | Evaluate the prints | The output is `Cursor` and `True`. |\n\nThe output is:\n\n```text\nCursor\nTrue\n```\n\nOption A is wrong because `execute()` does not return `None`. Option B confuses the return value with the affected-row count; use `c.rowcount` when that information is needed. Option D confuses the cursor with the connection that owns it. The return behavior is the same for this `DELETE` as for other calls to `Cursor.execute()`. Source: [Python sqlite3 Cursor.execute](https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.execute)."
+  },
+  {
+    "type": "single",
+    "question": "Part 5 of 5: Which line should replace the incorrect `c.commit()` so the deletion is committed before cleanup?\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('DELETE FROM tasks WHERE id = ?', (1,))\n\n# Commit the transaction:\n____\n\nc.close()\nconn.close()\n```",
+    "options": [
+      "`sqlite3.commit(conn)`",
+      "`conn.commit()`",
+      "`conn.save()`",
+      "`c.commit()`"
+    ],
+    "answer": [
+      1
+    ],
+    "explanation": "Incorrect - the correct answer is B: `conn.commit()`.\n\nTransaction control belongs to the `sqlite3.Connection`, not to the cursor. The complete program is:\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect('todo.db')\nc = conn.cursor()\nc.execute('DELETE FROM tasks WHERE id = ?', (1,))\nconn.commit()\nc.close()\nconn.close()\n```\n\nEnd-to-end trace:\n\n| Step | Operation | Effect |\n|------|-----------|--------|\n| 1 | `c.execute(...)` | Stages deletion of the row matching `id == 1`. |\n| 2 | `conn.commit()` | Commits the pending transaction and persists the deletion. |\n| 3 | `c.close()` | Closes the cursor. |\n| 4 | `conn.close()` | Closes the database connection. |\n\nOption A is wrong because `commit()` is not a module-level function. Option C uses a nonexistent `save()` method. Option D is wrong because a cursor executes statements but does not provide transaction control; `commit()` is a connection method. Closing a connection with pending changes can roll them back under the applicable transaction behavior, so commit before closing. Source: [Python sqlite3 Connection.commit and Connection.close](https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.commit)."
   }
 ]

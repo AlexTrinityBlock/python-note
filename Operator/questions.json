@@ -1,0 +1,14 @@
+[
+  {
+    "type": "single",
+    "question": "What does the following code print?\n\n```python\nimport math\n\n# Traditional comparison fails\nprint(0.1 + 0.2 == 0.3)\n\n# math.isclose handles the small floating-point difference\nprint(math.isclose(0.1 + 0.2, 0.3))\n```",
+    "options": [
+      "True, then True",
+      "False, then False",
+      "False, then True",
+      "True, then False"
+    ],
+    "answer": [2],
+    "explanation": "The correct answer is C: `False, then True`.\n\nPython's `float` values use binary floating-point representation. The decimal value `0.1` cannot be represented exactly as a finite binary fraction, and the same applies to `0.2` and `0.3`. The displayed decimal values are rounded representations of the stored values.\n\nStep-by-step:\n\n1. `0.1 + 0.2` produces a floating-point value that is very close to, but not exactly, the stored value for `0.3`.\n2. The `==` operator requires exact equality, so `0.1 + 0.2 == 0.3` evaluates to `False`.\n3. `math.isclose(a, b)` checks whether the values are within a relative or absolute tolerance. With its default tolerances, the small difference between `0.1 + 0.2` and `0.3` is accepted, so it evaluates to `True`.\n4. Therefore, the output is:\n\n```text\nFalse\nTrue\n```\n\n`math.isclose()` uses the comparison `abs(a - b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)`. For comparisons that require a domain-specific precision, pass explicit `rel_tol` and/or `abs_tol` values instead of relying on the defaults. Option A incorrectly claims that exact equality succeeds. Option B incorrectly claims that `math.isclose()` rejects this small representation error. Option D reverses both results."
+  }
+]

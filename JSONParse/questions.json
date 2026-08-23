@@ -1,0 +1,74 @@
+[
+  {
+    "type": "single",
+    "question": "What is the value of `json_str` after this code runs?\n\n```python\nimport json\n\nclass Vector:\n    def __init__(self, *components):\n        self.components = components\n\nclass VectorEncoder(json.JSONEncoder):\n    def default(self, value):\n        if isinstance(value, Vector):\n            return value.__dict__\n        return super().default(value)\n\nv1 = Vector(4, 2, 6)\njson_str = json.dumps(v1, cls=VectorEncoder)\n```",
+    "options": [
+      "`[4, 2, 6]`",
+      "`{\"components\": [4, 2, 6]}`",
+      "`Vector(4, 2, 6)`",
+      "The call raises `TypeError` because `Vector` is not JSON serializable."
+    ],
+    "answer": [1],
+    "explanation": "The correct answer is B: `{\"components\": [4, 2, 6]}`.\n\n`json.dumps()` cannot encode a `Vector` instance by default, so it calls `VectorEncoder.default(v1)`. The overridden method recognizes `v1` as a `Vector` and returns `v1.__dict__`, which is `{'components': (4, 2, 6)}`. JSON objects encode Python dictionaries, and JSON arrays encode Python lists and tuples.\n\nStep-by-step:\n\n1. `Vector(4, 2, 6)` stores the tuple `(4, 2, 6)` in `v1.components`.\n2. The encoder returns `{'components': (4, 2, 6)}`.\n3. The dictionary becomes a JSON object, and its tuple value becomes a JSON array.\n4. `json_str` is therefore `{\"components\": [4, 2, 6]}`.\n\nOption A omits the dictionary key that `__dict__` supplies. Option C is Python-style text, not valid JSON. Option D would be true without the custom encoder, but `VectorEncoder.default()` supplies a JSON-encodable replacement."
+  },
+  {
+    "type": "single",
+    "question": "The `VectorEncoder` in the code below serializes a vector as an object with one `components` member. Which `VectorDecoder` implementation makes `new_vector` a `Vector` instance with `new_vector.components == (4, 2, 6)`?\n\n```python\nimport json\n\nclass Vector:\n    def __init__(self, *components):\n        self.components = components\n\nclass VectorEncoder(json.JSONEncoder):\n    def default(self, value):\n        if isinstance(value, Vector):\n            return value.__dict__\n        return super().default(value)\n\nv1 = Vector(4, 2, 6)\njson_str = json.dumps(v1, cls=VectorEncoder)\nnew_vector = json.loads(json_str, cls=VectorDecoder)\n```",
+    "options": [
+      "```python\nclass VectorDecoder(json.JSONDecoder):\n    def default(self, value):\n        return Vector(*value['components'])\n```",
+      "```python\nclass VectorDecoder(json.JSONDecoder):\n    def encode(self, value):\n        return Vector(*value['components'])\n```",
+      "```python\nclass VectorDecoder(json.JSONDecoder):\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n\n    def default(self, value):\n        return Vector(*value['components'])\n```",
+      "```python\nclass VectorDecoder(json.JSONDecoder):\n    def __init__(self, *args, **kwargs):\n        super().__init__(object_hook=self.to_vector, *args, **kwargs)\n\n    @staticmethod\n    def to_vector(value):\n        if set(value) == {'components'}:\n            return Vector(*value['components'])\n        return value\n```"
+    ],
+    "answer": [3],
+    "explanation": "The correct answer is D. A `JSONDecoder` uses its `object_hook` callable after decoding each JSON object into a dictionary. The hook receives `{'components': [4, 2, 6]}`, recognizes the expected shape, and constructs `Vector(*[4, 2, 6])`, which passes `4`, `2`, and `6` as separate constructor arguments.\n\nComplete decoder:\n\n```python\nclass VectorDecoder(json.JSONDecoder):\n    def __init__(self, *args, **kwargs):\n        super().__init__(object_hook=self.to_vector, *args, **kwargs)\n\n    @staticmethod\n    def to_vector(value):\n        if set(value) == {'components'}:\n            return Vector(*value['components'])\n        return value\n```\n\nStep-by-step:\n\n1. `VectorEncoder` produces `{\"components\": [4, 2, 6]}`.\n2. The standard decoder turns that JSON object into `{'components': [4, 2, 6]}`.\n3. `object_hook` receives that dictionary.\n4. The dictionary has exactly the expected key, so the hook returns `Vector(4, 2, 6)`.\n5. `json.loads()` returns that replacement object as `new_vector`.\n\nOptions A and C incorrectly override `default()`, which belongs to encoding, not decoding. Option B incorrectly overrides `encode()`, which is an encoder operation. The key check prevents unrelated JSON objects from being converted accidentally; in a production format, an explicit type marker is often even clearer."
+  },
+  {
+    "type": "single",
+    "question": "What does this code print?\n\n```python\nimport json\n\ndef mark_objects(value):\n    value['seen'] = True\n    return value\n\nresult = json.loads(\n    '{\"outer\": {\"inner\": 1}}',\n    object_hook=mark_objects,\n)\nprint(result)\n```",
+    "options": [
+      "`{'outer': {'inner': 1, 'seen': True}, 'seen': True}`",
+      "`{'outer': {'inner': 1}, 'seen': True}`",
+      "`{'outer': {'inner': 1, 'seen': True}}`",
+      "It raises `TypeError` because `object_hook` must return a `Vector`."
+    ],
+    "answer": [0],
+    "explanation": "The correct answer is A: `{'outer': {'inner': 1, 'seen': True}, 'seen': True}`.\n\n`object_hook` is called for the result of every JSON object literal, not only the top-level object. A hook may return any replacement value; it does not need to return a custom-class instance.\n\nStep-by-step:\n\n1. The inner JSON object `{\"inner\": 1}` is decoded first as `{'inner': 1}`.\n2. `mark_objects()` adds `'seen': True`, yielding `{'inner': 1, 'seen': True}`.\n3. The outer object is then decoded, using that changed inner dictionary as its `outer` value.\n4. The hook receives the outer dictionary, adds its own `'seen': True`, and returns it.\n5. `print()` displays `{'outer': {'inner': 1, 'seen': True}, 'seen': True}`.\n\nOption B wrongly assumes the hook runs only for the outer object. Option C wrongly assumes it runs only for nested objects. Option D is false: any callable that accepts a decoded dictionary and returns a value can be an `object_hook`."
+  },
+  {
+    "type": "single",
+    "question": "What does this code print?\n\n```python\nimport decimal\nimport json\n\nvalue = json.loads('1.1', parse_float=decimal.Decimal)\nprint(type(value).__name__, value)\n```",
+    "options": [
+      "`float 1.1`",
+      "`str 1.1`",
+      "`Decimal 1.1`",
+      "It raises `JSONDecodeError` because JSON numbers must become `float` objects."
+    ],
+    "answer": [2],
+    "explanation": "The correct answer is C: `Decimal 1.1`.\n\nBy default, a JSON number containing a decimal point is decoded with `float(num_str)`. The `parse_float` argument replaces that conversion callable. Here the decoder calls `decimal.Decimal('1.1')`, preserving the JSON number text for Decimal construction.\n\nStep-by-step:\n\n1. The JSON text `1.1` is recognized as a real number.\n2. Because `parse_float=decimal.Decimal` was supplied, the decoder calls `decimal.Decimal('1.1')` instead of `float('1.1')`.\n3. `value` is a `Decimal` whose displayed value is `1.1`.\n4. `type(value).__name__` is `Decimal`, so the output is `Decimal 1.1`.\n\nOption A describes the default conversion when `parse_float` is omitted. Option B is wrong because JSON number tokens are not decoded as strings. Option D is wrong because `parse_float` is a documented customization point for JSON real numbers."
+  },
+  {
+    "type": "single",
+    "question": "Which statement correctly describes `object_pairs_hook` when both hooks are supplied to `json.loads()`?\n\n```python\nimport json\n\ndef as_dict(value):\n    return {'from': 'object_hook'}\n\ndef as_pairs(value):\n    return {'from': 'object_pairs_hook'}\n\nresult = json.loads(\n    '{\"x\": 1, \"x\": 2}',\n    object_hook=as_dict,\n    object_pairs_hook=as_pairs,\n)\n```",
+    "options": [
+      "`object_pairs_hook` receives `[('x', 1), ('x', 2)]`, takes priority over `object_hook`, and `result` is `{'from': 'object_pairs_hook'}`.",
+      "`object_hook` receives `{'x': 2}`, takes priority over `object_pairs_hook`, and `result` is `{'from': 'object_hook'}`.",
+      "Both hooks run; `object_hook` receives the dictionary produced by `object_pairs_hook`.",
+      "Neither hook runs because repeated member names make the JSON invalid to Python's decoder."
+    ],
+    "answer": [0],
+    "explanation": "The correct answer is A. `object_pairs_hook` receives an ordered list of name-value pairs for each JSON object and takes priority when both hooks are supplied. Therefore `as_pairs` receives `[('x', 1), ('x', 2)]` and its return value becomes `result`.\n\nStep-by-step:\n\n1. The decoder reads the JSON object members in source order, including both `x` members.\n2. It creates the ordered pair list `[('x', 1), ('x', 2)]` for `object_pairs_hook`.\n3. Because `object_pairs_hook` is present, `object_hook` is not called for this object.\n4. `as_pairs()` returns `{'from': 'object_pairs_hook'}`.\n5. `result` receives that returned dictionary.\n\nOption B describes the default dictionary behavior for repeated names, where the final value wins, but it ignores the priority rule. Option C is wrong because the hooks are alternatives for a given object when `object_pairs_hook` is set. Option D is wrong: Python's standard decoder accepts repeated names and normally retains only the final value in its dictionary result."
+  },
+  {
+    "type": "single",
+    "question": "What does this code print?\n\n```python\nimport json\n\noriginal = {1: 'one', True: 'true', None: 'none'}\nrestored = json.loads(json.dumps(original))\nprint(restored)\n```",
+    "options": [
+      "`{1: 'one', True: 'true', None: 'none'}`",
+      "It raises `TypeError` because JSON objects cannot have non-string Python keys.",
+      "`{'1': 'one', 'True': 'true', 'None': 'none'}`",
+      "`{'1': 'true', 'null': 'none'}`"
+    ],
+    "answer": [3],
+    "explanation": "The correct answer is D: `{'1': 'true', 'null': 'none'}`. JSON object member names are strings. During encoding, Python dictionary keys of supported basic types are converted to JSON member names; during decoding, those member names become Python strings. Python dictionaries also treat `1` and `True` as the same key because they compare equal and have the same hash, so the later `True: 'true'` assignment replaces the earlier `1: 'one'` assignment before JSON encoding begins.\n\nStep-by-step:\n\n1. The literal creates a dictionary with two effective entries: `{1: 'true', None: 'none'}`.\n2. `json.dumps()` converts key `1` to JSON member name `\"1\"` and `None` to `\"null\"`.\n3. The JSON text is equivalent to `{\"1\": \"true\", \"null\": \"none\"}`.\n4. `json.loads()` decodes JSON member names as Python strings.\n5. `restored` is `{'1': 'true', 'null': 'none'}`.\n\nOption A wrongly assumes JSON preserves Python key types. Option B is wrong because `int`, `bool`, and `None` are supported key types for encoding. Option C misses both the `1`/`True` key collision and JSON's `null` spelling for a `None` key."
+  }
+]

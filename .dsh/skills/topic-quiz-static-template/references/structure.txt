@@ -1,0 +1,30 @@
+PROJECT ROOT — static topic-based quiz bank web app
+===================================================
+
+Plain-text template. Replace every <PLACEHOLDER> with concrete values.
+No subject or programming language is implied; keep the app generic.
+
+├── index.html                 # Entry page: topic hub + quiz views (copy from references/index.html)
+├── style.css                  # Styles (author or reuse; referenced by index.html)
+├── script.js                  # Quiz logic (copy from references/script.js)
+├── topics.json                # Topic list shown on the entry page
+├── favicon.svg                # Optional app icon
+├── vendor/                    # Vendored libraries referenced by index.html (relative paths)
+│   ├── marked.min.js          # Markdown parser (marked v4)
+│   ├── prism.min.js           # Prism core (syntax highlighting)
+│   ├── prism-<lang>.min.js    # Prism grammar for the target language, e.g. prism-python.min.js
+│   ├── github-markdown.min.css# GitHub markdown styles
+│   └── prism.min.css          # Prism theme
+├── <TopicID>/                 # One directory per topic; id must be a safe URL/path segment
+│   ├── questions.json         # Question bank for this topic (see questions.json.txt)
+│   └── reference/             # Local study docs used as source material (gitignored, optional)
+└── ...                        # Add more topic directories as needed
+
+NOTES
+-----
+- All asset paths are relative so the app works under any subpath
+  (e.g. GitHub Pages project pages) with no code changes.
+- <TopicID>/reference/ holds downloaded/local study material only and is
+  typically ignored by version control.
+- Serve over HTTP (a static file server) — opening index.html directly fails
+  because browsers block fetch() of local JSON files.

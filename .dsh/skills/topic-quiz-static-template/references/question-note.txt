@@ -1,0 +1,45 @@
+question-note.txt — PLAIN-TEXT NOTE / STUDY CARD
+=================================================
+
+Plain-text template for a study note that accompanies a topic or a single
+question. Generic: no subject or language implied. Replace every
+<PLACEHOLDER> and delete sections you do not need.
+
+--------------------------------------------------------------------
+<NOTE TITLE>                                  (<TopicID> / <question number>)
+--------------------------------------------------------------------
+
+1. CONCEPT
+----------
+<One paragraph introducing the concept in plain words.>
+
+Key points:
+- <key point 1>
+- <key point 2>
+- <key point 3>
+
+2. EXAMPLE CODE
+---------------
+<code snippet in the target language>
+
+3. STEP-BY-STEP DERIVATION
+--------------------------
+<For any output: trace every round/state change.>
+
+| Step | State before | Operation | State after | Result |
+|------|--------------|-----------|-------------|--------|
+| 1    | <state>      | <op>      | <state>     | <res>  |
+
+1. <walkthrough step 1>
+2. <walkthrough step 2>
+3. <walkthrough step 3>
+4. Final output: <output>
+
+4. COMMON MISTAKES
+------------------
+- <mistake and why it is wrong>
+- <mistake and why it is wrong>
+
+5. EXPLANATION / FURTHER READING
+--------------------------------
+<Why the concept works the way it does; authoritative sources to verify.>

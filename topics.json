@@ -58,5 +58,15 @@
     "id": "CSVProcessing",
     "name": "CSV Processing",
     "description": "Reading, writing and processing comma-separated values with Python's csv module."
+  },
+  {
+    "id": "JSONParse",
+    "name": "JSON Encoding & Decoding",
+    "description": "Serializing Python data to JSON and customizing JSON decoding with hooks and decoder subclasses."
+  },
+  {
+    "id": "Operator",
+    "name": "Operator",
+    "description": "Python operators: arithmetic, comparison, logical, bitwise, assignment and operator overloading."
   }
 ]
