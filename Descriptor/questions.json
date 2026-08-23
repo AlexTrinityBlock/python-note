@@ -145,5 +145,89 @@
     "options": ["`c.__dict__` contains `{'instance_value': 2, 'managed': 'instance entry'}`, and `c.managed` is `'instance entry'`.", "`c.__dict__` contains every attribute inherited from `C`, and `c.managed` is `'from descriptor'`.", "`c.__dict__` cannot be accessed because `C` has a descriptor.", "`c.__dict__` contains only `{'instance_value': 2}`, and `c.managed` is `'from descriptor'`."],
     "answer": [0],
     "explanation": "The instance dictionary contains only attributes stored on that individual instance: `{'instance_value': 2, 'managed': 'instance entry'}`. It does not contain `class_value` or the `D` descriptor, because both live in `C.__dict__`. Since `D` has only `__get__`, it is a non-data descriptor, so the same-named instance entry wins and `c.managed` is `'instance entry'`.\n\n| Location | Relevant keys |\n| --- | --- |\n| `c.__dict__` | `instance_value`, `managed` |\n| `C.__dict__` | `class_value`, `managed` descriptor |\n\nIf `D` also defined `__set__` or `__delete__`, it would be a data descriptor and `c.managed` would instead be `'from descriptor'`."
+  },
+  {
+    "type": "single",
+    "question": "Which lookup path produces this output?\n\n```python\nclass D:\n    def __get__(self, obj, objtype=None):\n        return 'descriptor value'\n\nclass C:\n    value = D()\n\n    def __getattribute__(self, name):\n        return object.__getattribute__(self, name)\n\n    def __getattr__(self, name):\n        return f'fallback:{name}'\n\nc = C()\nprint(c.value, c.missing)\n```",
+    "options": ["`__getattr__` runs for both names, producing `fallback:value fallback:missing`.", "`D.__get__` is called directly for both names, producing `descriptor value descriptor value`.", "`__getattribute__` handles both lookups; its delegation triggers `D.__get__` for `value`, and its `AttributeError` for `missing` triggers `__getattr__`, producing `descriptor value fallback:missing`.", "`__getattribute__` skips descriptors, so the output is the `D` instance followed by `fallback:missing`."],
+    "answer": [2],
+    "explanation": "The correct answer is C. Every dotted access first enters `C.__getattribute__`. Here it delegates to `object.__getattribute__`, so normal lookup is preserved. For `value`, normal lookup finds the class descriptor and invokes `D.__get__(c, C)`. For `missing`, normal lookup raises `AttributeError`; only then does the dot operator call `C.__getattr__`.\n\n| Access | `__getattribute__` result | Next step | Final value |\n| --- | --- | --- | --- |\n| `c.value` | finds `D()` in `C` | invoke `D.__get__` | `'descriptor value'` |\n| `c.missing` | raises `AttributeError` | invoke `__getattr__` | `'fallback:missing'` |\n\n`__get__` belongs to the descriptor object (`D`), while `__getattribute__` and `__getattr__` belong to the object being accessed (`c`)."
+  },
+  {
+    "type": "single",
+    "question": "What happens when `__getattribute__` returns a value without delegating?\n\n```python\nclass D:\n    def __get__(self, obj, objtype=None):\n        return 'descriptor value'\n\nclass C:\n    value = D()\n\n    def __getattribute__(self, name):\n        if name == 'value':\n            return 'intercepted'\n        return object.__getattribute__(self, name)\n\n    def __getattr__(self, name):\n        return f'fallback:{name}'\n\nprint(C().value)\n```",
+    "options": ["It prints `descriptor value` because `__get__` always runs before `__getattribute__`.", "It prints `intercepted`; neither `D.__get__` nor `__getattr__` runs.", "It prints `fallback:value` because `__getattribute__` is not allowed to return a string.", "It raises `AttributeError` because custom `__getattribute__` cannot intercept class attributes."],
+    "answer": [1],
+    "explanation": "It prints `intercepted`. `__getattribute__` is the entry point for all instance attribute access. Its early return completes the lookup, so normal lookup never reaches the class descriptor and there is no `AttributeError` to activate `__getattr__`.\n\n1. `C().value` calls `C.__getattribute__(instance, 'value')`.\n2. The `if` branch returns `'intercepted'`.\n3. `D.__get__` is skipped because `object.__getattribute__` was not called.\n4. `__getattr__` is skipped because no `AttributeError` occurred.\n\nOverriding `__getattribute__` is therefore powerful but risky: delegate to `object.__getattribute__` unless intentionally replacing normal descriptor, instance-dictionary, class, and MRO lookup."
+  },
+  {
+    "type": "single",
+    "question": "Progressive question 1 of 6: When `obj.x` is evaluated, which method is entered first? Do not skip ahead; later questions reveal the next stages.\n\n```python\nclass C:\n    def __getattribute__(self, name):\n        print('1: __getattribute__', name)\n        return object.__getattribute__(self, name)\n\n    x = 10\n\nobj = C()\nprint(obj.x)\n```",
+    "options": ["`C.__getattribute__('x')`", "`C.__getattr__('x')`", "`int.__get__('x')`", "`C.__dict__['x']` is returned before any method call"],
+    "answer": [0],
+    "explanation": "The first method entered for `obj.x` is `C.__getattribute__('x')`. This is the general entry point for instance attribute access. Because this implementation delegates to `object.__getattribute__`, the remaining normal lookup process can continue.\n\nThe output begins with:\n\n```text\n1: __getattribute__ x\n```\n\n`__getattr__` is not the first hook; it is a fallback after normal lookup raises `AttributeError`. The class value `10` is also not returned before `__getattribute__` runs."
+  },
+  {
+    "type": "single",
+    "question": "Progressive question 2 of 6: After `__getattribute__` begins normal lookup, which object gets priority?\n\n```python\nclass DataDescriptor:\n    def __get__(self, obj, objtype=None):\n        print('2: DataDescriptor.__get__')\n        return 'descriptor'\n\n    def __set__(self, obj, value):\n        pass\n\nclass C:\n    x = DataDescriptor()\n\n    def __getattribute__(self, name):\n        print('1: __getattribute__', name)\n        return object.__getattribute__(self, name)\n\nobj = C()\nprint(obj.x)\n```",
+    "options": ["The instance dictionary, even when a data descriptor exists", "`__getattr__`, before descriptor lookup", "The data descriptor, whose `__get__` is invoked", "The class name `C`, rather than the attribute value"],
+    "answer": [2],
+    "explanation": "The data descriptor gets priority. `DataDescriptor` defines `__set__`, so it is a data descriptor. After `C.__getattribute__` delegates to `object.__getattribute__`, Python finds the descriptor in the class and calls `DataDescriptor.__get__(obj, C)` before consulting the instance dictionary.\n\nThe relevant order is:\n\n1. Enter `C.__getattribute__('x')`.\n2. Find a data descriptor named `x` in the class MRO.\n3. Invoke its `__get__`.\n4. Return `'descriptor'`.\n\nThe presence of `__set__` is what gives this descriptor priority over an instance entry with the same name."
+  },
+  {
+    "type": "single",
+    "question": "Progressive question 3 of 6: If the data descriptor is removed, which value wins after `__getattribute__`?\n\n```python\nclass NonDataDescriptor:\n    def __get__(self, obj, objtype=None):\n        print('3: NonDataDescriptor.__get__')\n        return 'descriptor'\n\nclass C:\n    x = NonDataDescriptor()\n\n    def __getattribute__(self, name):\n        print('1: __getattribute__', name)\n        return object.__getattribute__(self, name)\n\nobj = C()\nobj.__dict__['x'] = 'instance value'\nprint(obj.x)\n```",
+    "options": ["The non-data descriptor, because every descriptor beats `__dict__`", "The class name `C`, because instance values are ignored", "`__getattr__` returns a fallback", "The instance dictionary value `'instance value'`"],
+    "answer": [3],
+    "explanation": "The instance dictionary value `'instance value'` wins. `NonDataDescriptor` defines only `__get__`, so it is a non-data descriptor. Normal lookup first notices it, then checks `obj.__dict__`; because `'x'` is present there, that value is returned and `NonDataDescriptor.__get__` is not called.\n\n| Stage | Finding | Action |\n| --- | --- | --- |\n| 1 | `C.__getattribute__` | delegate to normal lookup |\n| 2 | non-data descriptor | remember it, continue |\n| 3 | `obj.__dict__['x']` | return `'instance value'` |\n\nThis is the opposite of the previous question, where defining `__set__` made the descriptor a data descriptor."
+  },
+  {
+    "type": "single",
+    "question": "Progressive question 4 of 6: If the instance entry is absent, what happens to the non-data descriptor?\n\n```python\nclass NonDataDescriptor:\n    def __get__(self, obj, objtype=None):\n        print('4: NonDataDescriptor.__get__')\n        return 'computed value'\n\nclass C:\n    x = NonDataDescriptor()\n\n    def __getattribute__(self, name):\n        print('1: __getattribute__', name)\n        return object.__getattribute__(self, name)\n\nobj = C()\nprint(obj.x)\n```",
+    "options": ["It is invoked and returns `'computed value'`", "It is ignored and `None` is returned", "`__getattr__` is invoked before it", "It raises `TypeError` because non-data descriptors cannot be read"],
+    "answer": [0],
+    "explanation": "The non-data descriptor's `__get__` is invoked and the output value is `'computed value'`. The lookup has already checked the instance dictionary and found no `'x'` entry. It then returns to the saved non-data descriptor and calls `__get__(obj, C)`.\n\nThe sequence is:\n\n1. `__getattribute__('x')` starts lookup.\n2. The non-data descriptor is found in `C`.\n3. `obj.__dict__` does not contain `'x'`.\n4. `NonDataDescriptor.__get__` runs and returns `'computed value'`.\n\n`__getattr__` is not involved because lookup succeeds."
+  },
+  {
+    "type": "single",
+    "question": "Progressive question 5 of 6: If no descriptor exists but a class attribute does, what is returned?\n\n```python\nclass C:\n    x = 'class value'\n\n    def __getattribute__(self, name):\n        print('1: __getattribute__', name)\n        return object.__getattribute__(self, name)\n\nobj = C()\nprint(obj.x)\n```",
+    "options": ["The `C` class object itself", "`'class value'`", "`None`", "`__getattr__('x')` must return a value"],
+    "answer": [1],
+    "explanation": "The class attribute value `'class value'` is returned. There is no data descriptor, no instance entry, and no non-data descriptor in this version. Normal lookup therefore reaches the plain class variable as its next successful source.\n\n```text\n1: __getattribute__ x\nclass value\n```\n\nThe value is found on `C`, but `C` itself is not returned. `__getattr__` is only needed when the complete normal lookup fails."
+  },
+  {
+    "type": "single",
+    "question": "Progressive question 6 of 6: What happens after every normal lookup stage fails?\n\n```python\nclass C:\n    def __getattribute__(self, name):\n        print('1: __getattribute__', name)\n        return object.__getattribute__(self, name)\n\n    def __getattr__(self, name):\n        print('6: __getattr__', name)\n        return 'fallback value'\n\nobj = C()\nprint(obj.missing)\n```",
+    "options": ["`AttributeError` is raised immediately; `__getattr__` is never considered", "`__getattribute__` calls `__getattr__` before normal lookup", "`__getattr__` runs after `__getattribute__` raises `AttributeError` and returns `'fallback value'`", "`__get__` is called on `C` even though no descriptor exists"],
+    "answer": [2],
+    "explanation": "`__getattribute__` performs normal lookup and raises `AttributeError` for the missing name. The dot operator then invokes `C.__getattr__('missing')`, which returns `'fallback value'`.\n\nThe complete final stage is:\n\n1. Enter `__getattribute__('missing')`.\n2. Check data descriptors: none.\n3. Check `obj.__dict__`: no `'missing'`.\n4. Check non-data descriptors: none.\n5. Check plain class attributes: none.\n6. Catch `AttributeError`, then call `__getattr__('missing')`.\n7. Print `'fallback value'`.\n\n`__getattr__` is a fallback hook, not a replacement for `__getattribute__`, and `__get__` belongs to a descriptor object rather than to `C` itself."
+  },
+  {
+    "type": "single",
+    "question": "What does `obj.__dict__['x']` actually do?\n\n```python\nclass C:\n    def __getattribute__(self, name):\n        print('attribute hook:', name)\n        return object.__getattribute__(self, name)\n\nobj = C()\nobj.__dict__['x'] = 10\nprint(obj.__dict__['x'])\n```",
+    "options": ["It first accesses `obj.__dict__`, then applies dictionary subscription for the key `'x'`.", "It directly invokes a descriptor named `x`.", "It calls `obj.__getattr__('x')` before reading the dictionary.", "It searches the class MRO for `x` and ignores `obj.__dict__`."],
+    "answer": [0],
+    "explanation": "A is correct. The expression has two operations: `obj.__dict__` first performs attribute access for the name `__dict__`, and then `['x']` calls the dictionary's subscription operation. The second operation is not attribute lookup for `x`, so a class descriptor named `x` and `__getattr__('x')` are bypassed.\n\nThe hook prints twice for the two explicit `obj.__dict__` accesses:\n\n```text\nattribute hook: __dict__\nattribute hook: __dict__\n10\n```\n\nThe `__dict__` attribute itself may be supplied by a built-in getset descriptor; the key lookup happens on the resulting dictionary."
+  },
+  {
+    "type": "multiple",
+    "question": "Which expressions directly read the value stored under `'x'` in an ordinary instance dictionary, without performing `obj.x` descriptor lookup?\n\n```python\nclass C:\n    x = property(lambda self: 'property value')\n\nobj = C()\nobj.__dict__['x'] = 'stored value'\n```",
+    "options": ["`obj.x`", "`obj.__dict__['x']`", "`object.__getattribute__(obj, '__dict__')['x']`", "`vars(obj)['x']`"],
+    "answer": [1, 2, 3],
+    "explanation": "B, C, and D are correct. They obtain the instance dictionary and then index it directly, so they return `'stored value'` without invoking the `x` property. `obj.x` is different: `property` is a data descriptor and its `__get__` wins over the same-named instance entry, returning `'property value'`.\n\n```python\nprint(obj.__dict__['x'])                         # stored value\nprint(vars(obj)['x'])                            # stored value\nprint(object.__getattribute__(obj, '__dict__')['x'])  # stored value\nprint(obj.x)                                     # property value\n```\n\nThe direct forms still differ in how they obtain the dictionary: `obj.__dict__` goes through ordinary attribute access, while `object.__getattribute__` bypasses an override of `C.__getattribute__` for that step."
+  },
+  {
+    "type": "single",
+    "question": "Which expression is incorrect for reading key `'x'` from an instance dictionary?\n\n```python\nclass C:\n    pass\n\nobj = C()\nobj.__dict__['x'] = 7\n```",
+    "options": ["`obj.__dict__.x`", "`obj.__dict__['x']`", "`vars(obj)['x']`", "`object.__getattribute__(obj, '__dict__')['x']`"],
+    "answer": [0],
+    "explanation": "A is incorrect. `obj.__dict__` produces a dictionary, and dictionaries use subscription syntax such as `['x']`, not attribute syntax such as `.x`. The other three expressions retrieve the dictionary and then read its `'x'` key.\n\n```python\nprint(obj.__dict__['x'])                              # 7\nprint(vars(obj)['x'])                                 # 7\nprint(object.__getattribute__(obj, '__dict__')['x'])  # 7\n# obj.__dict__.x -> AttributeError\n```\n\nThis question separates dictionary-key access from object-attribute access: the key string `'x'` is not passed through the descriptor protocol."
+  },
+  {
+    "type": "multiple",
+    "question": "Which statements about these two forms are true?\n\n```python\nclass C:\n    def __getattribute__(self, name):\n        print('hook', name)\n        return object.__getattribute__(self, name)\n\nobj = C()\nobj.__dict__['x'] = 7\nvalue = obj.__dict__['x']\nmissing = obj.__dict__.get('y')\n```",
+    "options": ["`obj.__dict__['x']` invokes `__getattr__('x')` if the dictionary lacks `'x'`.", "Both forms first access the `__dict__` attribute through the object's attribute machinery.", "Neither form can be used when the class defines `__getattribute__`.", "`.get('y')` returns `None` for a missing key instead of raising `KeyError`."],
+    "answer": [1, 3],
+    "explanation": "B and D are correct. Both expressions first evaluate `obj.__dict__`, which is an attribute lookup for the name `__dict__`; only then do they call dictionary subscription or `dict.get`. The missing key in `obj.__dict__['x']` would raise `KeyError`, not activate `__getattr__('x')`, because `__getattr__` is an object-attribute fallback and dictionary operations are separate.\n\n| Expression | Dictionary operation | Missing-key behavior |\n| --- | --- | --- |\n| `obj.__dict__['x']` | subscription | raises `KeyError` |\n| `obj.__dict__.get('y')` | `get` method | returns `None` by default |\n\nThe custom `__getattribute__` does not prevent these forms; it observes the lookup of `__dict__` and then delegates to the standard implementation."
   }
 ]
