@@ -119,6 +119,36 @@ button {
   letter-spacing: -0.02em;
 }
 
+.app-header-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.repo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+  padding: 6px var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--foreground);
+  font-size: var(--text-small);
+  line-height: var(--text-small-lh);
+  text-decoration: none;
+  transition: background var(--motion-default), border-color var(--motion-default);
+}
+
+.repo-link:hover {
+  background: var(--muted);
+  border-color: var(--ring);
+}
+
+.repo-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
 .subtitle {
   color: var(--muted-foreground);
   font-size: var(--text-small);
@@ -810,6 +840,10 @@ button {
   .app-header h1 {
     font-size: var(--text-h2);
     line-height: var(--text-h2-lh);
+  }
+
+  .repo-link {
+    margin-left: 60px;
   }
 
   .card {
